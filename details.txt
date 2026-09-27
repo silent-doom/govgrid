@@ -1,0 +1,170 @@
+GovGrid: Digital Public Infrastructure & Capital Reconciliation Engine
+Project Specification & Feature Dossier for Stitch (Google) UI/UX Upgrade
+Executive Overview & Purpose
+GovGrid is a Digital Public Infrastructure (DPI) platform that bridges the gap between unstructured citizen distress signals (multilingual voice notes, WhatsApp reports, public grievances) and government procurement budgets (GeM e-tenders, municipal capital sanctions).
+
+By executing automated spatial cross-matching (BigQuery GIS ST_DWithin) and multimodal discrepancy audits (Gemini 1.5 Pro on Vertex AI), GovGrid alerts municipal commissioners to:
+
+Unfunded Liabilities: High-distress citizen hotspots where zero budget has been sanctioned.
+Capital Leakage / Ghost Projects: 100% disbursed or active civil tenders where citizen distress remains critically high.
+Current Design System & Aesthetic Guardrails
+Stitch should adhere to and elevate the following design tokens and constraints:
+
+Token / Constraint	Specification / Implementation
+Color Rule	Strictly Solid Colors only. Absolutely NO gradients, NO blue or purple/violet shades (to avoid generic SaaS/AI tropes).
+Backgrounds	Deep Matte Obsidian (#0c1017), Surface Card (#141b24), Surface Elevated (#1b2430), Border (#232f3e).
+Semantic Accents	Emerald Green (#10b981) for funded/resolved/healthy, Ochre Amber (#f59e0b) for warnings/medium severity, Crimson Red (#ef4444) for critical distress/unfunded liabilities/leaks, Sage/Lime (#84cc16) for civil works.
+Typography	Space Grotesk for metric figures and display titles; Inter for UI labels, tables, and body; JetBrains Mono for IDs, GIS coordinates, and budget amounts.
+Iconography	Zero emojis. 100% SVG icons via Lucide (<Landmark />, <ShieldAlert />, <IndianRupee />, <Cpu />, etc.).
+Map Tiles	Esri World Dark Gray Canvas tiles (clean, un-watermarked high-contrast GIS base).
+Application Architecture & Route Inventory
+The frontend is powered by a multi-page routing structure managed by 
+
+App.jsx
+:
+
+/                     ─── Command Center (Executive Map & Geospatial Operations)
+/grievances           ─── Citizen Grievance Ledger & Telemetry
+/tenders              ─── GeM Procurement & Contractor Intel
+/reconciliation       ─── Gemini AI Discrepancy & Anomaly Matrix
+/jan-vani             ─── Multimodal Voice/WhatsApp Citizen Portal
+/analytics            ─── DPI Spatial & Capital Analytics
+/pipeline             ─── BigQuery GIS Schema & Ingestion Pipeline
+/architecture         ─── End-to-End Google Cloud DPI Architecture
+Detailed Component & Feature Breakdown
+1. Global Navigation Shell
+File: 
+
+Sidebar.jsx
+ & 
+
+TopBar.jsx
+Features:
+Expandable/collapsible sidebar with active route highlights.
+Multi-District Switcher: Anantapur (Rural AP), Bengaluru East (High-Density Tech Corridor), Varanasi Urban (Heritage/High Density).
+Mode Switcher: Synthetic Ground-Truth Mock Data vs. Live FastAPI/BigQuery Backend.
+Live Alert ticker showing total unresolved high-priority anomalies.
+2. Key Metrics Bar
+File: 
+
+MetricsBar.jsx
+Features:
+Animated stat counters for Citizen Grievances, Sanctioned Budget (in ₹ Crores), Unfunded Liabilities, Capital Leakage Flags, and Spatial Accountability Index.
+Dynamic status tags (URGENT, AUDIT, High Compliance).
+3. Command Center (Executive View)
+Files: 
+
+Dashboard.jsx
+, 
+
+MapView.jsx
+, 
+
+AlertsPanel.jsx
+Features:
+Leaflet GIS Map: Renders citizen distress points (color-coded by urgency) alongside procurement buffers (concentric semi-transparent buffer rings showing tender radius).
+Layer Controls: Toggle Citizen Distress layer, Procurement Buffer layer, and Severity Heatmap.
+Interactive Popups: Inspect exact grievance text, citizen language, GeM tender budget, and contractor ID upon clicking nodes.
+Real-Time Priority Feed: Split-pane alert panel flagging immediate municipal interventions.
+4. Citizen Grievance Ledger
+Files: 
+
+Grievances.jsx
+, 
+
+DataExplorer.jsx
+Features:
+Full tabular ledger of complaints with search, category filtering (Water Supply, Roads & Potholes, Sewage, Power Grid, Solid Waste), and severity filtering.
+Verification badges: Ingestion source (WhatsApp Voice, Jan-Sunwai, Call Center IVR), original citizen language (Telugu, Hindi, Kannada, Tamil, English), and verification confidence.
+Severity meter (0-10) with visual urgency indicators.
+5. GeM Procurement & Tender Intelligence
+Files: 
+
+TenderIntel.jsx
+, 
+
+TenderManager.jsx
+Features:
+Procurement registry showing GeM Tender IDs, Sanctioned Capital (₹ INR), Contractor Name, Department, and Geolocation radius.
+Milestone progress ring and disbursement bar (% spent vs % physically completed).
+Red-flag highlighting on tenders exhibiting capital leakage.
+6. AI Discrepancy & Reconciliation Matrix
+File: 
+
+Reconciliation.jsx
+Features:
+Automated cross-match between complaints and tenders within a 1.5km spatial buffer.
+Side-by-side reconciliation dossier comparing citizen claims with contractor self-reported milestones.
+Generative AI audit recommendation powered by Gemini 1.5 Pro: Suggested action (Freeze Payments, Initiate Vigilance Inquiry, Immediate Sanction).
+Action buttons: "Generate Formal Audit Dossier", "Notify District Collector".
+7. Jan-Vani Citizen Ingestion Portal
+File: 
+
+JanVaniPortal.jsx
+Features:
+Live simulator for citizen complaint submission via simulated voice recording or WhatsApp text.
+Multilingual voice support across Indic languages.
+Live Gemini processing breakdown showing: Audio Transcription $\to$ Sentiment/Urgency Extraction $\to$ Department Routing $\to$ Reverse Geocoding.
+Immediately appends validated complaints into the active map and ledger.
+8. DPI Spatial & Capital Analytics
+File: 
+
+Analytics.jsx
+Features:
+Solid-color Recharts data visualizations:
+Capital Allocation vs Distress Severity by Municipal Ward.
+Category-wise Expenditure vs Inflow of Complaints.
+Resolution Speed & Contractor Reliability Index.
+Fully responsive grid with interactive tooltips and category breakdowns.
+9. BigQuery GIS & Pipeline Telemetry
+File: 
+
+DataPipeline.jsx
+Features:
+Live connector health statuses (CPGRAMS, GeM API, BharatNet IoT sensors, WhatsApp Cloud API).
+BigQuery SQL transformation schemas and GIS spatial join queries displayed with code syntax styling.
+Telemetry pipeline latency, throughput, and sync frequency counters.
+10. Architecture & Google Cloud Flow
+File: 
+
+ArchitectureFlow.jsx
+Features:
+Visual system topology illustrating data ingestion through Cloud Run, vector indexing in Vertex AI, geospatial partitioning in BigQuery GIS, and delivery through FastAPI.
+Data Models & Contracts for Stitch
+Grievance Schema
+typescript
+interface Complaint {
+  id: string; // e.g. "CMP-2026-0891"
+  category: "Water Supply" | "Roads & Infrastructure" | "Sewage & Drainage" | "Electricity" | "Solid Waste";
+  description: string;
+  original_transcript?: string;
+  language: string; // "Telugu", "Hindi", "Kannada", etc.
+  severity_score: number; // 1 to 10
+  lat: number;
+  lng: number;
+  ward: string;
+  source: "WhatsApp Audio" | "Jan-Sunwai Web" | "IVR Toll-Free";
+  status: "Open" | "Assigned" | "Under Audit" | "Resolved";
+  created_at: string;
+}
+Tender Schema
+typescript
+interface Tender {
+  id: string; // e.g. "GEM-2025-C-84912"
+  title: string;
+  department: string;
+  budget_inr: number;
+  disbursed_inr: number;
+  contractor: string;
+  completion_pct: number;
+  target_lat: number;
+  target_lng: number;
+  radius_meters: number;
+  status: "Active" | "Completed" | "Under Review";
+  flagged_leakage: boolean;
+}
+High-Impact Opportunities for Google Stitch UI/UX Upgrade
+DPI Glass & Depth Enhancements: Add refined surface elevations, micro-borders, and tactile hover feedback without resorting to bright gradients.
+Geospatial Map Controls: Integrate custom dark map overlays, clustering pins with pulsing urgency halos, and interactive range-slider filters for timeline replay.
+Audit Dossier Export View: Design an exportable, printable PDF/Gov-Gazette modal layout for District Magistrate sanction reviews.
+Mobile/Tablet Inspector Mode: Responsive bottom sheets for on-ground municipal engineers conducting field verification visits.

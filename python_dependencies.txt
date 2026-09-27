@@ -1,0 +1,12 @@
+# Core Web Framework
+fastapi==0.104.1
+uvicorn==0.24.0.post1
+python-multipart==0.0.6
+
+# Frontend / Dashboard
+streamlit==1.28.2
+requests==2.31.0
+
+# Google AI & Data processing
+google-generativeai==0.3.1
+pydantic==2.5.2

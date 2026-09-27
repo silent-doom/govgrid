@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+      - ./data:/data
+      # Mount service account key if using file-based auth
+      - ./service-account-key.json:/app/service-account-key.json:ro
+    environment:
+      - PORT=8080
+    restart: unless-stopped
+
+  dashboard:
+    image: python:3.11-slim
+    working_dir: /app
+    command: >
+      sh -c "pip install -r /requirements.txt -q &&
+             streamlit run app.py --server.port=8501 --server.address=0.0.0.0"
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    volumes:
+      - ./dashboard:/app
+      - ./requirements.txt:/requirements.txt
+      - ./service-account-key.json:/app/service-account-key.json:ro
+    environment:
+      - BACKEND_URL=http://backend:8080
+    depends_on:
+      - backend
+    restart: unless-stopped

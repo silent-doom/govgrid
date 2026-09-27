@@ -1,0 +1,29 @@
+{
+  "grievances": [
+    {"name": "complaint_id", "type": "STRING", "mode": "REQUIRED", "description": "Unique UUID for the complaint"},
+    {"name": "category", "type": "STRING", "mode": "REQUIRED", "description": "Roads, Water, Electricity, Sanitation, or Other"},
+    {"name": "severity_score", "type": "INTEGER", "mode": "REQUIRED", "description": "Severity assessment from 1 to 10"},
+    {"name": "extracted_location", "type": "STRING", "mode": "NULLABLE", "description": "Extracted textual location description"},
+    {"name": "lat", "type": "FLOAT", "mode": "NULLABLE", "description": "Latitude coordinate"},
+    {"name": "lng", "type": "FLOAT", "mode": "NULLABLE", "description": "Longitude coordinate"},
+    {"name": "damage_assessment", "type": "STRING", "mode": "NULLABLE", "description": "AI visual/textual damage assessment"},
+    {"name": "original_language", "type": "STRING", "mode": "NULLABLE", "description": "Detected vernacular dialect"},
+    {"name": "image_gcs_uri", "type": "STRING", "mode": "NULLABLE", "description": "GCS URI of citizen uploaded image"},
+    {"name": "geo_point", "type": "GEOGRAPHY", "mode": "NULLABLE", "description": "BigQuery GIS Geography Point"},
+    {"name": "submitted_at", "type": "TIMESTAMP", "mode": "REQUIRED", "description": "Submission timestamp"}
+  ],
+  "tenders": [
+    {"name": "tender_id", "type": "STRING", "mode": "REQUIRED", "description": "Official tender reference ID"},
+    {"name": "department", "type": "STRING", "mode": "REQUIRED", "description": "Department issuing the tender"},
+    {"name": "budget_inr", "type": "INT64", "mode": "REQUIRED", "description": "Allocated expenditure budget in INR"},
+    {"name": "work_description", "type": "STRING", "mode": "REQUIRED", "description": "Scope of public infrastructure works"},
+    {"name": "target_location", "type": "STRING", "mode": "NULLABLE", "description": "Tender target area name"},
+    {"name": "target_lat", "type": "FLOAT", "mode": "NULLABLE", "description": "Latitude of worksite"},
+    {"name": "target_lng", "type": "FLOAT", "mode": "NULLABLE", "description": "Longitude of worksite"},
+    {"name": "target_geo_point", "type": "GEOGRAPHY", "mode": "NULLABLE", "description": "BigQuery GIS geography coordinate"},
+    {"name": "expected_completion_date", "type": "DATE", "mode": "NULLABLE", "description": "Target completion date"},
+    {"name": "status", "type": "STRING", "mode": "REQUIRED", "description": "Active, Completed, or Pending"},
+    {"name": "source_pdf_uri", "type": "STRING", "mode": "NULLABLE", "description": "GCS URI of original state gazette PDF"},
+    {"name": "ingested_at", "type": "TIMESTAMP", "mode": "REQUIRED", "description": "Ingestion timestamp"}
+  ]
+}

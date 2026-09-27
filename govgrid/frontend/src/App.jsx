@@ -55,7 +55,7 @@ export default function App() {
       />
 
       {/* Main Content Viewport */}
-      <main className="flex-1 w-full overflow-y-auto">
+      <main className="flex-1 w-full overflow-y-auto pb-20 lg:pb-0">
         <Routes>
           {/* Primary Stitch Revamped Views */}
           <Route path="/" element={<ExecutiveBriefing {...sharedProps} />} />

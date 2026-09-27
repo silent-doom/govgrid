@@ -108,6 +108,8 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
     },
   ];
 
+  const [mobileTab, setMobileTab] = useState('feed'); // 'feed' | 'inspector'
+
   const filteredStories = citizenStories.filter(story => {
     const matchesCategory = selectedCategory === 'All' || story.category === selectedCategory;
     const matchesSearch = story.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -141,11 +143,11 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full">
       
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center justify-between shadow-md">
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center justify-between shadow-md">
           <div className="flex items-center gap-2.5">
             <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
             <p className="text-xs font-semibold">{toastMessage}</p>
@@ -157,17 +159,17 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
       )}
 
       {/* Subheader & Search Section */}
-      <div className="mb-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4 sm:mb-6">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold mb-2 border border-blue-200/60 font-display">
               <Mic size={14} className="text-blue-600" />
               Direct Citizen Ground-Truth
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold font-display text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold font-display text-slate-900 tracking-tight">
               Citizen Voice Ledger
             </h1>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-slate-500 text-xs sm:text-sm mt-1">
               Ingested gently from WhatsApp Audio, grassroots townhalls &amp; local grievance hubs.
             </p>
           </div>
@@ -186,17 +188,17 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
         </div>
 
         {/* Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 pt-1 border-b border-slate-200/60 pb-5">
+        <div className="flex items-center gap-2 pt-1 border-b border-slate-200/60 pb-4 overflow-x-auto no-scrollbar">
           <button 
             onClick={() => setSelectedCategory('All')}
-            className={`px-4 py-2 rounded-2xl text-xs font-semibold transition flex items-center gap-1.5 shadow-xs ${
+            className={`px-3.5 py-1.5 rounded-2xl text-xs font-semibold transition flex items-center gap-1.5 shadow-xs whitespace-nowrap shrink-0 ${
               selectedCategory === 'All'
                 ? 'bg-primary text-white shadow-primary/20'
                 : 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-200'
             }`}
           >
             <span>All Reports</span>
-            <span className={`text-[11px] px-1.5 py-0.2 rounded-full ${
+            <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
               selectedCategory === 'All' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
             }`}>
               1,482
@@ -205,71 +207,98 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
 
           <button 
             onClick={() => setSelectedCategory('Water')}
-            className={`px-4 py-2 rounded-2xl text-xs font-semibold transition flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-2xl text-xs font-semibold transition flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
               selectedCategory === 'Water'
                 ? 'bg-blue-600 text-white shadow-xs'
                 : 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-200'
             }`}
           >
-            <Droplets size={14} className={selectedCategory === 'Water' ? 'text-white' : 'text-blue-500'} />
+            <Droplets size={13} className={selectedCategory === 'Water' ? 'text-white' : 'text-blue-500'} />
             <span>Water Supply</span>
-            <span className="bg-slate-100 text-slate-600 text-[11px] px-1.5 rounded-full">340</span>
+            <span className="bg-slate-100 text-slate-600 text-[10px] px-1.5 rounded-full">340</span>
           </button>
 
           <button 
             onClick={() => setSelectedCategory('Roads')}
-            className={`px-4 py-2 rounded-2xl text-xs font-semibold transition flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-2xl text-xs font-semibold transition flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
               selectedCategory === 'Roads'
                 ? 'bg-amber-600 text-white shadow-xs'
                 : 'bg-amber-50 text-amber-900 border border-amber-200/80 hover:bg-amber-100/70'
             }`}
           >
-            <AlertTriangle size={14} className={selectedCategory === 'Roads' ? 'text-white' : 'text-amber-600'} />
+            <AlertTriangle size={13} className={selectedCategory === 'Roads' ? 'text-white' : 'text-amber-600'} />
             <span>Roads &amp; Potholes</span>
-            <span className="bg-amber-100/90 text-amber-900 text-[11px] px-1.5 rounded-full">618</span>
+            <span className="bg-amber-100/90 text-amber-900 text-[10px] px-1.5 rounded-full">618</span>
           </button>
 
           <button 
             onClick={() => setSelectedCategory('Electricity')}
-            className={`px-4 py-2 rounded-2xl text-xs font-semibold transition flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-2xl text-xs font-semibold transition flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
               selectedCategory === 'Electricity'
                 ? 'bg-primary text-white shadow-xs'
                 : 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-200'
             }`}
           >
-            <Zap size={14} className={selectedCategory === 'Electricity' ? 'text-white' : 'text-amber-500'} />
+            <Zap size={13} className={selectedCategory === 'Electricity' ? 'text-white' : 'text-amber-500'} />
             <span>Electricity &amp; Lighting</span>
-            <span className="bg-slate-100 text-slate-600 text-[11px] px-1.5 rounded-full">284</span>
+            <span className="bg-slate-100 text-slate-600 text-[10px] px-1.5 rounded-full">284</span>
           </button>
 
           <button 
             onClick={() => setSelectedCategory('Sanitation')}
-            className={`px-4 py-2 rounded-2xl text-xs font-semibold transition flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-2xl text-xs font-semibold transition flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
               selectedCategory === 'Sanitation'
                 ? 'bg-emerald-700 text-white shadow-xs'
                 : 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-200'
             }`}
           >
-            <TreePine size={14} className={selectedCategory === 'Sanitation' ? 'text-white' : 'text-emerald-600'} />
+            <TreePine size={13} className={selectedCategory === 'Sanitation' ? 'text-white' : 'text-emerald-600'} />
             <span>Parks &amp; Sanitation</span>
-            <span className="bg-slate-100 text-slate-600 text-[11px] px-1.5 rounded-full">240</span>
+            <span className="bg-slate-100 text-slate-600 text-[10px] px-1.5 rounded-full">240</span>
+          </button>
+        </div>
+
+        {/* Mobile View Toggle (Visible only on screens < lg) */}
+        <div className="lg:hidden flex items-center p-1 bg-surface-dim rounded-2xl border border-slate-200 mt-3 shadow-2xs">
+          <button
+            onClick={() => setMobileTab('feed')}
+            className={`flex-1 py-2 text-xs font-bold font-display rounded-xl transition flex items-center justify-center gap-1.5 ${
+              mobileTab === 'feed'
+                ? 'bg-white text-primary shadow-xs border border-slate-200/60'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Mic size={14} />
+            <span>Voice Feed ({filteredStories.length})</span>
+          </button>
+
+          <button
+            onClick={() => setMobileTab('inspector')}
+            className={`flex-1 py-2 text-xs font-bold font-display rounded-xl transition flex items-center justify-center gap-1.5 ${
+              mobileTab === 'inspector'
+                ? 'bg-white text-primary shadow-xs border border-slate-200/60'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Info size={14} />
+            <span>Case #{selectedCase.caseNo}</span>
           </button>
         </div>
       </div>
 
       {/* Split Layout: Stories Feed (Left) & Focused Detail Inspector (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
         
         {/* Left Column: Feed of Clean Story Cards (7 cols) */}
-        <div className="lg:col-span-7 space-y-4">
+        <div className={`lg:col-span-7 space-y-4 ${mobileTab === 'feed' ? 'block' : 'hidden lg:block'}`}>
           
           {/* Quick Voice Note Ingestion Simulator Input */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-xs">
+          <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/80 shadow-xs">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles size={16} className="text-secondary" />
               <h3 className="font-display font-bold text-sm text-slate-900">Citizen WhatsApp / Voice Simulator</h3>
             </div>
-            <form onSubmit={handleSimulateVoiceSubmit} className="flex gap-2">
+            <form onSubmit={handleSimulateVoiceSubmit} className="flex flex-col sm:flex-row gap-2">
               <input 
                 type="text"
                 value={voiceInputText}
@@ -280,7 +309,7 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
               <button 
                 type="submit"
                 disabled={simulatedRecording}
-                className="bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 shadow-xs"
+                className="bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shrink-0 shadow-xs"
               >
                 <Mic size={14} />
                 <span>{simulatedRecording ? 'Transcribing...' : 'Ingest Voice'}</span>
@@ -295,8 +324,11 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
             return (
               <article 
                 key={story.id}
-                onClick={() => setSelectedCaseId(story.id)}
-                className={`bg-white rounded-3xl p-6 border transition cursor-pointer shadow-xs hover:shadow-sm relative ${
+                onClick={() => {
+                  setSelectedCaseId(story.id);
+                  setMobileTab('inspector');
+                }}
+                className={`bg-white rounded-3xl p-5 sm:p-6 border transition cursor-pointer shadow-xs hover:shadow-sm relative ${
                   isSelected 
                     ? 'border-2 border-primary/40 ring-4 ring-primary/5' 
                     : 'border-slate-200/80 hover:border-slate-300'
@@ -394,9 +426,18 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
         </div>
 
         {/* Right Column: Single Focused Detail View for Selected Report (5 cols) */}
-        <div className="lg:col-span-5 sticky top-28">
-          <aside className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm space-y-6">
+        <div className={`lg:col-span-5 sticky top-24 ${mobileTab === 'inspector' ? 'block' : 'hidden lg:block'}`}>
+          <aside className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-sm space-y-6">
             
+            {/* Mobile Back to Feed Button */}
+            <button 
+              onClick={() => setMobileTab('feed')}
+              className="lg:hidden text-xs font-bold text-primary flex items-center gap-1 hover:underline pb-1 border-b border-slate-100 w-full"
+            >
+              <ChevronRight size={15} className="rotate-180" />
+              <span>Back to Citizen Voice Feed</span>
+            </button>
+
             {/* Focused Header */}
             <div>
               <div className="flex items-center justify-between mb-2">

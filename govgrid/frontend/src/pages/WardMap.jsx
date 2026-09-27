@@ -18,7 +18,7 @@ export default function WardMap({ districtData, complaints = [], tenders = [] })
   const capitalCrores = (totalCapital / 10000000).toFixed(1);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full">
       
       {/* Header Bar */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
@@ -27,35 +27,35 @@ export default function WardMap({ districtData, complaints = [], tenders = [] })
             <MapIcon size={14} className="text-secondary" />
             BigQuery GIS ST_DWithin Geospatial Engine
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold font-display text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold font-display text-slate-900 tracking-tight">
             Ward Spatial Command Map
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-slate-500 text-xs sm:text-sm mt-1">
             Real-time cross-referencing of citizen grievance clusters against sanctioned GeM public procurement buffers.
           </p>
         </div>
 
         {/* Quick Spatial Stats Pills */}
-        <div className="flex items-center gap-3">
-          <div className="bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs text-xs">
-            <span className="text-slate-400 block text-[10px] font-bold uppercase font-display">Monitored Jurisdiction</span>
-            <span className="font-display font-bold text-slate-900">{districtData?.name || 'District Node'}</span>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="bg-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-slate-200 shadow-2xs text-xs">
+            <span className="text-slate-400 block text-[9px] sm:text-[10px] font-bold uppercase font-display">Monitored Jurisdiction</span>
+            <span className="font-display font-bold text-slate-900 text-xs sm:text-sm">{districtData?.name || 'District Node'}</span>
           </div>
 
-          <div className="bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs text-xs">
-            <span className="text-slate-400 block text-[10px] font-bold uppercase font-display">Tender Capital Bound</span>
-            <span className="font-display font-bold text-emerald-700">₹{capitalCrores} Cr</span>
+          <div className="bg-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-slate-200 shadow-2xs text-xs">
+            <span className="text-slate-400 block text-[9px] sm:text-[10px] font-bold uppercase font-display">Tender Capital Bound</span>
+            <span className="font-display font-bold text-emerald-700 text-xs sm:text-sm">₹{capitalCrores} Cr</span>
           </div>
 
-          <div className="bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs text-xs">
-            <span className="text-slate-400 block text-[10px] font-bold uppercase font-display">Grievances Pinned</span>
-            <span className="font-display font-bold text-rose-600">{complaints.length} Hotspots</span>
+          <div className="bg-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-slate-200 shadow-2xs text-xs">
+            <span className="text-slate-400 block text-[9px] sm:text-[10px] font-bold uppercase font-display">Grievances Pinned</span>
+            <span className="font-display font-bold text-rose-600 text-xs sm:text-sm">{complaints.length} Hotspots</span>
           </div>
         </div>
       </div>
 
       {/* Map & Inspector Container */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden p-4">
+      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden p-2 sm:p-4">
         <MapView 
           complaints={complaints}
           tenders={tenders}

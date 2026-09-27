@@ -5,6 +5,17 @@ All notable changes to the GovGrid Digital Public Infrastructure & Capital Recon
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-09-28
+
+### Fixed & Enhanced
+- **Desktop Navigation Bar Wrapping Fix**: Added `whitespace-nowrap` and container adjustments to prevent text wrapping on `Executive Brief`, `Citizen Voices`, and `Tender Audits` tabs.
+- **Full Mobile Viewport Support (iPhone/Android/Tablet)**:
+  - **Mobile Hamburger & Slide-out Drawer**: Accessible navigation drawer with quick destination grid and mobile district switcher.
+  - **Ergonomic Mobile Bottom App Bar**: Sticky bottom navigation bar for one-thumb switching (`Brief`, `Voices`, `Audits`, `Map`, `More`).
+  - **Citizen Voices Mobile Switcher**: Segmented toggle between `Voice Feed` and `Case Inspector` with auto-jump on card selection and one-tap return.
+  - **Executive Briefing Mobile Switcher**: Segmented toggle between `Top Priorities (3)` and `Ward Map & Audio` to eliminate long vertical scrolling on mobile phones.
+  - **Responsive Containers & Touch Targets**: Added `pb-20 lg:pb-0` to viewport, horizontal scrolling category pills, and full-width touch-friendly action buttons.
+
 ## [1.1.0] - 2026-09-28
 
 ### Added

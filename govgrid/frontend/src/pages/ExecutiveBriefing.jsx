@@ -26,6 +26,7 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
   const [frozenTenders, setFrozenTenders] = useState({});
   const [approvedFunds, setApprovedFunds] = useState({});
   const [selectedPin, setSelectedPin] = useState(1);
+  const [mobileTab, setMobileTab] = useState('priorities'); // 'priorities' | 'spatial'
 
   const handleFreeze = (tenderId, title) => {
     setFrozenTenders(prev => ({ ...prev, [tenderId]: true }));
@@ -48,11 +49,11 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full flex-1">
       
       {/* Toast Notification Alert */}
       {actionNotice && (
-        <div className={`mb-6 p-4 rounded-2xl border transition-all flex items-start justify-between gap-3 shadow-md ${
+        <div className={`mb-4 sm:mb-6 p-3 sm:p-4 rounded-2xl border transition-all flex items-start justify-between gap-3 shadow-md ${
           actionNotice.type === 'frozen' 
             ? 'bg-rose-50 border-rose-200 text-rose-900' 
             : 'bg-emerald-50 border-emerald-200 text-emerald-900'
@@ -64,8 +65,8 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
               <CheckCircle2 className="text-emerald-600 shrink-0 mt-0.5" size={20} />
             )}
             <div>
-              <h4 className="font-display font-bold text-sm">{actionNotice.title}</h4>
-              <p className="text-xs mt-0.5 opacity-90">{actionNotice.message}</p>
+              <h4 className="font-display font-bold text-xs sm:text-sm">{actionNotice.title}</h4>
+              <p className="text-[11px] sm:text-xs mt-0.5 opacity-90">{actionNotice.message}</p>
             </div>
           </div>
           <button 
@@ -78,80 +79,107 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
       )}
 
       {/* Warm Welcoming Banner */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl sm:text-3xl font-display font-bold text-slate-900 tracking-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-slate-900 tracking-tight">
                 Good morning, Commissioner Desai
               </h1>
-              <span className="text-2xl" role="img" aria-label="sun">☀️</span>
+              <span className="text-xl sm:text-2xl" role="img" aria-label="sun">☀️</span>
             </div>
-            <p className="text-slate-600 text-sm sm:text-base mt-1.5 font-normal">
+            <p className="text-slate-600 text-xs sm:text-base mt-1.5 font-normal">
               <strong className="font-semibold text-rose-700">3 critical spatial items</strong> require your attention today across <strong className="text-slate-900 font-semibold">₹42.8 Cr</strong> in municipal capital.
             </p>
           </div>
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-600 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs self-start md:self-auto">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-600 bg-white px-3 sm:px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs self-start md:self-auto">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Last automated sync: <strong>8:45 AM</strong> (CPGRAMS + GeM)</span>
           </div>
         </div>
 
         {/* 3 Clean Highlight Metric Pills */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-5 sm:mt-6">
           {/* Metric 1 */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition flex items-center justify-between">
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition flex items-center justify-between">
             <div>
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-display">Citizen Reports</span>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-display font-extrabold text-slate-900">1,428</span>
-                <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+                <span className="text-xl sm:text-2xl font-display font-extrabold text-slate-900">1,428</span>
+                <span className="text-[11px] sm:text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
                   92% Vernacular
                 </span>
               </div>
             </div>
-            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <MessageSquare size={22} className="text-primary" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+              <MessageSquare size={20} className="text-primary" />
             </div>
           </div>
 
           {/* Metric 2 */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition flex items-center justify-between">
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition flex items-center justify-between">
             <div>
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-display">Capital Reconciled</span>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-display font-extrabold text-slate-900">84.2%</span>
+                <span className="text-xl sm:text-2xl font-display font-extrabold text-slate-900">84.2%</span>
                 <span className="text-xs font-medium text-slate-500">₹141.8 / 184.6 Cr</span>
               </div>
             </div>
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <CheckCircle2 size={24} className="text-secondary" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <CheckCircle2 size={22} className="text-secondary" />
             </div>
           </div>
 
           {/* Metric 3 */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition flex items-center justify-between">
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition flex items-center justify-between">
             <div>
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-display">Pending Attention</span>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-display font-extrabold text-rose-600">3 Hotspots</span>
-                <span className="text-xs font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/60">
+                <span className="text-xl sm:text-2xl font-display font-extrabold text-rose-600">3 Hotspots</span>
+                <span className="text-[11px] sm:text-xs font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/60">
                   Immediate
                 </span>
               </div>
             </div>
-            <div className="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-              <AlertTriangle size={24} className="text-rose-600" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+              <AlertTriangle size={22} className="text-rose-600" />
             </div>
           </div>
+        </div>
+
+        {/* Mobile View Switcher (Visible only on mobile/tablet < lg) */}
+        <div className="lg:hidden flex items-center p-1 bg-surface-dim rounded-2xl border border-slate-200 mt-4 shadow-2xs">
+          <button
+            onClick={() => setMobileTab('priorities')}
+            className={`flex-1 py-2 text-xs font-bold font-display rounded-xl transition flex items-center justify-center gap-1.5 ${
+              mobileTab === 'priorities'
+                ? 'bg-white text-primary shadow-xs border border-slate-200/60'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <AlertTriangle size={14} className="text-rose-600" />
+            <span>Top Priorities (3)</span>
+          </button>
+
+          <button
+            onClick={() => setMobileTab('spatial')}
+            className={`flex-1 py-2 text-xs font-bold font-display rounded-xl transition flex items-center justify-center gap-1.5 ${
+              mobileTab === 'spatial'
+                ? 'bg-white text-primary shadow-xs border border-slate-200/60'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <MapPin size={14} className="text-secondary" />
+            <span>Ward Map &amp; Audio</span>
+          </button>
         </div>
       </div>
 
       {/* Main Two-Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
         
         {/* Left Column: Today's Top 3 Spatial Priorities (7 Cols) */}
-        <section className="lg:col-span-7 space-y-5">
+        <section className={`lg:col-span-7 space-y-5 ${mobileTab === 'priorities' ? 'block' : 'hidden lg:block'}`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-display font-bold text-slate-900">Today's Top 3 Spatial Priorities</h2>
@@ -367,7 +395,7 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
         </section>
 
         {/* Right Column: Ward Spatial Overview & Community Voice Note (5 Cols) */}
-        <section className="lg:col-span-5 space-y-6">
+        <section className={`lg:col-span-5 space-y-6 ${mobileTab === 'spatial' ? 'block' : 'hidden lg:block'}`}>
           
           {/* Ward Spatial Overview Card */}
           <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">

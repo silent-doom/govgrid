@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GovGrid - Executive Daily Brief</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#f8f9fc",
+            "card": "#ffffff",
+            "primary": "#0f2744",
+            "primary-soft": "#e8eef6",
+            "accent": "#1e4c7e",
+            "sage": "#166534",
+            "sage-light": "#dcfce7",
+            "coral": "#c2410c",
+            "coral-light": "#ffedd5",
+            "rose-alert": "#b91c1c",
+            "rose-light": "#fee2e2",
+            "muted-border": "#f1f4f9",
+            "slate-subtle": "#64748b"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            display: ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+<!-- Friendly Top Navigation Header -->
+<header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+<!-- Brand & District Selector -->
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-sm ring-4 ring-primary/5">
+<span class="material-symbols-outlined text-xl">grid_view</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-display font-bold text-lg text-primary tracking-tight">GovGrid</span>
+<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">Live Brief</span>
+</div>
+<p class="text-xs text-slate-500 font-medium hidden sm:block">Civic Reconciliation Engine</p>
+</div>
+</div>
+<!-- District Pill Selector -->
+<div class="hidden md:flex items-center gap-1.5 pl-4 border-l border-slate-200">
+<span class="material-symbols-outlined text-slate-400 text-sm">location_on</span>
+<div class="relative">
+<select class="text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200/80 rounded-lg py-1.5 pl-2.5 pr-7 appearance-none focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer transition">
+<option selected="" value="bengaluru-east">Bengaluru East</option>
+<option value="anantapur">Anantapur Rural</option>
+<option value="varanasi">Varanasi Urban</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-1.5 top-2 text-slate-400 text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="hidden lg:flex items-center gap-1 bg-slate-50/80 p-1 rounded-xl border border-slate-100">
+<a class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-primary shadow-sm border border-slate-100 flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-sm">article</span>
+          Executive Brief
+        </a>
+<a class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-primary hover:bg-white/60 transition flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-sm">record_voice_over</span>
+          Citizen Voices
+        </a>
+<a class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-primary hover:bg-white/60 transition flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+          Tender Audits
+        </a>
+<a class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-primary hover:bg-white/60 transition flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-sm">map</span>
+          Ward Map
+        </a>
+</nav>
+<!-- User Profile & Notifications -->
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 rounded-xl hover:bg-slate-50 border border-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center relative transition" title="Notifications">
+<span class="material-symbols-outlined text-xl">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
+</button>
+<div class="flex items-center gap-3 pl-2 sm:border-l sm:border-slate-100">
+<div class="hidden sm:flex flex-col text-right">
+<span class="text-xs font-semibold text-slate-900 leading-tight">Sarita Desai, IAS</span>
+<span class="text-[11px] text-slate-500">Municipal Commissioner</span>
+</div>
+<img alt="Commissioner Sarita Desai" class="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100 shadow-sm" src="https://lh3.googleusercontent.com/aida/AEtjO1V0FdREEs6ZThX9EGReDYLBX3kP7-xhoSw4t77SKzUtphw_F5uQQ-CkDigK3Mztxzhe8LHp0tBQEzigg___D8S1tEgt50-yzw-nMyRKHv8Sar5r7jBMONXH8Qr6TAYezR08pX4jj6nAF-DJxBBfUTN4jMzkHrIkZ8ySTbjQvFfDQ7c2GQeAnl_5SI5oodamJaioWwqMYko20rexb_tbOF8nb8tjDlrcDJK-Uc2zLONmTosUBw80971wLus"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Body Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
+<!-- Warm Welcoming Banner -->
+<div class="mb-8">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-2">
+<h1 class="text-2xl sm:text-3xl font-display font-bold text-slate-900 tracking-tight">Good morning, Commissioner Desai</h1>
+<span class="inline-flex items-center text-xl">☀️</span>
+</div>
+<p class="text-slate-600 text-sm sm:text-base mt-1.5 font-normal">
+<strong class="font-semibold text-rose-700">3 critical spatial items</strong> require your attention today across <strong class="text-slate-900 font-semibold">₹42.8 Cr</strong> in municipal capital.
+          </p>
+</div>
+<div class="flex items-center gap-2 text-xs font-medium text-slate-500 bg-white px-3.5 py-2 rounded-xl border border-slate-100 shadow-xs self-start md:self-auto">
+<span class="material-symbols-outlined text-sm text-emerald-600">sync</span>
+<span>Last automated sync: <strong>8:45 AM</strong> (CPGRAMS + GeM)</span>
+</div>
+</div>
+<!-- 3 Clean Highlight Metric Pills -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+<!-- Metric 1 -->
+<div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-shadow flex items-center justify-between">
+<div>
+<span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Citizen Reports</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-2xl font-display font-bold text-slate-900">1,428</span>
+<span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">92% Vernacular</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">forum</span>
+</div>
+</div>
+<!-- Metric 2 -->
+<div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-shadow flex items-center justify-between">
+<div>
+<span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Capital Reconciled</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-2xl font-display font-bold text-slate-900">84.2%</span>
+<span class="text-xs font-medium text-slate-500">₹141.8 / 184.6 Cr</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">check_circle</span>
+</div>
+</div>
+<!-- Metric 3 -->
+<div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-shadow flex items-center justify-between">
+<div>
+<span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Pending Attention</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-2xl font-display font-bold text-rose-600">3 Hotspots</span>
+<span class="text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">Immediate</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">crisis_alert</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Two-Column Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: Today's Top 3 Spatial Priorities (7 Cols) -->
+<section class="lg:col-span-7 space-y-5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<h2 class="text-lg font-display font-bold text-slate-900">Today's Top 3 Spatial Priorities</h2>
+<span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Sorted by urgency</span>
+</div>
+<button class="text-xs font-semibold text-accent hover:text-primary transition flex items-center gap-1">
+            View All 14 Audits
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<!-- Priority Card 1: Mahadevapura Ring Road Drainage -->
+<article class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="flex items-start justify-between gap-4">
+<div class="space-y-1.5 flex-1">
+<div class="flex flex-wrap items-center gap-2">
+<span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-rose-50 text-rose-700 border border-rose-100">
+                  Critical Mismatch
+                </span>
+<span class="text-xs font-medium text-slate-500">Ward 14 (Mahadevapura)</span>
+<span class="text-xs text-slate-300">•</span>
+<span class="text-xs font-mono text-slate-500">GEM-2025-C-84912</span>
+</div>
+<h3 class="text-lg font-display font-bold text-slate-900 group-hover:text-primary transition">
+                Mahadevapura Ring Road Drainage &amp; Sinkhole
+              </h3>
+</div>
+<div class="text-right">
+<span class="text-xs text-slate-400 block font-medium">Disbursed</span>
+<span class="text-base font-display font-bold text-slate-900">₹18.50 Cr</span>
+</div>
+</div>
+<p class="text-sm text-slate-600 mt-3 leading-relaxed">
+            Satellite imagery confirms only <strong>22% physical completion</strong>, while contractor received 100% milestone sign-off. Road severely submerged with 148 citizen distress calls.
+          </p>
+<!-- Quick tags badge ribbon -->
+<div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-700 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> 148 Citizen Complaints
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-700 font-medium">
+<span class="material-symbols-outlined text-xs text-slate-400">near_me</span> ST_DWithin: 340m
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-700 font-medium">
+<span class="material-symbols-outlined text-xs text-slate-400">business</span> Apex Infra Ltd
+            </span>
+</div>
+<!-- Bottom Action Bar -->
+<div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+<span class="text-xs text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-amber-500">bolt</span>
+              Suggested: Hold final escrow tranche
+            </span>
+<div class="flex items-center gap-2">
+<button class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition border border-slate-200">
+                Inspect GIS Evidence
+              </button>
+<button class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">lock</span>
+                Review &amp; Freeze Payment
+              </button>
+</div>
+</div>
+</article>
+<!-- Priority Card 2: Kadugodi Urban Slum Water Main -->
+<article class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="flex items-start justify-between gap-4">
+<div class="space-y-1.5 flex-1">
+<div class="flex flex-wrap items-center gap-2">
+<span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/60">
+                  Unfunded Deficit
+                </span>
+<span class="text-xs font-medium text-slate-500">Ward 22 (Kadugodi Slum Cluster)</span>
+<span class="text-xs text-slate-300">•</span>
+<span class="text-xs font-mono text-slate-500">DEF-2025-09</span>
+</div>
+<h3 class="text-lg font-display font-bold text-slate-900 group-hover:text-primary transition">
+                Kadugodi Urban Slum Water Main Breach
+              </h3>
+</div>
+<div class="text-right">
+<span class="text-xs text-slate-400 block font-medium">Budget Allocated</span>
+<span class="text-base font-display font-bold text-rose-600">₹0.00 (Zero)</span>
+</div>
+</div>
+<p class="text-sm text-slate-600 mt-3 leading-relaxed">
+            Severe clean drinking water disruption impacting ~4,200 households for 48 hours. Rapid citizen inflow with 312 vernacular calls via Jan-Vani voice channel.
+          </p>
+<!-- Quick tags badge ribbon -->
+<div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-700 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> 312 Inquiries (48 hrs)
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-medium">
+<span class="material-symbols-outlined text-xs text-emerald-600">shield</span> SDMF Fund Eligible
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-700 font-medium">
+<span class="material-symbols-outlined text-xs text-slate-400">schedule</span> Urgent &lt; 24h
+            </span>
+</div>
+<!-- Bottom Action Bar -->
+<div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+<span class="text-xs text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-emerald-600">psychology</span>
+              Vertex AI: Reallocate from Contingency Head #12
+            </span>
+<div class="flex items-center gap-2">
+<button class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition border border-slate-200">
+                Dispatch Tankers
+              </button>
+<button class="px-4 py-2 rounded-xl text-xs font-bold bg-primary hover:bg-primary/90 text-white shadow-sm transition flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                Approve ₹3.2 Cr Emergency Fund
+              </button>
+</div>
+</div>
+</article>
+<!-- Priority Card 3: Outer Ring Road Culvert -->
+<article class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="flex items-start justify-between gap-4">
+<div class="space-y-1.5 flex-1">
+<div class="flex flex-wrap items-center gap-2">
+<span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100">
+                  Contractor Delay
+                </span>
+<span class="text-xs font-medium text-slate-500">Ward 18 (Hoodi Junction)</span>
+<span class="text-xs text-slate-300">•</span>
+<span class="text-xs font-mono text-slate-500">GEM-2024-R-1102</span>
+</div>
+<h3 class="text-lg font-display font-bold text-slate-900 group-hover:text-primary transition">
+                Outer Ring Road Culvert Reinforcement
+              </h3>
+</div>
+<div class="text-right">
+<span class="text-xs text-slate-400 block font-medium">Sanctioned Outlay</span>
+<span class="text-base font-display font-bold text-slate-900">₹6.40 Cr</span>
+</div>
+</div>
+<p class="text-sm text-slate-600 mt-3 leading-relaxed">
+            Project delayed by 184 days. Sri Lakshmi Earthmovers performance index dropped to 38/100 across 4 civil wards. Notice deadline expires in 48 hours.
+          </p>
+<!-- Quick tags badge ribbon -->
+<div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-700 font-medium">
+<span class="material-symbols-outlined text-xs text-slate-400">alarm</span> 184 Days Overdue
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-700 font-medium">
+<span class="material-symbols-outlined text-xs text-slate-400">engineering</span> Sri Lakshmi Earthmovers
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 font-medium">
+              Score: 38/100
+            </span>
+</div>
+<!-- Bottom Action Bar -->
+<div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+<span class="text-xs text-slate-500">Auto show-cause notice drafted &amp; queued</span>
+<div class="flex items-center gap-2">
+<button class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition border border-slate-200">
+                View Contractor History
+              </button>
+<button class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition">
+                Issue Final Penalty Notice
+              </button>
+</div>
+</div>
+</article>
+</section>
+<!-- Right Column: Simplified Mini-Map & Community Voice Note (5 Cols) -->
+<section class="lg:col-span-5 space-y-6">
+<!-- Simplified Mini-Map Card -->
+<div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<div>
+<h3 class="text-sm font-display font-bold text-slate-900">Ward Spatial Overview</h3>
+<p class="text-xs text-slate-500">Bengaluru East • 3 Active Hotspots</p>
+</div>
+<a class="text-xs font-semibold text-accent hover:underline flex items-center gap-1" href="#">
+              Full Map <span class="material-symbols-outlined text-xs">open_in_new</span>
+</a>
+</div>
+<!-- Calm, simplified map preview container -->
+<div class="relative w-full h-56 rounded-xl bg-slate-50 border border-slate-200/80 overflow-hidden">
+<!-- Stylized Light Map Vector Backdrop -->
+<svg class="w-full h-full object-cover" viewbox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+<!-- Soft background landmass -->
+<rect fill="#f8fafc" height="240" width="400"></rect>
+<!-- Subtle administrative zones -->
+<path d="M 0,80 Q 120,70 190,130 T 400,110 L 400,0 L 0,0 Z" fill="#f1f5f9" opacity="0.7"></path>
+<path d="M 120,240 Q 220,160 300,200 T 400,220 L 400,240 Z" fill="#e2e8f0" opacity="0.4"></path>
+<!-- Main Arterial Road Network -->
+<path d="M -10,140 Q 100,110 220,150 T 420,130" fill="none" stroke="#ffffff" stroke-width="8"></path>
+<path d="M -10,140 Q 100,110 220,150 T 420,130" fill="none" stroke="#cbd5e1" stroke-width="2.5"></path>
+<!-- Secondary Roads -->
+<path d="M 160,-10 L 170,120 L 250,250" fill="none" stroke="#ffffff" stroke-width="6"></path>
+<path d="M 160,-10 L 170,120 L 250,250" fill="none" stroke="#cbd5e1" stroke-width="2"></path>
+<path d="M 280,30 Q 230,100 320,180" fill="none" stroke="#ffffff" stroke-width="5"></path>
+<path d="M 280,30 Q 230,100 320,180" fill="none" stroke="#e2e8f0" stroke-dasharray="4 3" stroke-width="1.5"></path>
+<!-- Soft Buffer Circle around Priority 1 -->
+<circle cx="210" cy="140" fill="#fee2e2" fill-opacity="0.5" r="32" stroke="#fca5a5" stroke-dasharray="3 3" stroke-width="1"></circle>
+</svg>
+<!-- Friendly Pin 1: Mahadevapura (Red Alert) -->
+<div class="absolute top-[52%] left-[50%] -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<div class="w-8 h-8 rounded-full bg-rose-600 text-white shadow-md flex items-center justify-center font-bold text-xs ring-4 ring-rose-100 hover:scale-110 transition-transform">
+                1
+              </div>
+<div class="hidden group-hover:block absolute bottom-9 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[11px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-30 font-medium">
+                Mahadevapura (P1 Sinkhole)
+              </div>
+</div>
+<!-- Friendly Pin 2: Kadugodi Slum (Amber Alert) -->
+<div class="absolute top-[68%] left-[72%] -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<div class="w-7 h-7 rounded-full bg-amber-500 text-white shadow-md flex items-center justify-center font-bold text-xs ring-4 ring-amber-100 hover:scale-110 transition-transform">
+                2
+              </div>
+<div class="hidden group-hover:block absolute bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[11px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-30 font-medium">
+                Kadugodi (Water Main)
+              </div>
+</div>
+<!-- Friendly Pin 3: Hoodi (Blue Note) -->
+<div class="absolute top-[30%] left-[36%] -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<div class="w-7 h-7 rounded-full bg-blue-600 text-white shadow-md flex items-center justify-center font-bold text-xs ring-4 ring-blue-100 hover:scale-110 transition-transform">
+                3
+              </div>
+<div class="hidden group-hover:block absolute bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[11px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-30 font-medium">
+                Hoodi Culvert Delay
+              </div>
+</div>
+<!-- Gentle bottom badge -->
+<div class="absolute bottom-2.5 left-2.5 right-2.5 bg-white/90 backdrop-blur-xs px-2.5 py-1.5 rounded-lg border border-slate-100 flex items-center justify-between text-[11px] text-slate-600">
+<span class="flex items-center gap-1 font-medium">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span> GIS Auto-Matched
+              </span>
+<span class="font-mono text-slate-500">500m Buffer Zone</span>
+</div>
+</div>
+<!-- Pin Legend List -->
+<div class="mt-3.5 space-y-2">
+<div class="flex items-center justify-between text-xs py-1 px-1.5 rounded-lg hover:bg-slate-50 transition cursor-pointer">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[10px] flex items-center justify-center">1</span>
+<span class="font-medium text-slate-800">Mahadevapura Ring Rd</span>
+</div>
+<span class="text-rose-600 font-semibold text-[11px]">₹18.5 Cr Flagged</span>
+</div>
+<div class="flex items-center justify-between text-xs py-1 px-1.5 rounded-lg hover:bg-slate-50 transition cursor-pointer">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-amber-100 text-amber-700 font-bold text-[10px] flex items-center justify-center">2</span>
+<span class="font-medium text-slate-800">Kadugodi Water Breach</span>
+</div>
+<span class="text-amber-700 font-semibold text-[11px]">312 Complaints</span>
+</div>
+<div class="flex items-center justify-between text-xs py-1 px-1.5 rounded-lg hover:bg-slate-50 transition cursor-pointer">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 font-bold text-[10px] flex items-center justify-center">3</span>
+<span class="font-medium text-slate-800">Hoodi Culvert Work</span>
+</div>
+<span class="text-slate-500 text-[11px]">184d Overdue</span>
+</div>
+</div>
+</div>
+<!-- Recent Community Voice Note Card -->
+<div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-base">record_voice_over</span>
+</div>
+<div>
+<h3 class="text-sm font-display font-bold text-slate-900">Recent Citizen Voice Note</h3>
+<p class="text-[11px] text-slate-500">Jan-Vani IVR • Auto-transcribed</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 font-medium text-[11px]">
+              Kannada
+            </span>
+</div>
+<!-- Playable Audio Waveform Player -->
+<div class="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+<div class="flex items-center gap-3">
+<button class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center shadow-xs hover:bg-primary/90 transition shrink-0" title="Play recording">
+<span class="material-symbols-outlined text-lg">play_arrow</span>
+</button>
+<!-- Waveform bars -->
+<div class="flex-1 flex items-center gap-1 h-8 px-1">
+<div class="w-1 bg-slate-300 rounded-full h-3"></div>
+<div class="w-1 bg-primary rounded-full h-5"></div>
+<div class="w-1 bg-primary rounded-full h-7"></div>
+<div class="w-1 bg-primary rounded-full h-4"></div>
+<div class="w-1 bg-primary rounded-full h-6"></div>
+<div class="w-1 bg-primary rounded-full h-8"></div>
+<div class="w-1 bg-primary rounded-full h-5"></div>
+<div class="w-1 bg-primary rounded-full h-7"></div>
+<div class="w-1 bg-slate-300 rounded-full h-4"></div>
+<div class="w-1 bg-slate-300 rounded-full h-6"></div>
+<div class="w-1 bg-slate-300 rounded-full h-3"></div>
+<div class="w-1 bg-slate-300 rounded-full h-5"></div>
+<div class="w-1 bg-slate-300 rounded-full h-2"></div>
+<div class="w-1 bg-slate-300 rounded-full h-4"></div>
+<div class="w-1 bg-slate-300 rounded-full h-2"></div>
+</div>
+<span class="text-xs font-mono font-medium text-slate-500 shrink-0">0:14 / 0:38</span>
+</div>
+</div>
+<!-- Plain English Vernacular Translation -->
+<div class="p-3 bg-amber-50/60 rounded-xl border border-amber-100 text-xs text-slate-700 leading-relaxed">
+<div class="font-semibold text-amber-900 mb-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">translate</span> English Translation:
+            </div>
+<p class="italic text-slate-700 font-sans">
+              "For three days, the water line beside the government school in Kadugodi has burst open. Drinking water is flooding into houses and the kids cannot walk to school. Please send repair teams immediately."
+            </p>
+<div class="mt-2 text-[11px] text-slate-500 flex items-center justify-between">
+<span>Verified Resident • Anjanappa Layout</span>
+<span class="text-amber-800 font-medium">Confidence: 98%</span>
+</div>
+</div>
+</div>
+<!-- Quick District Helpdesk Note -->
+<div class="p-4 rounded-2xl bg-primary-soft/60 border border-blue-100 flex items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-white text-primary flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-lg">support_agent</span>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-900">Executive Briefing Helpline</p>
+<p class="text-[11px] text-slate-600">Disaster Management Cell: Extension 104</p>
+</div>
+</div>
+<button class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white text-primary hover:bg-slate-50 shadow-2xs border border-slate-200 transition">
+            Call Desk
+          </button>
+</div>
+</section>
+</div>
+</main>
+<!-- Clean, Uncluttered Footer -->
+<footer class="bg-white border-t border-slate-100 mt-12 py-5 text-xs text-slate-500">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span>GovGrid DPI v2.4 • Municipal Urban Infrastructure &amp; Finance Reconciliation</span>
+</div>
+<div class="flex items-center gap-4 text-slate-400">
+<span>Bengaluru East District Command</span>
+<span>•</span>
+<span>Secure Enclave Authenticated</span>
+</div>
+</div>
+</footer>
+</body></html>

@@ -2,34 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { DISTRICT_DATASETS } from './data/mockData';
 
-// Layout
-import Sidebar from './layout/Sidebar';
-import TopBar from './layout/TopBar';
+// Stitch Revamped Layout
+import StitchHeader from './layout/StitchHeader';
 
-// Pages
-import Dashboard from './pages/Dashboard';
-import Grievances from './pages/Grievances';
-import TenderIntel from './pages/TenderIntel';
-import Reconciliation from './pages/Reconciliation';
-import JanVaniPortal from './components/JanVaniPortal';
+// Stitch Pages
+import ExecutiveBriefing from './pages/ExecutiveBriefing';
+import CitizenVoices from './pages/CitizenVoices';
+import TenderAudits from './pages/TenderAudits';
+import WardMap from './pages/WardMap';
+
+// Retained DPI Pages
 import Analytics from './pages/Analytics';
 import DataPipeline from './pages/DataPipeline';
 import ArchitectureFlow from './components/ArchitectureFlow';
+import Dashboard from './pages/Dashboard';
 
 export default function App() {
-  const [collapsed, setCollapsed] = useState(false);
-  const [liveMode, setLiveMode] = useState(false);
-  const [selectedDistrict, setSelectedDistrict] = useState('anantapur');
-
-  const districtData = DISTRICT_DATASETS[selectedDistrict] || DISTRICT_DATASETS.anantapur;
-  const [complaints, setComplaints] = useState(districtData.complaints);
-  const [tenders, setTenders] = useState(districtData.tenders);
+  const [selectedDistrict, setSelectedDistrict] = useState('bengaluru');
+  const districtData = DISTRICT_DATASETS[selectedDistrict] || DISTRICT_DATASETS.bengaluru || DISTRICT_DATASETS.anantapur;
+  
+  const [complaints, setComplaints] = useState(districtData.complaints || []);
+  const [tenders, setTenders] = useState(districtData.tenders || []);
 
   useEffect(() => {
     const next = DISTRICT_DATASETS[selectedDistrict];
     if (next) {
-      setComplaints(next.complaints);
-      setTenders(next.tenders);
+      setComplaints(next.complaints || []);
+      setTenders(next.tenders || []);
     }
   }, [selectedDistrict]);
 
@@ -40,44 +39,62 @@ export default function App() {
   const sharedProps = { complaints, tenders, districtData, unfundedCount, leakageCount };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-app)' }}>
-      <Sidebar
-        collapsed={collapsed}
-        setCollapsed={setCollapsed}
+    <div className="min-h-screen flex flex-col bg-surface font-sans text-on-surface antialiased selection:bg-blue-100 selection:text-blue-900">
+      {/* Stitch Civic Modernism Header */}
+      <StitchHeader
         selectedDistrict={selectedDistrict}
         setSelectedDistrict={setSelectedDistrict}
-        liveMode={liveMode}
-        setLiveMode={setLiveMode}
+        alertCount={alertCount}
+        onRefresh={() => {
+          const next = DISTRICT_DATASETS[selectedDistrict];
+          if (next) {
+            setComplaints([...next.complaints]);
+            setTenders([...next.tenders]);
+          }
+        }}
       />
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
-        <TopBar districtName={districtData.name} alertCount={alertCount} />
+      {/* Main Content Viewport */}
+      <main className="flex-1 w-full overflow-y-auto">
+        <Routes>
+          {/* Primary Stitch Revamped Views */}
+          <Route path="/" element={<ExecutiveBriefing {...sharedProps} />} />
+          <Route path="/briefing" element={<ExecutiveBriefing {...sharedProps} />} />
+          <Route path="/voices" element={<CitizenVoices complaints={complaints} onAddComplaint={c => setComplaints(p => [c, ...p])} />} />
+          <Route path="/audits" element={<TenderAudits tenders={tenders} complaints={complaints} />} />
+          <Route path="/map" element={<WardMap {...sharedProps} />} />
+          <Route path="/analytics" element={<Analytics complaints={complaints} tenders={tenders} />} />
+          <Route path="/pipeline" element={<DataPipeline />} />
+          <Route path="/architecture" element={<ArchitectureFlow />} />
 
-        <main style={{ flex: 1, overflowY: 'auto', paddingTop: '16px' }}>
-          <Routes>
-            <Route path="/"               element={<Dashboard {...sharedProps} />} />
-            <Route path="/dashboard"      element={<Navigate to="/" replace />} />
-            <Route path="/grievances"     element={<Grievances complaints={complaints} />} />
-            <Route path="/tenders"        element={<TenderIntel tenders={tenders} />} />
-            <Route path="/reconciliation" element={<Reconciliation complaints={complaints} tenders={tenders} />} />
-            <Route path="/jan-vani"       element={<JanVaniPortal onAddComplaint={c => setComplaints(p => [c, ...p])} />} />
-            <Route path="/analytics"      element={<Analytics complaints={complaints} tenders={tenders} />} />
-            <Route path="/pipeline"       element={<DataPipeline />} />
-            <Route path="/architecture"   element={<ArchitectureFlow />} />
-            <Route path="*"               element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
+          {/* Legacy / Direct Aliases for complete backward compatibility */}
+          <Route path="/jan-vani" element={<Navigate to="/voices" replace />} />
+          <Route path="/grievances" element={<Navigate to="/voices" replace />} />
+          <Route path="/reconciliation" element={<Navigate to="/audits" replace />} />
+          <Route path="/tenders" element={<Navigate to="/audits" replace />} />
+          <Route path="/dashboard" element={<Navigate to="/" replace />} />
+          <Route path="/command" element={<Dashboard {...sharedProps} />} />
 
-        <footer style={{
-          textAlign: 'center', padding: '10px 20px', fontSize: '0.7rem',
-          color: 'var(--text-muted)', borderTop: '1px solid var(--border)',
-          background: 'var(--bg-base)',
-        }}>
-          <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>GovGrid</span> · Digital Public Infrastructure &amp; Budget Reconciliation Engine ·{' '}
-          Jurisdiction: <span style={{ color: 'var(--emerald)', fontWeight: 600 }}>{districtData.name}</span> ·{' '}
-          Powered by <b>Vertex AI (Gemini 1.5 Pro)</b>, <b>BigQuery GIS</b>, and <b>Cloud Run</b>
-        </footer>
-      </div>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+
+      {/* Stitch Clean Uncluttered Footer */}
+      <footer className="bg-white border-t border-slate-200/80 py-5 text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="font-medium text-slate-700">GovGrid DPI v2.4</span>
+            <span className="text-slate-400">•</span>
+            <span>Municipal Urban Infrastructure &amp; Finance Reconciliation</span>
+          </div>
+          <div className="flex items-center gap-3 text-slate-400">
+            <span className="font-semibold text-slate-600">{districtData.name} Command</span>
+            <span>•</span>
+            <span>Powered by Vertex AI &amp; BigQuery GIS</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

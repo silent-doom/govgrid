@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Jan-Vani Citizen Voices — GovGrid</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#022448",
+            "primary-container": "#1e3a5f",
+            "secondary": "#146a59",
+            "secondary-container": "#e6f7f2",
+            "surface": "#f8faff",
+            "surface-card": "#ffffff",
+            "surface-dim": "#eef3f9",
+            "on-surface": "#192231",
+            "on-surface-variant": "#5a6679",
+            "outline": "#d6dfec",
+            "outline-variant": "#e6edf7",
+            "pastel-mint": "#e6f8f1",
+            "pastel-mint-text": "#116b4a",
+            "pastel-amber": "#fff4e5",
+            "pastel-amber-text": "#a05e03",
+            "pastel-rose": "#fde8e8",
+            "pastel-rose-text": "#b82a2a",
+            "pastel-blue": "#e8f2ff",
+            "pastel-blue-text": "#1a56db",
+            "pastel-purple": "#f3e8ff",
+            "pastel-purple-text": "#6b21a8"
+          },
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'sans-serif']
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.5rem',
+            '4xl': '2rem'
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    @layer base {
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      h1, h2, h3, h4, h5, h6, .font-heading {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #d6dfec;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #b8c7dc;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen selection:bg-pastel-blue selection:text-pastel-blue-text">
+<!-- Top Navigation Header -->
+<header class="sticky top-0 z-40 bg-surface-card/90 backdrop-blur-md border-b border-outline-variant">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-6">
+<!-- Brand & District Selector -->
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white shadow-sm shadow-primary/20">
+<span class="material-symbols-outlined text-[22px]">record_voice_over</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-heading font-bold text-lg text-primary tracking-tight">Jan-Vani</span>
+<span class="text-xs px-2 py-0.5 rounded-full bg-pastel-mint text-pastel-mint-text font-medium">Citizen Stream</span>
+</div>
+<p class="text-xs text-on-surface-variant font-medium">GovGrid • Andhra Pradesh</p>
+</div>
+</div>
+<div class="h-6 w-px bg-outline-variant hidden md:block"></div>
+<!-- District Selector Dropdown -->
+<div class="relative hidden sm:flex items-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] absolute left-3 pointer-events-none">location_on</span>
+<select class="appearance-none bg-surface-dim hover:bg-slate-100 text-on-surface text-sm font-semibold pl-8 pr-8 py-2 rounded-xl border border-transparent hover:border-outline focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer transition">
+<option selected="">Anantapur Rural</option>
+<option>Bengaluru East</option>
+<option>Varanasi Urban</option>
+</select>
+<span class="material-symbols-outlined text-on-surface-variant text-[16px] absolute right-2.5 pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="hidden lg:flex items-center gap-1 bg-surface-dim p-1.5 rounded-2xl">
+<a class="px-4 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface rounded-xl transition" href="#">Executive Brief</a>
+<a class="px-4 py-2 text-sm font-semibold text-primary bg-surface-card rounded-xl shadow-xs transition" href="#">Citizen Voices</a>
+<a class="px-4 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface rounded-xl transition" href="#">Tender Audits</a>
+<a class="px-4 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface rounded-xl transition" href="#">Ward Map</a>
+</nav>
+<!-- Right User & Commissioner Profile -->
+<div class="flex items-center gap-3">
+<button class="relative w-10 h-10 rounded-2xl bg-surface-dim hover:bg-slate-200/70 text-on-surface-variant flex items-center justify-center transition" title="Citizen notifications">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-pastel-rose-text ring-2 ring-white"></span>
+</button>
+<div class="h-8 w-px bg-outline-variant"></div>
+<!-- Commissioner Sarita's Avatar Profile -->
+<div class="flex items-center gap-3 pl-1">
+<img alt="Commissioner Sarita Desai" class="w-11 h-11 rounded-2xl object-cover ring-2 ring-white shadow-sm shadow-slate-300/40" src="https://lh3.googleusercontent.com/aida/AEtjO1V0FdREEs6ZThX9EGReDYLBX3kP7-xhoSw4t77SKzUtphw_F5uQQ-CkDigK3Mztxzhe8LHp0tBQEzigg___D8S1tEgt50-yzw-nMyRKHv8Sar5r7jBMONXH8Qr6TAYezR08pX4jj6nAF-DJxBBfUTN4jMzkHrIkZ8ySTbjQvFfDQ7c2GQeAnl_5SI5oodamJaioWwqMYko20rexb_tbOF8nb8tjDlrcDJK-Uc2zLONmTosUBw80971wLus"/>
+<div class="hidden xl:flex flex-col text-left">
+<span class="font-heading font-semibold text-sm text-on-surface leading-tight">Sarita Desai</span>
+<span class="text-xs text-on-surface-variant">Municipal Commissioner</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Layout -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Peaceful Welcome Subheader & Search Section -->
+<div class="mb-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+<div>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pastel-blue text-pastel-blue-text text-xs font-semibold mb-2">
+<span class="material-symbols-outlined text-[15px]">forum</span>
+            Direct Citizen Ground-Truth
+          </div>
+<h1 class="text-2xl sm:text-3xl font-bold font-heading text-on-surface tracking-tight">Citizen Voice Ledger</h1>
+<p class="text-on-surface-variant text-sm mt-1">Ingested gently from WhatsApp Audio, grassroots townhalls &amp; local grievance hubs.</p>
+</div>
+<!-- Search Bar -->
+<div class="relative w-full md:w-80">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant/70 text-[20px]">search</span>
+<input class="w-full bg-surface-card pl-10 pr-4 py-2.5 rounded-2xl border border-outline-variant hover:border-outline focus:border-primary focus:ring-3 focus:ring-primary/10 text-sm text-on-surface placeholder:text-on-surface-variant/60 shadow-xs transition" placeholder="Search voice notes, wards, keywords..." type="text"/>
+</div>
+</div>
+<!-- Filter Pills -->
+<div class="flex flex-wrap items-center gap-2 pt-1 border-b border-outline-variant/60 pb-5">
+<button class="px-4 py-2 rounded-2xl text-xs font-semibold bg-primary text-white shadow-sm shadow-primary/20 flex items-center gap-1.5 transition">
+<span>All Reports</span>
+<span class="bg-white/20 text-white text-[11px] px-1.5 py-0.2 rounded-full">1,482</span>
+</button>
+<button class="px-4 py-2 rounded-2xl text-xs font-medium bg-surface-card hover:bg-surface-dim text-on-surface-variant hover:text-on-surface border border-outline-variant transition flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-sky-500">water_drop</span>
+<span>Water Supply</span>
+<span class="bg-surface-dim text-on-surface-variant text-[11px] px-1.5 rounded-full">340</span>
+</button>
+<button class="px-4 py-2 rounded-2xl text-xs font-semibold bg-pastel-amber text-pastel-amber-text border border-amber-200/70 transition flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-amber-600">crisis_alert</span>
+<span>Roads &amp; Potholes</span>
+<span class="bg-amber-100/70 text-pastel-amber-text text-[11px] px-1.5 rounded-full">618</span>
+</button>
+<button class="px-4 py-2 rounded-2xl text-xs font-medium bg-surface-card hover:bg-surface-dim text-on-surface-variant hover:text-on-surface border border-outline-variant transition flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-amber-500">bolt</span>
+<span>Electricity &amp; Lighting</span>
+<span class="bg-surface-dim text-on-surface-variant text-[11px] px-1.5 rounded-full">284</span>
+</button>
+<button class="px-4 py-2 rounded-2xl text-xs font-medium bg-surface-card hover:bg-surface-dim text-on-surface-variant hover:text-on-surface border border-outline-variant transition flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-emerald-500">park</span>
+<span>Parks &amp; Sanitation</span>
+<span class="bg-surface-dim text-on-surface-variant text-[11px] px-1.5 rounded-full">240</span>
+</button>
+</div>
+</div>
+<!-- Split Layout: Stories Feed (Left) & Focused Detail Inspector (Right) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: Feed of Clean Story Cards (7 cols) -->
+<div class="lg:col-span-7 space-y-4">
+<!-- Story Card 1 (Active / Selected) -->
+<article class="bg-surface-card rounded-3xl p-6 border-2 border-primary/20 shadow-sm relative transition hover:shadow-md cursor-pointer">
+<div class="flex items-start justify-between gap-4 mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-2xl bg-pastel-amber flex items-center justify-center text-pastel-amber-text font-bold text-sm">
+                DR
+              </div>
+<div>
+<h2 class="font-heading font-bold text-base text-on-surface">Dharmavaram Residents Collective</h2>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span> Verified WhatsApp Community
+                  </span>
+<span class="text-xs text-on-surface-variant">• 18 min ago</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-3 py-1 rounded-full bg-pastel-rose text-pastel-rose-text text-xs font-semibold">
+                Ward 14 • High Impact
+              </span>
+</div>
+</div>
+<!-- Telugu Audio Player Pill -->
+<div class="bg-surface-dim rounded-2xl p-3 my-3 flex items-center gap-3">
+<button class="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs hover:bg-primary-container transition" title="Play Voice Note">
+<span class="material-symbols-outlined text-[20px]">pause</span>
+</button>
+<div class="flex-1">
+<div class="flex justify-between items-center text-xs mb-1.5">
+<span class="font-medium text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">mic</span> Telugu Voice Note
+                </span>
+<span class="text-on-surface-variant font-mono text-[11px]">0:18 / 0:34</span>
+</div>
+<div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-1/2 rounded-full"></div>
+</div>
+</div>
+<span class="text-[11px] px-2 py-0.5 rounded-md bg-white text-secondary font-medium border border-outline-variant/60">
+              98.2% Accurate
+            </span>
+</div>
+<!-- English Translation Quote Block -->
+<blockquote class="bg-pastel-blue/40 border-l-3 border-pastel-blue-text/40 rounded-r-2xl p-3.5 my-3 text-sm text-on-surface italic leading-relaxed">
+            “The crater on Dharmavaram Bypass road has widened severely after last night’s rains. School buses are stranded each morning and children are forced to walk through slush. Please sanction repair immediately.”
+          </blockquote>
+<!-- Attachments & Metadata Footer -->
+<div class="flex items-center justify-between pt-2">
+<div class="flex items-center gap-3">
+<!-- Thumbnail Preview of Community Photo -->
+<div class="relative group">
+<div class="w-14 h-14 rounded-xl bg-slate-200 overflow-hidden border border-outline-variant flex items-center justify-center">
+<svg class="w-full h-full object-cover" fill="none" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#cbd5e1" height="100" width="100"></rect>
+<path d="M10 80 Q 40 40, 70 70 T 100 60 L 100 100 L 0 100 Z" fill="#94a3b8"></path>
+<circle cx="50" cy="50" fill="#64748b" r="14"></circle>
+<path d="M42 48 L 58 52" stroke="#e2e8f0" stroke-width="2"></path>
+</svg>
+</div>
+<span class="absolute -top-1.5 -right-1.5 bg-primary text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">1</span>
+</div>
+<div class="text-xs text-on-surface-variant">
+<p class="font-medium text-on-surface">Pothole Depth: 38cm</p>
+<p>Singanamala Junction Radial</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-semibold text-primary flex items-center gap-0.5">
+                Active Selection
+                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</span>
+</div>
+</div>
+</article>
+<!-- Story Card 2 -->
+<article class="bg-surface-card rounded-3xl p-6 border border-outline-variant/80 hover:border-outline shadow-xs hover:shadow-sm transition cursor-pointer">
+<div class="flex items-start justify-between gap-4 mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-2xl bg-pastel-blue flex items-center justify-center text-pastel-blue-text font-bold text-sm">
+                LN
+              </div>
+<div>
+<h2 class="font-heading font-bold text-base text-on-surface">Lakshmi Narayana &amp; Neighbors</h2>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span> Jan-Vani IVR Call Center
+                  </span>
+<span class="text-xs text-on-surface-variant">• 42 min ago</span>
+</div>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full bg-pastel-blue text-pastel-blue-text text-xs font-semibold">
+              Ward 7 • Water Pressure
+            </span>
+</div>
+<!-- Audio Player Pill -->
+<div class="bg-surface-dim rounded-2xl p-3 my-3 flex items-center gap-3">
+<button class="w-9 h-9 rounded-xl bg-surface-card hover:bg-primary hover:text-white text-primary flex items-center justify-center shrink-0 border border-outline-variant shadow-xs transition" title="Play Voice Note">
+<span class="material-symbols-outlined text-[20px]">play_arrow</span>
+</button>
+<div class="flex-1">
+<div class="flex justify-between items-center text-xs mb-1.5">
+<span class="font-medium text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">mic</span> Telugu Voice Note
+                </span>
+<span class="text-on-surface-variant font-mono text-[11px]">0:41</span>
+</div>
+<div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-outline h-full w-0 rounded-full"></div>
+</div>
+</div>
+<span class="text-[11px] px-2 py-0.5 rounded-md bg-white text-on-surface-variant font-medium border border-outline-variant/60">
+              96.4% Accurate
+            </span>
+</div>
+<!-- English Translation Quote Block -->
+<blockquote class="bg-surface-dim/60 border-l-3 border-outline rounded-r-2xl p-3.5 my-3 text-sm text-on-surface italic leading-relaxed">
+            “The pipeline line on 4th cross street hasn't provided municipal drinking water for two consecutive days. Women in our lane are having to buy commercial cans at inflated prices.”
+          </blockquote>
+<!-- Attachments & Metadata Footer -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-2 text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-sky-500">water_drop</span>
+<span>12 Households Co-signed</span>
+</div>
+<span class="text-xs text-on-surface-variant hover:text-primary font-medium flex items-center gap-0.5">
+              View details
+              <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</span>
+</div>
+</article>
+<!-- Story Card 3 -->
+<article class="bg-surface-card rounded-3xl p-6 border border-outline-variant/80 hover:border-outline shadow-xs hover:shadow-sm transition cursor-pointer">
+<div class="flex items-start justify-between gap-4 mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-2xl bg-pastel-mint flex items-center justify-center text-pastel-mint-text font-bold text-sm">
+                MK
+              </div>
+<div>
+<h2 class="font-heading font-bold text-base text-on-surface">M. Kesava (Gram Panchayat Rep)</h2>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span> Rural Kiosk Submission
+                  </span>
+<span class="text-xs text-on-surface-variant">• 2 hours ago</span>
+</div>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full bg-pastel-mint text-pastel-mint-text text-xs font-semibold">
+              Ward 19 • Street Lighting
+            </span>
+</div>
+<!-- Audio Player Pill -->
+<div class="bg-surface-dim rounded-2xl p-3 my-3 flex items-center gap-3">
+<button class="w-9 h-9 rounded-xl bg-surface-card hover:bg-primary hover:text-white text-primary flex items-center justify-center shrink-0 border border-outline-variant shadow-xs transition" title="Play Voice Note">
+<span class="material-symbols-outlined text-[20px]">play_arrow</span>
+</button>
+<div class="flex-1">
+<div class="flex justify-between items-center text-xs mb-1.5">
+<span class="font-medium text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">mic</span> Telugu Voice Note
+                </span>
+<span class="text-on-surface-variant font-mono text-[11px]">0:22</span>
+</div>
+<div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-outline h-full w-0 rounded-full"></div>
+</div>
+</div>
+<span class="text-[11px] px-2 py-0.5 rounded-md bg-white text-on-surface-variant font-medium border border-outline-variant/60">
+              99.1% Accurate
+            </span>
+</div>
+<!-- English Translation Quote Block -->
+<blockquote class="bg-surface-dim/60 border-l-3 border-outline rounded-r-2xl p-3.5 my-3 text-sm text-on-surface italic leading-relaxed">
+            “Four new solar streetlight poles on the canal bund road are completely inactive since Friday night. Villagers returning from farm work feel unsafe in dark curves.”
+          </blockquote>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-2 text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-amber-500">lightbulb</span>
+<span>4 Inactive Streetlights</span>
+</div>
+<span class="text-xs text-on-surface-variant hover:text-primary font-medium flex items-center gap-0.5">
+              View details
+              <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</span>
+</div>
+</article>
+</div>
+<!-- Right Column: Single Focused Detail View for Selected Report (5 cols) -->
+<div class="lg:col-span-5 sticky top-28">
+<aside class="bg-surface-card rounded-3xl p-6 sm:p-7 border border-outline-variant/90 shadow-sm space-y-6">
+<!-- Focused Header -->
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pastel-rose text-pastel-rose-text text-xs font-bold">
+<span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                Action Required • No Tender Found
+              </span>
+<span class="text-xs text-on-surface-variant font-mono">Case #JAN-2024-884</span>
+</div>
+<h2 class="font-heading font-bold text-xl sm:text-2xl text-on-surface tracking-tight">
+              Dharmavaram Road Crater Breach
+            </h2>
+<p class="text-sm text-on-surface-variant mt-1">
+              Singanamala Bypass Corridor, Ward 14
+            </p>
+</div>
+<!-- Empathetic Human Reason Why Flagged -->
+<div class="bg-pastel-amber/60 border border-amber-200/80 rounded-2xl p-4">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-amber-700 text-[22px] shrink-0 mt-0.5">info</span>
+<div>
+<h3 class="font-heading font-semibold text-sm text-amber-900">Why was this flagged?</h3>
+<p class="text-xs sm:text-sm text-amber-900/90 mt-1 leading-relaxed">
+                  Citizens reported a severe <span class="font-semibold text-amber-950">38cm crater depth</span> blocking school transit. Our AI capital audit found that <span class="font-semibold text-amber-950">no municipal road tender currently covers this 800m stretch</span>.
+                </p>
+</div>
+</div>
+</div>
+<!-- Simple Friendly Satellite & Spatial Preview -->
+<div class="rounded-2xl border border-outline-variant overflow-hidden bg-surface-dim">
+<div class="p-3 bg-surface-dim/80 flex items-center justify-between text-xs text-on-surface-variant border-b border-outline-variant/60">
+<span class="font-medium flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-secondary">satellite_alt</span>
+                Satellite Context Preview
+              </span>
+<span class="text-[11px] text-on-surface-variant">Singanamala Ward 14</span>
+</div>
+<!-- Graphic Illustration of Road & Void -->
+<div class="h-44 relative bg-slate-100 flex items-center justify-center overflow-hidden">
+<svg class="w-full h-full object-cover opacity-90" viewbox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+<!-- Soft Green Terrain -->
+<rect fill="#f1f5f9" height="180" width="400"></rect>
+<path d="M 0,40 Q 150,20 280,60 T 400,30 L 400,0 L 0,0 Z" fill="#e2e8f0"></path>
+<path d="M 0,140 Q 180,160 300,130 T 400,150 L 400,180 L 0,180 Z" fill="#e2e8f0"></path>
+<!-- Main Road Corridor -->
+<path d="M -10,100 C 120,95 240,85 410,95" fill="none" stroke="#cbd5e1" stroke-width="28"></path>
+<path d="M -10,100 C 120,95 240,85 410,95" fill="none" stroke="#94a3b8" stroke-width="24"></path>
+<path d="M -10,100 C 120,95 240,85 410,95" fill="none" stroke="#ffffff" stroke-dasharray="6,6" stroke-width="2"></path>
+<!-- Unfunded 800m Gap Highlight (Gentle Pastel Rose Area) -->
+<circle cx="210" cy="90" fill="#fee2e2" fill-opacity="0.7" r="46" stroke="#f87171" stroke-dasharray="4,4" stroke-width="2"></circle>
+<!-- Pothole Point Marker -->
+<circle cx="210" cy="90" fill="#dc2626" r="10"></circle>
+<circle cx="210" cy="90" fill="#ffffff" r="4"></circle>
+</svg>
+<!-- Map Floating Badge -->
+<div class="absolute bottom-3 left-3 bg-white/95 backdrop-blur-xs px-3 py-1.5 rounded-xl border border-outline-variant shadow-xs">
+<p class="text-[11px] font-bold text-on-surface">800m Unsanctioned Corridor</p>
+<p class="text-[10px] text-on-surface-variant">Nearest active tender is 1.2km away</p>
+</div>
+<div class="absolute top-3 right-3 bg-white/90 px-2.5 py-1 rounded-lg text-[10px] font-medium text-on-surface shadow-xs">
+                Lat 14.6819 • Lon 77.6006
+              </div>
+</div>
+</div>
+<!-- Community Voice Summary Details -->
+<div class="space-y-3 pt-1">
+<div class="flex items-center justify-between text-xs py-2 border-b border-outline-variant/60">
+<span class="text-on-surface-variant">Estimated Quick Repair Cost</span>
+<span class="font-heading font-bold text-sm text-primary">₹3.40 Lakhs</span>
+</div>
+<div class="flex items-center justify-between text-xs py-2 border-b border-outline-variant/60">
+<span class="text-on-surface-variant">Impacted Population</span>
+<span class="font-semibold text-on-surface">~4,200 Daily Commuters</span>
+</div>
+<div class="flex items-center justify-between text-xs py-2 border-b border-outline-variant/60">
+<span class="text-on-surface-variant">Suggested Executive Action</span>
+<span class="font-medium text-emerald-700 bg-pastel-mint px-2 py-0.5 rounded-md">Pothole Filling Rapid Tender</span>
+</div>
+</div>
+<!-- Two Obvious, Friendly Action Buttons -->
+<div class="space-y-3 pt-2">
+<button class="w-full bg-secondary hover:bg-emerald-800 text-white font-heading font-semibold text-sm py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-sm transition">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+<span>Sanction Quick Repair</span>
+</button>
+<button class="w-full bg-surface-dim hover:bg-slate-200/80 text-primary font-heading font-semibold text-sm py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 border border-outline-variant transition">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">person_add</span>
+<span>Assign Ward Engineer</span>
+</button>
+</div>
+<!-- Calming Assurance Footnote -->
+<p class="text-center text-xs text-on-surface-variant flex items-center justify-center gap-1.5 pt-1">
+<span class="material-symbols-outlined text-[15px] text-emerald-600">verified_user</span>
+            Notification automatically sends SMS update to citizens upon sanction.
+          </p>
+</aside>
+</div>
+</div>
+</main>
+</body></html>

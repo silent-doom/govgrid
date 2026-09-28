@@ -23,10 +23,21 @@ from models.grievance import GrievanceInput, GrievanceRecord
 from services.gemini_service import parse_grievance
 from services.speech_service import transcribe_audio
 from services.geocoding_service import geocode_location
-from services.bigquery_service import insert_grievance, run_clustering
+from services.bigquery_service import insert_grievance, run_clustering, get_grievances
 from services.gcs_service import upload_file
 
 router = APIRouter()
+
+
+@router.get(
+    "/",
+    summary="List citizen grievances",
+    description="Returns geocoded grievances directly from BigQuery GIS with native coordinates.",
+)
+async def list_grievances(limit: int = 150):
+    records = await get_grievances(limit=limit)
+    return {"count": len(records), "grievances": records}
+
 
 
 @router.post(

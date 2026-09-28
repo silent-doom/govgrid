@@ -27,8 +27,20 @@ class TenderRecord(BaseModel):
     budget_inr: int = Field(
         description="Allocated budget in Indian Rupees",
     )
+    budget_disbursed_inr: Optional[int] = Field(
+        None, description="Disbursed public capital in INR"
+    )
+    pfms_transaction_id: Optional[str] = Field(
+        None, description="Public Financial Management System (PFMS) transaction ID"
+    )
+    milestone_progress: Optional[int] = Field(
+        default=0, description="Milestone completion percentage (0-100)"
+    )
     work_description: str = Field(
         description="Description of the infrastructure work to be done",
+    )
+    contractor: Optional[str] = Field(
+        None, description="Contractor / executing agency"
     )
     target_location: Optional[str] = Field(
         None, description="Human-readable target location string"
@@ -38,9 +50,9 @@ class TenderRecord(BaseModel):
     expected_completion_date: Optional[date] = Field(
         None, description="Expected project completion date"
     )
-    status: Literal["Active", "Completed", "Pending"] = Field(
+    status: str = Field(
         default="Active",
-        description="Current tender status",
+        description="Current tender status (Active, Completed, Pending, Flagged)",
     )
     source_pdf_uri: Optional[str] = Field(
         None, description="GCS URI of the source PDF"

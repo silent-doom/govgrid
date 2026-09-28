@@ -17,26 +17,87 @@ import DataPipeline from './pages/DataPipeline';
 import ArchitectureFlow from './components/ArchitectureFlow';
 import Dashboard from './pages/Dashboard';
 
+import { 
+  fetchReconciliation, 
+  fetchDistrictSummary, 
+  fetchLiveGrievances, 
+  fetchLiveTenders 
+} from './services/api';
+
 export default function App() {
   const [selectedDistrict, setSelectedDistrict] = useState('bengaluru');
   const districtData = DISTRICT_DATASETS[selectedDistrict] || DISTRICT_DATASETS.bengaluru || DISTRICT_DATASETS.anantapur;
   
   const [complaints, setComplaints] = useState(districtData.complaints || []);
   const [tenders, setTenders] = useState(districtData.tenders || []);
+  const [reconciliationReport, setReconciliationReport] = useState(null);
+  const [isLiveBackend, setIsLiveBackend] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch live BigQuery datasets and spatial reconciliation from backend
+  const loadLiveData = async () => {
+    setLoading(true);
+    try {
+      const [reconData, liveComplaints, liveTenders] = await Promise.all([
+        fetchReconciliation(),
+        fetchLiveGrievances(150),
+        fetchLiveTenders(),
+      ]);
+
+      if (reconData) {
+        setReconciliationReport(reconData);
+        setIsLiveBackend(true);
+      }
+
+      // Filter or enrich district datasets if available
+      const localNext = DISTRICT_DATASETS[selectedDistrict];
+      if (liveComplaints && liveComplaints.length > 0) {
+        // District coordinate bounding check or use all live
+        const centerLat = districtData.center?.[0] || 12.97;
+        const matched = liveComplaints.filter(c => {
+          if (!c.lat) return true;
+          return Math.abs(c.lat - centerLat) < 1.5;
+        });
+        setComplaints(matched.length > 0 ? matched : liveComplaints);
+      } else if (localNext) {
+        setComplaints(localNext.complaints || []);
+      }
+
+      if (liveTenders && liveTenders.length > 0) {
+        const centerLat = districtData.center?.[0] || 12.97;
+        const matched = liveTenders.filter(t => {
+          if (!t.target_lat) return true;
+          return Math.abs(t.target_lat - centerLat) < 1.5;
+        });
+        setTenders(matched.length > 0 ? matched : liveTenders);
+      } else if (localNext) {
+        setTenders(localNext.tenders || []);
+      }
+    } catch (e) {
+      console.warn('Live API sync notice:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const next = DISTRICT_DATASETS[selectedDistrict];
-    if (next) {
-      setComplaints(next.complaints || []);
-      setTenders(next.tenders || []);
-    }
+    loadLiveData();
   }, [selectedDistrict]);
 
-  const unfundedCount = complaints.filter(c => c.severity_score >= 8).length;
-  const leakageCount = tenders.filter(t => t.flagged_leakage).length;
+  const unfundedCount = reconciliationReport?.unfunded_liabilities_count || complaints.filter(c => c.severity_score >= 8).length;
+  const leakageCount = reconciliationReport?.capital_leakage_count || tenders.filter(t => t.flagged_leakage).length;
   const alertCount = unfundedCount + leakageCount;
 
-  const sharedProps = { complaints, tenders, districtData, unfundedCount, leakageCount };
+  const sharedProps = { 
+    complaints, 
+    tenders, 
+    districtData, 
+    unfundedCount, 
+    leakageCount, 
+    reconciliationReport,
+    isLiveBackend,
+    onRefresh: loadLiveData
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-surface font-sans text-on-surface antialiased selection:bg-blue-100 selection:text-blue-900">
@@ -45,13 +106,8 @@ export default function App() {
         selectedDistrict={selectedDistrict}
         setSelectedDistrict={setSelectedDistrict}
         alertCount={alertCount}
-        onRefresh={() => {
-          const next = DISTRICT_DATASETS[selectedDistrict];
-          if (next) {
-            setComplaints([...next.complaints]);
-            setTenders([...next.tenders]);
-          }
-        }}
+        isLiveBackend={isLiveBackend}
+        onRefresh={loadLiveData}
       />
 
       {/* Main Content Viewport */}

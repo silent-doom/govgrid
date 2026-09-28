@@ -6,11 +6,12 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # ── GCP Core ──────────────────────────────────────────────────────────────
-    gcp_project_id: str = "your-gcp-project-id"
+    gcp_project_id: str = "eventflow-e3c91"
     gcp_region: str = "asia-south1"
+    gcp_location: str = "asia-south1"
 
     # ── BigQuery ──────────────────────────────────────────────────────────────
-    bigquery_dataset: str = "govgrid"
+    bigquery_dataset: str = "govgrid_dpi"
     bigquery_grievances_table: str = "grievances"
     bigquery_tenders_table: str = "tenders"
     bigquery_clusters_table: str = "complaint_clusters"

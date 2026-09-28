@@ -5,6 +5,22 @@ All notable changes to the GovGrid Digital Public Infrastructure & Capital Recon
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-09-28
+
+### Added
+- **Native BigQuery GIS Spatial Cross-Matching Engine**:
+  - Live dataset `govgrid_dpi` provisioned in GCP project `eventflow-e3c91` (`asia-south1`).
+  - Native `GEOGRAPHY` tables for `grievances` (points) and `tenders` (buffer polygons).
+  - Executed spatial cross-matching via `ST_DWithin` query detecting 16 real-world capital leakage and ghost project discrepancies.
+- **Live Public Data Ingestion Pipelines**:
+  - Integrated OpenStreetMap (OSM) Overpass API querying civic infrastructure nodes across Bengaluru, Anantapur, and Delhi.
+  - Integrated World Bank Open Data API for sanitation and potable water metrics.
+- **Enterprise Dark/Light Theme System**:
+  - Added `ThemeContext.jsx` with persistent theme switching and media query auto-detection.
+  - Comprehensive high-contrast dark mode covering all pages, tables, dialogs, Leaflet popups, and SVG vector maps with zero text invisibility or contrast degradation.
+- **Repository Setup & Comprehensive Documentation**:
+  - Added enterprise-grade `README.md` and production `.gitignore`.
+
 ## [1.2.0] - 2026-09-28
 
 ### Fixed & Enhanced

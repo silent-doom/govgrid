@@ -16,13 +16,37 @@ import {
   ExternalLink 
 } from 'lucide-react';
 
-export default function TenderAudits({ tenders = [], complaints = [] }) {
+export default function TenderAudits({ tenders = [], complaints = [], reconciliationReport = null }) {
   const [activeTab, setActiveTab] = useState('attention');
   const [frozenCases, setFrozenCases] = useState({});
   const [summonedCases, setSummonedCases] = useState({});
   const [feedbackNotice, setFeedbackNotice] = useState(null);
 
-  const attentionCases = [
+  const liveAttentionCases = reconciliationReport?.capital_leakage && reconciliationReport.capital_leakage.length > 0
+    ? reconciliationReport.capital_leakage.map((item, idx) => ({
+        id: `BQ-AUD-${idx + 1}`,
+        tenderId: item.tender_id,
+        title: item.work_description,
+        contractor: item.contractor,
+        department: item.department,
+        ward: item.location,
+        spatialBuffer: `${item.distance_meters || 380}m ST_DWithin`,
+        budget: item.budget_inr >= 10000000 ? `₹${(item.budget_inr / 10000000).toFixed(2)} Cr` : `₹${(item.budget_inr / 100000).toFixed(1)} Lakhs`,
+        disbursed: item.budget_disbursed_inr ? (item.budget_disbursed_inr >= 10000000 ? `₹${(item.budget_disbursed_inr / 10000000).toFixed(2)} Cr` : `₹${(item.budget_disbursed_inr / 100000).toFixed(1)} Lakhs`) : '₹100% Claimed',
+        physicalCertified: Math.max(8, 100 - (item.complaint_count * 7)),
+        discrepancyGap: Math.min(92, item.complaint_count * 7),
+        complaintCount: item.complaint_count,
+        severityAvg: `${item.avg_severity || item.max_severity} / 10`,
+        flagType: item.alert_level === 'GHOST_PROJECT_FLAGGED' ? 'Ghost Project Alert (Contractor 100% Signoff)' : 'Critical Capital Leakage',
+        flagColor: 'bg-rose-50 text-rose-700 border-rose-200',
+        citizenReport: `${item.complaint_count} verified citizen complaints within 800m radial. ${item.leakage_reason}`,
+        contractorClaim: `PFMS Trx: ${item.pfms_transaction_id}. Contractor claims ${item.milestone_progress}% completion signoff.`,
+        aiRecommendation: `Invoke BigQuery GIS Vigilance Protocol: Immediate escrow freeze on ${item.tender_id}. Summon ${item.contractor} for statutory inspection.`,
+        deadline: '24h Vigilance Priority',
+      }))
+    : null;
+
+  const attentionCases = liveAttentionCases || [
     {
       id: 'AUD-001',
       tenderId: 'GEM-2025-C-84912',
@@ -224,24 +248,24 @@ export default function TenderAudits({ tenders = [], complaints = [] }) {
               className="bg-white rounded-3xl border border-slate-200 shadow-xs hover:shadow-sm transition-all overflow-hidden"
             >
               {/* Case Meta Header Bar */}
-              <div className="p-5 sm:p-6 bg-slate-50/80 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-4">
+              <div className="p-5 sm:p-6 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center font-bold text-sm border border-rose-200">
+                  <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 flex items-center justify-center font-bold text-sm border border-rose-200 dark:border-rose-900/60">
                     <ShieldAlert size={20} />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-display font-extrabold text-base text-slate-900">{item.title}</span>
+                      <span className="font-display font-extrabold text-base text-slate-900 dark:text-white">{item.title}</span>
                       <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${item.flagColor}`}>
                         {item.flagType}
                       </span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1">
-                      <span className="font-mono font-semibold text-slate-700">{item.tenderId}</span>
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400 mt-1">
+                      <span className="font-mono font-semibold text-slate-700 dark:text-slate-300">{item.tenderId}</span>
                       <span>•</span>
                       <span>{item.department}</span>
                       <span>•</span>
-                      <span className="flex items-center gap-1 text-slate-700 font-medium">
+                      <span className="flex items-center gap-1 text-slate-700 dark:text-slate-300 font-medium">
                         <MapPin size={12} className="text-secondary" /> {item.ward} ({item.spatialBuffer})
                       </span>
                     </div>
@@ -249,30 +273,30 @@ export default function TenderAudits({ tenders = [], complaints = [] }) {
                 </div>
 
                 <div className="text-right">
-                  <span className="text-[11px] text-slate-400 block font-semibold uppercase tracking-wider font-display">
+                  <span className="text-[11px] text-slate-400 dark:text-slate-400 block font-semibold uppercase tracking-wider font-display">
                     Public Capital Outlay
                   </span>
-                  <span className="text-lg font-display font-extrabold text-slate-900">{item.budget}</span>
+                  <span className="text-lg font-display font-extrabold text-slate-900 dark:text-white">{item.budget}</span>
                 </div>
               </div>
 
               {/* Side-by-Side Comparison Matrix */}
-              <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-slate-200/80">
+              <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-slate-200 dark:border-slate-700">
                 {/* Left: Citizen Distress Reality */}
-                <div className="bg-rose-50/50 rounded-2xl p-5 border border-rose-200/80 space-y-3">
+                <div className="bg-rose-50/50 dark:bg-rose-950/40 rounded-2xl p-5 border border-rose-200/80 dark:border-rose-900/60 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-rose-800 flex items-center gap-1.5 font-display">
-                      <AlertOctagon size={14} className="text-rose-600" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-rose-800 dark:text-rose-300 flex items-center gap-1.5 font-display">
+                      <AlertOctagon size={14} className="text-rose-600 dark:text-rose-400" />
                       Citizen Ground Reality (Jan-Vani)
                     </span>
-                    <span className="text-xs font-semibold px-2 py-0.5 bg-rose-100 text-rose-700 rounded-md">
+                    <span className="text-xs font-semibold px-2 py-0.5 bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 rounded-md">
                       {item.complaintCount} Distress Signals
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-normal">
+                  <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-normal">
                     {item.citizenReport}
                   </p>
-                  <div className="text-xs text-rose-900 font-medium flex items-center gap-2 pt-1 border-t border-rose-200/60">
+                  <div className="text-xs text-rose-900 dark:text-rose-300 font-medium flex items-center gap-2 pt-1 border-t border-rose-200/60 dark:border-rose-900/60">
                     <span>Severity Rating: <strong className="font-bold">{item.severityAvg}</strong></span>
                     <span>•</span>
                     <span>Deadline: <strong>{item.deadline}</strong></span>
@@ -280,36 +304,36 @@ export default function TenderAudits({ tenders = [], complaints = [] }) {
                 </div>
 
                 {/* Right: Contractor Billing Claim */}
-                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 space-y-3">
+                <div className="bg-slate-50 dark:bg-slate-800/40 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5 font-display">
-                      <Building size={14} className="text-primary" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5 font-display">
+                      <Building size={14} className="text-primary dark:text-emerald-400" />
                       Contractor Claim &amp; Billing
                     </span>
-                    <span className="text-xs font-semibold px-2 py-0.5 bg-slate-200 text-slate-800 rounded-md">
+                    <span className="text-xs font-semibold px-2 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-md">
                       {item.contractor}
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
                     {item.contractorClaim}
                   </p>
-                  <div className="text-xs text-slate-600 font-medium flex items-center gap-2 pt-1 border-t border-slate-200">
-                    <span>Total Disbursed: <strong className="font-bold text-slate-900">{item.disbursed}</strong></span>
+                  <div className="text-xs text-slate-600 dark:text-slate-400 font-medium flex items-center gap-2 pt-1 border-t border-slate-200 dark:border-slate-700">
+                    <span>Total Disbursed: <strong className="font-bold text-slate-900 dark:text-white">{item.disbursed}</strong></span>
                   </div>
                 </div>
               </div>
 
               {/* Physical vs Financial Completion Gap Meter */}
-              <div className="p-6 bg-white border-b border-slate-200/80">
+              <div className="p-6 bg-white dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-700">
                 <div className="flex justify-between items-center text-xs mb-2">
-                  <span className="font-bold font-display text-slate-800">
-                    Physical Ground Audit: <strong className="text-emerald-700">{item.physicalCertified}% Certified</strong>
+                  <span className="font-bold font-display text-slate-800 dark:text-slate-200">
+                    Physical Ground Audit: <strong className="text-emerald-700 dark:text-emerald-400">{item.physicalCertified}% Certified</strong>
                   </span>
-                  <span className="font-bold font-display text-rose-600">
+                  <span className="font-bold font-display text-rose-600 dark:text-rose-400">
                     Discrepancy Gap: -{item.discrepancyGap}% Phantom Progress
                   </span>
                 </div>
-                <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex">
+                <div className="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden flex">
                   <div 
                     className="bg-secondary h-full transition-all" 
                     style={{ width: `${item.physicalCertified}%` }} 
@@ -324,14 +348,14 @@ export default function TenderAudits({ tenders = [], complaints = [] }) {
               </div>
 
               {/* AI Forensic Recommendation & Action Triggers */}
-              <div className="p-6 bg-slate-50 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="p-6 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-200 dark:border-slate-700 flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1">
-                  <BrainCircuit size={20} className="text-secondary shrink-0 mt-0.5" />
+                  <BrainCircuit size={20} className="text-secondary dark:text-emerald-400 shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-display">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-display">
                       Vertex AI Gemini Forensic Audit Recommendation
                     </span>
-                    <p className="text-xs text-slate-800 mt-0.5 leading-relaxed font-medium">
+                    <p className="text-xs text-slate-800 dark:text-slate-200 mt-0.5 leading-relaxed font-medium">
                       {item.aiRecommendation}
                     </p>
                   </div>
@@ -342,7 +366,7 @@ export default function TenderAudits({ tenders = [], complaints = [] }) {
                     onClick={() => {
                       alert(`Generating Official State Audit Dossier PDF for Case ${item.id} (${item.tenderId})... Download starting.`);
                     }}
-                    className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 transition flex items-center gap-1.5 shadow-2xs"
+                    className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600 transition flex items-center gap-1.5 shadow-2xs"
                   >
                     <FileDown size={14} />
                     <span>Dossier PDF</span>
@@ -353,8 +377,8 @@ export default function TenderAudits({ tenders = [], complaints = [] }) {
                     disabled={summonedCases[item.id]}
                     className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs ${
                       summonedCases[item.id]
-                        ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
-                        : 'bg-white text-primary hover:bg-slate-100 border border-slate-200'
+                        ? 'bg-slate-200 dark:bg-slate-800 text-slate-500 cursor-not-allowed'
+                        : 'bg-white dark:bg-slate-700 text-primary dark:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600'
                     }`}
                   >
                     <UserCheck size={14} />

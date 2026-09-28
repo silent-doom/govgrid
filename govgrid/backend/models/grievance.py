@@ -41,7 +41,9 @@ class GrievanceRecord(BaseModel):
         description="Short AI-generated description of the damage based on image/text",
     )
     original_language: Optional[str] = Field(None, description="Detected source language")
+    audio_recording_uri: Optional[str] = Field(None, description="GCS URI of citizen voice note")
     image_gcs_uri: Optional[str] = Field(None, description="GCS URI of uploaded image")
+    status: str = Field(default="Open", description="Grievance status (Open, Escalated, In Progress, Resolved)")
     submitted_at: datetime = Field(default_factory=datetime.utcnow)
 
     class Config:

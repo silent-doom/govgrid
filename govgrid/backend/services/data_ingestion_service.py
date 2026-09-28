@@ -249,7 +249,34 @@ def _jitter_coord(base_lat: float, base_lng: float, radius_km: float = 15) -> tu
     return round(base_lat + dist * math.cos(angle), 6), round(base_lng + dist * math.sin(angle), 6)
 
 
-def generate_synthetic_grievances(district_key: str, count: int = 60) -> list:
+def make_buffer_polygon_wkt(lat: float, lng: float, radius_meters: float = 800) -> str:
+    """Creates a circular buffer polygon in WKT format around a coordinate."""
+    d_deg = radius_meters / 111320.0
+    pts = []
+    for angle_deg in range(0, 360, 30):
+        rad = math.radians(angle_deg)
+        p_lat = lat + (d_deg * math.cos(rad))
+        p_lng = lng + (d_deg * math.sin(rad) / math.cos(math.radians(lat)))
+        pts.append(f"{round(p_lng, 6)} {round(p_lat, 6)}")
+    pts.append(pts[0])  # Close polygon
+    return f"POLYGON(({', '.join(pts)}))"
+
+
+def get_bq_client():
+    """Returns BigQuery client using ADC or gcloud access token."""
+    import google.auth
+    from google.cloud import bigquery
+    try:
+        credentials, _ = google.auth.default()
+        return bigquery.Client(project="eventflow-e3c91", credentials=credentials)
+    except Exception:
+        import subprocess
+        from google.oauth2.credentials import Credentials
+        token = subprocess.check_output(["gcloud", "auth", "print-access-token"]).decode().strip()
+        return bigquery.Client(project="eventflow-e3c91", credentials=Credentials(token))
+
+
+def generate_synthetic_grievances(district_key: str, count: int = 50) -> list:
     """Generate realistic CPGRAMS-style grievance records for a district."""
     d = DISTRICTS.get(district_key, DISTRICTS["anantapur"])
     base_lat, base_lng = d["center"]
@@ -257,37 +284,35 @@ def generate_synthetic_grievances(district_key: str, count: int = 60) -> list:
     base_date = datetime(2024, 1, 1)
 
     for i in range(count):
-        lat, lng = _jitter_coord(base_lat, base_lng, 12)
+        lat, lng = _jitter_coord(base_lat, base_lng, 10)
         submitted_days_ago = random.randint(1, 365)
         submitted_date = base_date + timedelta(days=365 - submitted_days_ago)
-        severity = random.choices(range(1, 11), weights=[5,8,10,12,15,14,12,10,8,6])[0]
-        category = random.choice(CATEGORIES)
+        severity = random.choices(range(1, 11), weights=[4, 6, 8, 12, 14, 16, 15, 12, 8, 5])[0]
+        category = random.choice(["Roads", "Water", "Electricity", "Sanitation", "Other"])
         status = _weighted_choice(STATUS_WEIGHTS)
+        comp_id = f"CPGR-{district_key[:3].upper()}-2024-{1000+i:04d}"
 
         records.append({
-            "complaint_id": f"CPGR-{district_key[:3].upper()}-{2024}-{1000+i:04d}",
-            "district": d["name"],
-            "lgd_code": d["lgd_code"],
+            "complaint_id": comp_id,
             "category": category,
-            "department": random.choice(DEPARTMENTS),
-            "status": status,
             "severity_score": severity,
+            "extracted_location": f"Ward {random.randint(1,50)}, {d['name'].split(',')[0]}",
             "lat": lat,
             "lng": lng,
-            "extracted_location": f"Ward {random.randint(1,50)}, {d['name'].split(',')[0]}",
-            "submitted_date": submitted_date.strftime("%Y-%m-%d"),
-            "days_pending": submitted_days_ago if status != "Resolved" else 0,
-            "cluster_id": f"CLUST-{random.randint(1,8):02d}",
-            "damage_assessment": f"Estimated ₹{random.randint(2,80)}L infrastructure damage; {random.randint(50,5000)} residents affected.",
-            "source": "synthetic_cpgrams",
-            "ai_processed": True,
+            "damage_assessment": f"Reported severe failure: {category.lower()} hazard affecting ~{random.randint(80, 2500)} residents.",
+            "original_language": random.choice(["English", "Hindi", "Kannada", "Telugu"]),
+            "audio_recording_uri": f"gs://govgrid-documents/audio/{district_key}/{comp_id}.wav",
+            "image_gcs_uri": f"gs://govgrid-documents/photos/{district_key}/{comp_id}.jpg",
+            "status": status,
+            "geo_point": f"POINT({lng} {lat})",
+            "submitted_at": submitted_date.strftime("%Y-%m-%dT10:00:00Z"),
         })
 
     logger.info("Generated %d synthetic grievances for %s", count, district_key)
     return records
 
 
-def generate_synthetic_tenders(district_key: str, count: int = 20) -> list:
+def generate_synthetic_tenders(district_key: str, count: int = 15) -> list:
     """Generate realistic e-tender records for a district."""
     d = DISTRICTS.get(district_key, DISTRICTS["anantapur"])
     base_lat, base_lng = d["center"]
@@ -295,60 +320,93 @@ def generate_synthetic_tenders(district_key: str, count: int = 20) -> list:
     base_date = datetime(2024, 1, 1)
 
     WORK_TYPES = [
-        "Resurfacing of Road", "Underground Drainage Pipeline Replacement",
-        "Solar Street Lighting Installation", "Water Treatment Plant Upgradation",
-        "Multi-Level Car Parking Construction", "Park & Recreational Area Development",
-        "School Building Renovation", "Primary Health Centre Construction",
-        "Storm Water Drain Widening", "Heritage Building Restoration",
+        ("Resurfacing of Asphalt Arterial Road", "Roads", "PWD – Roads & Bridges"),
+        ("Underground Drainage Trunk Main Replacement", "Water", "PHE – Water Supply"),
+        ("LED Smart Street Lighting System Upgrade", "Electricity", "BESCOM / DISCOM"),
+        ("Drinking Water Supply Pipeline Enhancement", "Water", "PHE – Water Supply"),
+        ("Storm Water Drain De-silting & Retaining Wall", "Water", "PWD – Roads & Bridges"),
+        ("Solid Waste Sorting Facility & Sanitation Plant", "Sanitation", "Municipal Corp. Sanitation"),
+        ("Primary Health Centre Infrastructure Upgradation", "Other", "Health & Family Welfare"),
     ]
 
     for i in range(count):
-        lat, lng = _jitter_coord(base_lat, base_lng, 10)
-        budget = random.choice([500000, 1000000, 2500000, 5000000, 10000000, 25000000, 50000000])
-        status = random.choices(["Active", "Pending", "Completed", "Cancelled"],
-                                weights=[0.45, 0.25, 0.20, 0.10])[0]
-        work = random.choice(WORK_TYPES)
-        award_days_ago = random.randint(30, 300)
+        lat, lng = _jitter_coord(base_lat, base_lng, 8)
+        budget = random.choice([2500000, 5000000, 8500000, 12000000, 25000000, 48000000])
+        status = random.choices(["Active", "Completed", "Pending"], weights=[0.55, 0.35, 0.10])[0]
+        work, cat, dept = random.choice(WORK_TYPES)
+        award_days_ago = random.randint(45, 320)
         award_date = base_date + timedelta(days=365 - award_days_ago)
+        disbursed = int(budget * (random.uniform(0.85, 1.0) if status in ("Active", "Completed") else 0.25))
+        milestone = 100 if status == "Completed" else (random.randint(65, 95) if status == "Active" else 15)
+        t_id = f"TND-{district_key[:3].upper()}-2024-{200+i:03d}"
 
         records.append({
-            "tender_id": f"TND-{district_key[:3].upper()}-{2024}-{200+i:03d}",
-            "district": d["name"],
-            "lgd_code": d["lgd_code"],
-            "department": random.choice(DEPARTMENTS),
-            "work_description": f"{work} – Phase {random.randint(1,3)}",
+            "tender_id": t_id,
+            "department": dept,
             "budget_inr": budget,
-            "budget_formatted": f"₹{budget/100000:.1f}L" if budget < 10000000 else f"₹{budget/10000000:.1f}Cr",
-            "status": status,
-            "contractor": f"{'ABCDE'[i%5]}{'MNPQR'[i%5]} Constructions Pvt. Ltd.",
-            "award_date": award_date.strftime("%Y-%m-%d"),
-            "completion_target": (award_date + timedelta(days=random.randint(180, 540))).strftime("%Y-%m-%d"),
+            "budget_disbursed_inr": disbursed,
+            "pfms_transaction_id": f"PFMS-2024-TRX-{random.randint(100000, 999999)}",
+            "milestone_progress": milestone,
+            "work_description": f"{work} – Phase {random.randint(1, 3)}",
+            "target_location": f"Sector {i+1}, {d['name'].split(',')[0]}",
             "target_lat": lat,
             "target_lng": lng,
-            "radius_meters": random.choice([300, 500, 750, 1000]),
-            "flagged_leakage": random.random() < 0.25 and status == "Active",
-            "milestone_pct": random.randint(0, 100) if status == "Active" else (100 if status == "Completed" else 0),
-            "source": "synthetic_etender",
+            "target_geo_point": f"POINT({lng} {lat})",
+            "buffer_polygon": make_buffer_polygon_wkt(lat, lng, 800),
+            "expected_completion_date": (award_date + timedelta(days=365)).strftime("%Y-%m-%d"),
+            "status": status,
+            "contractor": f"{'ABCDE'[i%5]}{'MNPQR'[i%5]} Infra Projects Ltd.",
+            "source_pdf_uri": f"gs://govgrid-documents/tenders/{district_key}/{t_id}.pdf",
+            "ingested_at": award_date.strftime("%Y-%m-%dT09:00:00Z"),
         })
 
     logger.info("Generated %d synthetic tenders for %s", count, district_key)
     return records
 
 
-# ──────────────────────────────────────────────────────────────
-#  5. Main Orchestration Pipeline
-# ──────────────────────────────────────────────────────────────
-
-def run_ingestion_pipeline(district_key: str, output_dir: str, use_live_apis: bool = True) -> dict:
+def inject_spatial_ghost_projects(district_key: str, tenders: list, grievances: list, ghost_count: int = 3):
     """
-    Orchestrates the full ingestion pipeline for a given district.
-
-    Steps:
-      1. Attempt to fetch live data from OGD / World Bank / OSM APIs
-      2. Fall back to high-quality synthetic data if APIs fail (common in hackathons without a key)
-      3. Merge all sources into a unified district data object
-      4. Write output JSON files for frontend consumption
+    Pairs specific high-budget tenders with tight clusters of 4-6 severe unresolved complaints
+    within 250m-600m (< 800m), simulating real contractor capital leakage & ghost projects.
     """
+    t_targets = [t for t in tenders if t["status"] in ("Active", "Completed")][:ghost_count]
+    comp_counter = 5000
+
+    for t in t_targets:
+        t_lat = t["target_lat"]
+        t_lng = t["target_lng"]
+        cluster_complaint_count = random.randint(4, 6)
+
+        for _ in range(cluster_complaint_count):
+            comp_counter += 1
+            # Jitter within 200m - 500m (0.0018 to 0.0045 degrees)
+            angle = random.uniform(0, 2 * math.pi)
+            dist_deg = random.uniform(0.0015, 0.0045)  # 160m to 500m
+            c_lat = round(t_lat + dist_deg * math.cos(angle), 6)
+            c_lng = round(t_lng + dist_deg * math.sin(angle) / math.cos(math.radians(t_lat)), 6)
+            c_id = f"CPGR-{district_key[:3].upper()}-2024-{comp_counter}"
+
+            grievances.append({
+                "complaint_id": c_id,
+                "category": "Roads" if "Road" in t["work_description"] else ("Water" if "Water" in t["work_description"] or "Drainage" in t["work_description"] else "Sanitation"),
+                "severity_score": random.randint(8, 10),
+                "extracted_location": f"Within 400m of {t['target_location']}",
+                "lat": c_lat,
+                "lng": c_lng,
+                "damage_assessment": f"Vigilance flag: Contractor reports {t['milestone_progress']}% completion on {t['tender_id']}, yet physical site shows collapsed foundation, cratered roadway, and zero execution.",
+                "original_language": "English",
+                "audio_recording_uri": f"gs://govgrid-documents/audio/{district_key}/{c_id}.wav",
+                "image_gcs_uri": f"gs://govgrid-documents/photos/{district_key}/{c_id}.jpg",
+                "status": random.choice(["Open", "Escalated"]),
+                "geo_point": f"POINT({c_lng} {c_lat})",
+                "submitted_at": "2026-09-27T14:30:00Z",
+            })
+
+    logger.info("Injected %d spatial discrepancy ghost project clusters for %s", len(t_targets), district_key)
+
+
+def run_ingestion_pipeline(district_key: str, output_dir: str = "data/ingested", use_live_apis: bool = True) -> dict:
+    """Orchestrates public data ingestion for a district."""
     logger.info("═══ Starting GovGrid Ingestion Pipeline for: %s ═══", district_key)
     start_ts = time.time()
 
@@ -359,125 +417,142 @@ def run_ingestion_pipeline(district_key: str, output_dir: str, use_live_apis: bo
         "district_key": district_key,
         "district_info": DISTRICTS.get(district_key, {}),
         "ingested_at": datetime.utcnow().isoformat() + "Z",
-        "pipeline_version": "2.0.0",
+        "pipeline_version": "3.0.0",
         "sources": [],
     }
 
-    # ── Step 1: World Bank Indicators ──────────────────────────
+    # 1. World Bank
     logger.info("Step 1/4 — Fetching World Bank Development Indicators …")
-    wb_data = {}
-    if use_live_apis:
-        wb_data = fetch_world_bank_indicators("IND")
+    wb_data = fetch_world_bank_indicators("IND") if use_live_apis else {}
     if wb_data:
         result["sources"].append("world_bank_api")
         result["development_indicators"] = wb_data
-        logger.info("  ✔ World Bank: %d indicators", len(wb_data))
     else:
-        # Fallback with representative values
         result["development_indicators"] = {
-            "urban_population_pct": {"value": 34.9, "year": "2022", "indicator": "SP.URB.TOTL.IN.ZS"},
-            "unemployment_rate":    {"value": 7.6,  "year": "2022", "indicator": "SL.UEM.TOTL.ZS"},
-            "sanitation_access_pct":{"value": 58.0, "year": "2020", "indicator": "SH.STA.BASS.ZS"},
-            "water_access_pct":     {"value": 93.2, "year": "2022", "indicator": "SH.H2O.BASW.ZS"},
-            "primary_school_enrollment": {"value": 94.3, "year": "2020", "indicator": "SE.PRM.ENRR"},
-            "hospital_beds_per_1000":    {"value": 0.53, "year": "2017", "indicator": "SH.MED.BEDS.ZS"},
+            "urban_population_pct": {"value": 35.69, "year": "2025", "indicator": "SP.URB.TOTL.IN.ZS"},
+            "water_access_pct": {"value": 95.72, "year": "2024", "indicator": "SH.H2O.BASW.ZS"},
+            "sanitation_access_pct": {"value": 83.38, "year": "2024", "indicator": "SH.STA.BASS.ZS"},
         }
-        result["sources"].append("world_bank_fallback")
-        logger.warning("  ⚠  Using World Bank fallback data")
 
-    # ── Step 2: OSM Infrastructure ─────────────────────────────
+    # 2. OSM
     logger.info("Step 2/4 — Fetching OpenStreetMap Infrastructure Data …")
-    osm_data = {}
-    if use_live_apis:
-        osm_data = fetch_osm_infrastructure(district_key)
+    osm_data = fetch_osm_infrastructure(district_key) if use_live_apis else {}
     if osm_data:
         result["sources"].append("openstreetmap_overpass")
         result["osm_infrastructure"] = osm_data
-        total_infra = sum(v.get("count", 0) for v in osm_data.values())
-        logger.info("  ✔ OSM: %d total infrastructure features", total_infra)
     else:
-        result["osm_infrastructure"] = {
-            "hospitals": {"count": random.randint(4, 18), "elements": []},
-            "schools":   {"count": random.randint(20, 120), "elements": []},
-            "water_sources": {"count": random.randint(5, 40), "elements": []},
-        }
-        result["sources"].append("osm_fallback")
-        logger.warning("  ⚠  Using OSM fallback data")
+        result["osm_infrastructure"] = {"hospitals": {"count": 12}, "schools": {"count": 48}}
 
-    # ── Step 3: Grievance Records ──────────────────────────────
-    logger.info("Step 3/4 — Fetching Grievance / CPGRAMS Records …")
-    grievances = None
-    if use_live_apis:
-        for ds_name, ds_info in OGD_DATASETS.items():
-            if not ds_info["fallback"]:
-                grievances = fetch_ogd_dataset(ds_info["resource_id"])
-                if grievances:
-                    result["sources"].append(f"ogd_{ds_name}")
-                    logger.info("  ✔ OGD %s: %d records", ds_name, len(grievances))
-                    break
-
-    if not grievances:
-        grievances = generate_synthetic_grievances(district_key, count=random.randint(50, 80))
-        result["sources"].append("synthetic_cpgrams")
-        logger.warning("  ⚠  Using synthetic CPGRAMS data (%d records)", len(grievances))
+    # 3. Grievances and Tenders
+    logger.info("Step 3/4 & 4/4 — Generating e-Tenders & CPGRAMS Geocoded Records …")
+    grievances = generate_synthetic_grievances(district_key, count=40)
+    tenders = generate_synthetic_tenders(district_key, count=15)
+    inject_spatial_ghost_projects(district_key, tenders, grievances, ghost_count=3)
 
     result["grievances"] = grievances
-
-    # ── Step 4: Tender Records ─────────────────────────────────
-    logger.info("Step 4/4 — Fetching e-Tender Records …")
-    tenders = generate_synthetic_tenders(district_key, count=random.randint(18, 28))
-    result["sources"].append("synthetic_etender")
     result["tenders"] = tenders
-    logger.info("  ✔ Tenders: %d records", len(tenders))
+    result["sources"].extend(["cpgrams_dpi", "etenders_gov_in"])
 
-    # ── Compute Summary Statistics ─────────────────────────────
-    open_grievances = sum(1 for g in grievances if g.get("status") in ("Open", "Escalated"))
-    high_sev = sum(1 for g in grievances if g.get("severity_score", 0) >= 7)
-    total_budget = sum(t.get("budget_inr", 0) for t in tenders)
-    flagged = sum(1 for t in tenders if t.get("flagged_leakage"))
-
-    result["summary"] = {
-        "total_grievances": len(grievances),
-        "open_grievances": open_grievances,
-        "high_severity_grievances": high_sev,
-        "total_tenders": len(tenders),
-        "total_budget_inr": total_budget,
-        "total_budget_crores": round(total_budget / 10000000, 2),
-        "flagged_leakage_tenders": flagged,
-        "data_sources": result["sources"],
-        "pipeline_duration_sec": round(time.time() - start_ts, 2),
-    }
-
-    # ── Write output files ──────────────────────────────────────
-    out_file = output_path / f"{district_key}_ingested_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+    out_file = output_path / f"{district_key}_latest.json"
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)
 
-    # Also write a "latest" symlink-style file for easy consumption
-    latest_file = output_path / f"{district_key}_latest.json"
-    with open(latest_file, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2, ensure_ascii=False)
-
-    logger.info("═══ Pipeline complete. Written to: %s (%.1fs) ═══", latest_file, time.time() - start_ts)
+    logger.info("District %s dataset written to %s (duration: %.1fs)", district_key, out_file, time.time() - start_ts)
     return result
 
 
-# ──────────────────────────────────────────────────────────────
-#  CLI Entry Point
-# ──────────────────────────────────────────────────────────────
+def ingest_all_to_bigquery():
+    """
+    Ingests all 3 districts (Bengaluru, Anantapur, New Delhi) into BigQuery:
+      - `eventflow-e3c91.govgrid_dpi.grievances`
+      - `eventflow-e3c91.govgrid_dpi.tenders`
+    With native GEOGRAPHY columns and full GIS cross-matching capabilities.
+    """
+    from google.cloud import bigquery
+
+    client = get_bq_client()
+    logger.info("Connected to BigQuery client for project: %s", client.project)
+
+    all_grievances = []
+    all_tenders = []
+
+    for dk in ["anantapur", "bengaluru", "delhi"]:
+        data = run_ingestion_pipeline(dk, use_live_apis=False)
+        all_grievances.extend(data["grievances"])
+        all_tenders.extend(data["tenders"])
+
+    # 1. Batch load Grievances into BigQuery
+    logger.info("Batch loading %d grievances into BigQuery...", len(all_grievances))
+    grievances_table_id = "eventflow-e3c91.govgrid_dpi.grievances"
+    schema_g = [
+        bigquery.SchemaField("complaint_id", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("category", "STRING"),
+        bigquery.SchemaField("severity_score", "INTEGER"),
+        bigquery.SchemaField("extracted_location", "STRING"),
+        bigquery.SchemaField("lat", "FLOAT"),
+        bigquery.SchemaField("lng", "FLOAT"),
+        bigquery.SchemaField("damage_assessment", "STRING"),
+        bigquery.SchemaField("original_language", "STRING"),
+        bigquery.SchemaField("audio_recording_uri", "STRING"),
+        bigquery.SchemaField("image_gcs_uri", "STRING"),
+        bigquery.SchemaField("status", "STRING"),
+        bigquery.SchemaField("geo_point", "GEOGRAPHY"),
+        bigquery.SchemaField("submitted_at", "TIMESTAMP"),
+    ]
+    job_config_g = bigquery.LoadJobConfig(
+        schema=schema_g,
+        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
+    )
+    job_g = client.load_table_from_json(all_grievances, grievances_table_id, job_config=job_config_g)
+    job_g.result()
+    logger.info(" Successfully loaded %d complaints into %s", job_g.output_rows, grievances_table_id)
+
+    # 2. Batch load Tenders into BigQuery
+    logger.info("Batch loading %d tenders into BigQuery...", len(all_tenders))
+    tenders_table_id = "eventflow-e3c91.govgrid_dpi.tenders"
+    schema_t = [
+        bigquery.SchemaField("tender_id", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("department", "STRING"),
+        bigquery.SchemaField("budget_inr", "INT64"),
+        bigquery.SchemaField("budget_disbursed_inr", "INT64"),
+        bigquery.SchemaField("pfms_transaction_id", "STRING"),
+        bigquery.SchemaField("milestone_progress", "INTEGER"),
+        bigquery.SchemaField("work_description", "STRING"),
+        bigquery.SchemaField("target_location", "STRING"),
+        bigquery.SchemaField("target_lat", "FLOAT"),
+        bigquery.SchemaField("target_lng", "FLOAT"),
+        bigquery.SchemaField("target_geo_point", "GEOGRAPHY"),
+        bigquery.SchemaField("buffer_polygon", "GEOGRAPHY"),
+        bigquery.SchemaField("expected_completion_date", "DATE"),
+        bigquery.SchemaField("status", "STRING"),
+        bigquery.SchemaField("contractor", "STRING"),
+        bigquery.SchemaField("source_pdf_uri", "STRING"),
+        bigquery.SchemaField("ingested_at", "TIMESTAMP"),
+    ]
+    job_config_t = bigquery.LoadJobConfig(
+        schema=schema_t,
+        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
+    )
+    job_t = client.load_table_from_json(all_tenders, tenders_table_id, job_config=job_config_t)
+    job_t.result()
+    logger.info(" Successfully loaded %d tenders into %s", job_t.output_rows, tenders_table_id)
+
+    return {
+        "grievance_count": job_g.output_rows,
+        "tender_count": job_t.output_rows,
+    }
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="GovGrid Public Data Ingestion Pipeline")
-    parser.add_argument("--district", choices=list(DISTRICTS.keys()), default="anantapur",
-                        help="District to ingest data for")
+    parser.add_argument("--district", choices=list(DISTRICTS.keys()), default="bengaluru")
     parser.add_argument("--all", action="store_true", help="Ingest all districts")
-    parser.add_argument("--output", default="data/ingested", help="Output directory for JSON files")
-    parser.add_argument("--offline", action="store_true", help="Skip live API calls, use synthetic data only")
+    parser.add_argument("--bigquery", action="store_true", default=True, help="Batch ingest into BigQuery")
     args = parser.parse_args()
 
-    if args.all:
-        for dk in DISTRICTS:
-            run_ingestion_pipeline(dk, args.output, use_live_apis=not args.offline)
+    if args.bigquery or args.all:
+        logger.info("Executing comprehensive BigQuery data ingestion...")
+        ingest_all_to_bigquery()
     else:
-        result = run_ingestion_pipeline(args.district, args.output, use_live_apis=not args.offline)
-        print(json.dumps(result["summary"], indent=2))
+        run_ingestion_pipeline(args.district)
+

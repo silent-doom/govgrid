@@ -20,7 +20,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 
-export default function ExecutiveBriefing({ districtData, complaints = [], tenders = [] }) {
+export default function ExecutiveBriefing({ districtData, complaints = [], tenders = [], reconciliationReport = null }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [actionNotice, setActionNotice] = useState(null);
   const [frozenTenders, setFrozenTenders] = useState({});
@@ -410,21 +410,21 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
               </NavLink>
             </div>
 
-            {/* Stylized Light Map Vector Backdrop with Interactive Pins */}
-            <div className="relative w-full h-56 rounded-xl bg-slate-50 border border-slate-200/80 overflow-hidden">
+            {/* Stylized Map Vector Backdrop with Interactive Pins */}
+            <div className="relative w-full h-56 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 overflow-hidden">
               <svg className="w-full h-full object-cover" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
-                <rect fill="#f8fafc" height="240" width="400" />
-                <path d="M 0,80 Q 120,70 190,130 T 400,110 L 400,0 L 0,0 Z" fill="#f1f5f9" opacity="0.8" />
-                <path d="M 120,240 Q 220,160 300,200 T 400,220 L 400,240 Z" fill="#e2e8f0" opacity="0.5" />
-                <path d="M -10,140 Q 100,110 220,150 T 420,130" fill="none" stroke="#ffffff" strokeWidth="8" />
-                <path d="M -10,140 Q 100,110 220,150 T 420,130" fill="none" stroke="#cbd5e1" strokeWidth="2.5" />
-                <path d="M 160,-10 L 170,120 L 250,250" fill="none" stroke="#ffffff" strokeWidth="6" />
-                <path d="M 160,-10 L 170,120 L 250,250" fill="none" stroke="#cbd5e1" strokeWidth="2" />
-                <path d="M 280,30 Q 230,100 320,180" fill="none" stroke="#ffffff" strokeWidth="5" />
+                <rect fill="currentColor" className="text-slate-50 dark:text-slate-900" height="240" width="400" />
+                <path d="M 0,80 Q 120,70 190,130 T 400,110 L 400,0 L 0,0 Z" fill="currentColor" className="text-slate-100 dark:text-slate-800" opacity="0.8" />
+                <path d="M 120,240 Q 220,160 300,200 T 400,220 L 400,240 Z" fill="currentColor" className="text-slate-200 dark:text-slate-800" opacity="0.5" />
+                <path d="M -10,140 Q 100,110 220,150 T 420,130" fill="none" stroke="currentColor" className="text-white dark:text-slate-700" strokeWidth="8" />
+                <path d="M -10,140 Q 100,110 220,150 T 420,130" fill="none" stroke="currentColor" className="text-slate-300 dark:text-slate-600" strokeWidth="2.5" />
+                <path d="M 160,-10 L 170,120 L 250,250" fill="none" stroke="currentColor" className="text-white dark:text-slate-700" strokeWidth="6" />
+                <path d="M 160,-10 L 170,120 L 250,250" fill="none" stroke="currentColor" className="text-slate-300 dark:text-slate-600" strokeWidth="2" />
+                <path d="M 280,30 Q 230,100 320,180" fill="none" stroke="currentColor" className="text-white dark:text-slate-700" strokeWidth="5" />
                 
                 {/* 500m Buffer Circle around Priority 1 */}
-                <circle cx="210" cy="140" fill="#fee2e2" fillOpacity="0.5" r="32" stroke="#fca5a5" strokeDasharray="3 3" strokeWidth="1" />
-                <circle cx="280" cy="170" fill="#fef3c7" fillOpacity="0.5" r="26" stroke="#fcd34d" strokeDasharray="3 3" strokeWidth="1" />
+                <circle cx="210" cy="140" fill="#fee2e2" fillOpacity="0.4" r="32" stroke="#fca5a5" strokeDasharray="3 3" strokeWidth="1" />
+                <circle cx="280" cy="170" fill="#fef3c7" fillOpacity="0.4" r="26" stroke="#fcd34d" strokeDasharray="3 3" strokeWidth="1" />
               </svg>
 
               {/* Pin 1: Mahadevapura (Red Alert) */}
@@ -433,11 +433,11 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
                 className="absolute top-[55%] left-[52%] -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
               >
                 <div className={`w-8 h-8 rounded-full bg-rose-600 text-white shadow-md flex items-center justify-center font-bold text-xs ring-4 transition-transform ${
-                  selectedPin === 1 ? 'ring-rose-200 scale-110' : 'ring-rose-100 hover:scale-105'
+                  selectedPin === 1 ? 'ring-rose-200 dark:ring-rose-900 scale-110' : 'ring-rose-100 dark:ring-rose-950 hover:scale-105'
                 }`}>
                   1
                 </div>
-                <div className="hidden group-hover:block absolute bottom-9 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[11px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-30 font-medium">
+                <div className="hidden group-hover:block absolute bottom-9 left-1/2 -translate-x-1/2 bg-slate-900 dark:bg-slate-800 text-white text-[11px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-30 font-medium border border-slate-700">
                   Mahadevapura (P1 Sinkhole)
                 </div>
               </button>
@@ -448,11 +448,11 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
                 className="absolute top-[70%] left-[70%] -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
               >
                 <div className={`w-7 h-7 rounded-full bg-amber-500 text-white shadow-md flex items-center justify-center font-bold text-xs ring-4 transition-transform ${
-                  selectedPin === 2 ? 'ring-amber-200 scale-110' : 'ring-amber-100 hover:scale-105'
+                  selectedPin === 2 ? 'ring-amber-200 dark:ring-amber-900 scale-110' : 'ring-amber-100 dark:ring-amber-950 hover:scale-105'
                 }`}>
                   2
                 </div>
-                <div className="hidden group-hover:block absolute bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[11px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-30 font-medium">
+                <div className="hidden group-hover:block absolute bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 dark:bg-slate-800 text-white text-[11px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-30 font-medium border border-slate-700">
                   Kadugodi (Water Main)
                 </div>
               </button>
@@ -463,21 +463,21 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
                 className="absolute top-[32%] left-[38%] -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
               >
                 <div className={`w-7 h-7 rounded-full bg-primary text-white shadow-md flex items-center justify-center font-bold text-xs ring-4 transition-transform ${
-                  selectedPin === 3 ? 'ring-blue-200 scale-110' : 'ring-blue-100 hover:scale-105'
+                  selectedPin === 3 ? 'ring-blue-200 dark:ring-slate-700 scale-110' : 'ring-blue-100 dark:ring-slate-800 hover:scale-105'
                 }`}>
                   3
                 </div>
-                <div className="hidden group-hover:block absolute bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[11px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-30 font-medium">
+                <div className="hidden group-hover:block absolute bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 dark:bg-slate-800 text-white text-[11px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-30 font-medium border border-slate-700">
                   Hoodi Culvert Delay
                 </div>
               </button>
 
               {/* Gentle bottom badge */}
-              <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-white/95 backdrop-blur-xs px-2.5 py-1.5 rounded-lg border border-slate-200 flex items-center justify-between text-[11px] text-slate-600 shadow-2xs">
+              <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-300 shadow-2xs">
                 <span className="flex items-center gap-1 font-medium">
                   <span className="w-2 h-2 rounded-full bg-emerald-500" /> GIS Auto-Matched
                 </span>
-                <span className="font-mono text-slate-500">500m Buffer Zone</span>
+                <span className="font-mono text-slate-500 dark:text-slate-400">500m Buffer Zone</span>
               </div>
             </div>
 
@@ -574,36 +574,36 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
             </div>
 
             {/* Plain English Vernacular Translation */}
-            <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-200/80 text-xs text-slate-700 leading-relaxed">
-              <div className="font-semibold text-amber-900 mb-1 flex items-center gap-1">
+            <div className="p-3 bg-amber-50/70 dark:bg-amber-950/40 rounded-xl border border-amber-200/80 dark:border-amber-800/60 text-xs text-slate-700 dark:text-amber-100 leading-relaxed">
+              <div className="font-semibold text-amber-900 dark:text-amber-300 mb-1 flex items-center gap-1">
                 <span>English Translation:</span>
               </div>
-              <p className="italic text-slate-800 font-sans">
+              <p className="italic text-slate-800 dark:text-slate-200 font-sans">
                 "For three days, the water line beside the government school in Kadugodi has burst open. Drinking water is flooding into houses and the kids cannot walk to school. Please send repair teams immediately."
               </p>
-              <div className="mt-2 text-[11px] text-slate-500 flex items-center justify-between">
+              <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
                 <span>Verified Resident • Anjanappa Layout</span>
-                <span className="text-amber-800 font-semibold">Confidence: 98%</span>
+                <span className="text-amber-800 dark:text-amber-400 font-semibold">Confidence: 98%</span>
               </div>
             </div>
           </div>
 
           {/* Quick District Helpdesk Note */}
-          <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 flex items-center justify-between gap-3 shadow-2xs">
+          <div className="p-4 rounded-2xl bg-surface-dim dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 shadow-2xs">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-white text-primary flex items-center justify-center shadow-xs">
+              <div className="w-9 h-9 rounded-xl bg-white dark:bg-slate-700 text-primary flex items-center justify-center shadow-xs">
                 <PhoneCall size={18} className="text-primary" />
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-900">Executive Briefing Helpline</p>
-                <p className="text-[11px] text-slate-600">Disaster Management Cell: Extension 104</p>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">Executive Briefing Helpline</p>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300">Disaster Management Cell: Extension 104</p>
               </div>
             </div>
             <button 
               onClick={() => {
                 alert("Initiating secure audio conference with Municipal Disaster Management Desk (Ext 104)...");
               }}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white text-primary hover:bg-slate-50 shadow-2xs border border-slate-200 transition"
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-primary dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-600 shadow-2xs border border-slate-200 dark:border-slate-600 transition"
             >
               Call Desk
             </button>

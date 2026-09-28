@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useTheme } from '../ThemeContext';
 import { 
   Building2, 
   MapPin, 
@@ -14,17 +15,21 @@ import {
   RefreshCw,
   Menu,
   X,
-  Sparkles
+  Sparkles,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 export default function StitchHeader({ 
   selectedDistrict, 
   setSelectedDistrict, 
   alertCount = 3,
+  isLiveBackend = false,
   onRefresh
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { theme, toggleTheme, isDark } = useTheme();
 
   const navItems = [
     { to: '/', label: 'Executive Brief', icon: FileText, exact: true },
@@ -58,9 +63,16 @@ export default function StitchHeader({
               <div>
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <span className="font-display font-extrabold text-base sm:text-lg text-primary tracking-tight">GovGrid</span>
-                  <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-semibold bg-secondary-container text-secondary border border-secondary/20 hidden xs:inline-block">
-                    Civic Audit
-                  </span>
+                  {isLiveBackend ? (
+                    <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold bg-emerald-50 text-emerald-700 border border-emerald-300 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      BigQuery GIS
+                    </span>
+                  ) : (
+                    <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-semibold bg-secondary-container text-secondary border border-secondary/20 hidden xs:inline-block">
+                      Civic Audit
+                    </span>
+                  )}
                 </div>
                 <p className="text-[10px] sm:text-xs text-on-surface-variant font-medium hidden sm:block">Digital Public Infrastructure</p>
               </div>
@@ -117,6 +129,16 @@ export default function StitchHeader({
               title="Refresh Data Feeds"
             >
               <RefreshCw size={16} />
+            </button>
+
+            {/* Theme Toggle Button */}
+            <button 
+              onClick={toggleTheme}
+              className="theme-toggle-btn rounded-2xl"
+              title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label="Toggle theme"
+            >
+              {isDark ? <Sun size={17} /> : <Moon size={17} />}
             </button>
 
             {/* Notifications Button */}

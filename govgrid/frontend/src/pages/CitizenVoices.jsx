@@ -387,13 +387,13 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
                     </div>
                   </div>
 
-                  <span className="text-[11px] px-2 py-0.5 rounded-md bg-white text-secondary font-semibold border border-slate-200 shadow-2xs">
+                  <span className="text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-700 text-secondary dark:text-emerald-400 font-semibold border border-slate-200 dark:border-slate-600 shadow-2xs">
                     {story.accuracy} Accurate
                   </span>
                 </div>
 
                 {/* English Translation Quote Block */}
-                <blockquote className="bg-blue-50/50 border-l-4 border-blue-400 rounded-r-2xl p-3.5 my-3 text-xs sm:text-sm text-slate-800 italic leading-relaxed">
+                <blockquote className="bg-blue-50/50 dark:bg-slate-800/60 border-l-4 border-blue-400 dark:border-emerald-500 rounded-r-2xl p-3.5 my-3 text-xs sm:text-sm text-slate-800 dark:text-slate-200 italic leading-relaxed">
                   “{story.translation}”
                 </blockquote>
 
@@ -401,20 +401,20 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
                 <div className="flex items-center justify-between pt-2">
                   <div className="flex items-center gap-3">
                     <div className="relative group">
-                      <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden border border-slate-200 flex items-center justify-center text-slate-400">
+                      <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400">
                         <Camera size={20} />
                       </div>
                       <span className="absolute -top-1.5 -right-1.5 bg-primary text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                         1
                       </span>
                     </div>
-                    <div className="text-xs text-slate-600">
-                      <p className="font-bold text-slate-900">{story.damageDetail}</p>
-                      <p className="text-slate-500">{story.locationRadial}</p>
+                    <div className="text-xs text-slate-600 dark:text-slate-300">
+                      <p className="font-bold text-slate-900 dark:text-white">{story.damageDetail}</p>
+                      <p className="text-slate-500 dark:text-slate-400">{story.locationRadial}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-primary dark:text-emerald-400">
                     <span>{isSelected ? 'Active Selection' : 'Inspect Dossier'}</span>
                     <ChevronRight size={15} />
                   </div>
@@ -449,21 +449,21 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
                   Case #{selectedCase.caseNo}
                 </span>
               </div>
-              <h2 className="font-display font-extrabold text-xl sm:text-2xl text-slate-900 tracking-tight">
+              <h2 className="font-display font-extrabold text-xl sm:text-2xl text-slate-900 dark:text-white tracking-tight">
                 {selectedCase.title}
               </h2>
-              <p className="text-xs text-slate-500 mt-1 font-medium">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
                 {selectedCase.locationRadial}, {selectedCase.ward}
               </p>
             </div>
 
             {/* Empathetic Human Reason Why Flagged */}
-            <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-4">
+            <div className="bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl p-4">
               <div className="flex items-start gap-3">
-                <Info size={20} className="text-amber-700 shrink-0 mt-0.5" />
+                <Info size={20} className="text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="font-display font-bold text-xs text-amber-900">Why was this flagged?</h3>
-                  <p className="text-xs text-amber-900/90 mt-1 leading-relaxed">
+                  <h3 className="font-display font-bold text-xs text-amber-900 dark:text-amber-300">Why was this flagged?</h3>
+                  <p className="text-xs text-amber-900/90 dark:text-amber-100 mt-1 leading-relaxed">
                     {selectedCase.reasonFlagged}
                   </p>
                 </div>

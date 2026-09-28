@@ -148,26 +148,27 @@ export default function MapView({ complaints, tenders, center, zoom }) {
                   <span>{tender.tender_id} ({tender.budget_formatted})</span>
                 </Tooltip>
                 <Popup>
-                  <div style={{ color: '#0F172A', minWidth: '220px', fontFamily: 'sans-serif' }}>
-                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#065F46', borderBottom: '1px solid #E2E8F0', paddingBottom: '4px', marginBottom: '6px' }}>
+                  <div style={{ color: 'var(--text-primary)', minWidth: '220px', fontFamily: 'sans-serif' }}>
+                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--emerald)', borderBottom: '1px solid var(--border)', paddingBottom: '4px', marginBottom: '6px' }}>
                       {tender.department}
                     </div>
                     <div style={{ fontSize: '0.8rem', marginBottom: '4px' }}>
-                      <b>NIT ID:</b> <code>{tender.tender_id}</code>
+                      <b>NIT ID:</b> <code style={{ color: 'var(--text-primary)' }}>{tender.tender_id}</code>
                     </div>
                     <div style={{ fontSize: '0.8rem', marginBottom: '4px' }}>
-                      <b>Sanctioned Budget:</b> <span style={{ color: '#047857', fontWeight: 700 }}>{tender.budget_formatted}</span>
+                      <b>Sanctioned Budget:</b> <span style={{ color: 'var(--emerald)', fontWeight: 700 }}>{tender.budget_formatted}</span>
                     </div>
                     <div style={{ fontSize: '0.8rem', marginBottom: '4px' }}>
                       <b>Target Worksite:</b> {tender.target_location}
                     </div>
-                    <div style={{ fontSize: '0.78rem', color: '#475569', marginBottom: '6px' }}>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
                       <b>Scope:</b> {tender.work_description}
                     </div>
                     {isLeakage && (
                       <div style={{
-                        background: '#FEF3C7',
-                        color: '#92400E',
+                        background: 'var(--amber-subtle)',
+                        color: 'var(--amber-bright)',
+                        border: '1px solid var(--amber-border)',
                         padding: '4px 8px',
                         borderRadius: '4px',
                         fontSize: '0.75rem',
@@ -211,12 +212,12 @@ export default function MapView({ complaints, tenders, center, zoom }) {
                   <span>Severity {c.severity_score}/10: {c.category}</span>
                 </Tooltip>
                 <Popup>
-                  <div style={{ color: '#0F172A', minWidth: '240px', fontFamily: 'sans-serif' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E2E8F0', paddingBottom: '4px', marginBottom: '6px' }}>
-                      <span style={{ fontWeight: 800, fontSize: '0.88rem', color: '#991B1B' }}>
+                  <div style={{ color: 'var(--text-primary)', minWidth: '240px', fontFamily: 'sans-serif' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '4px', marginBottom: '6px' }}>
+                      <span style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--rose-bright)' }}>
                         {c.category} Grievance
                       </span>
-                      <span style={{ background: '#FEE2E2', color: '#991B1B', padding: '2px 6px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>
+                      <span style={{ background: 'var(--rose-subtle)', color: 'var(--rose-bright)', border: '1px solid var(--rose-border)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>
                         {c.severity_score}/10 SEV
                       </span>
                     </div>
@@ -225,11 +226,11 @@ export default function MapView({ complaints, tenders, center, zoom }) {
                       <b>Location:</b> {c.extracted_location}
                     </div>
 
-                    <div style={{ fontSize: '0.75rem', color: '#475569', marginBottom: '6px' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
                       <b>AI Assessment:</b> {c.damage_assessment}
                     </div>
 
-                    <div style={{ fontSize: '0.75rem', color: '#64748B', display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between' }}>
                       <span>Reported: {c.submitted_at || 'Recently'}</span>
                       <span>Cluster: <code>{c.cluster_id}</code></span>
                     </div>

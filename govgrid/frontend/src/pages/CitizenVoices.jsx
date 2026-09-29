@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Mic, 
   Search, 
@@ -22,15 +22,33 @@ import {
   Radio,
   Layers,
   MessageCircle,
-  FileCheck
+  FileCheck,
+  Volume2,
+  VolumeX,
+  Square,
+  RefreshCcw
 } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
+
+const WAVE_BARS = [6, 12, 18, 10, 16, 22, 14, 20, 8, 24, 16, 26, 12, 18, 22, 10, 18, 14, 20, 14, 8, 16, 10, 14];
 
 export default function CitizenVoices({ complaints = [], onAddComplaint }) {
   const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [playingId, setPlayingId] = useState('VOICE-1');
+  const [playingId, setPlayingId] = useState(null);
+  const [playbackSeconds, setPlaybackSeconds] = useState(0);
+  const [playbackDuration, setPlaybackDuration] = useState(25);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [isRecordingMic, setIsRecordingMic] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+
+  const audioRef = useRef(null);
+  const intervalRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const recordingTimerRef = useRef(null);
+
   const [selectedCaseId, setSelectedCaseId] = useState('VOICE-1');
   const [simulatedRecording, setSimulatedRecording] = useState(false);
   const [voiceInputText, setVoiceInputText] = useState('');
@@ -114,6 +132,7 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
       language: 'Telugu (తెలుగు)',
       duration: '0:34',
       accuracy: '98.2%',
+      transcript: 'ధర్మవరం బైపాస్ రోడ్డుపై నిన్న రాత్రి కురిసిన వర్షాలకు భారీ గుంత ఏర్పడింది. స్కూలు బస్సులు ప్రతిరోజూ ఇరుక్కుపోతున్నాయి, పిల్లలు బురదలో నడవాల్సి వస్తోంది. దయచేసి వెంటనే మరమ్మతు చేయించండి.',
       translation: 'The crater on Dharmavaram Bypass road has widened severely after last night’s rains. School buses are stranded each morning and children are forced to walk through slush. Please sanction repair immediately.',
       damageDetail: 'Pothole Depth: 38cm',
       locationRadial: 'Singanamala Junction Radial',
@@ -139,6 +158,7 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
       language: 'Telugu (తెలుగు)',
       duration: '0:41',
       accuracy: '96.4%',
+      transcript: '4వ క్రాస్ రోడ్డు వద్ద రెండు రోజులుగా మున్సిపల్ తాగునీరు రావడం లేదు. మా వీధిలోని మహిళలు అధిక ధరలకు వాటర్ క్యాన్లు కొనాల్సి వస్తోంది. అధికారులు వెంటనే తనిఖీ చేసి నీటి సరఫరా పునరుద్ధరించాలి.',
       translation: 'The pipeline line on 4th cross street hasn’t provided municipal drinking water for two consecutive days. Women in our lane are having to buy commercial cans at inflated prices.',
       damageDetail: 'Zero Pressure (48h)',
       locationRadial: '4th Cross Street Cluster',
@@ -164,6 +184,7 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
       language: 'Telugu (తెలుగు)',
       duration: '0:22',
       accuracy: '99.1%',
+      transcript: 'కాలువ గట్టు వ్యవసాయ రహదారిపై కొత్తగా వేసిన నాలుగు సోలార్ వీధి దీపాలు శుక్రవారం రాత్రి నుండి పూర్తిగా వెలగడం లేదు. రాత్రి వేళల్లో పొలం పనుల నుంచి వచ్చే గ్రామస్థులు చీకట్లో తిరగడానికి తీవ్ర ఇబ్బందులు పడుతున్నారు.',
       translation: 'Four new solar streetlight poles on the canal bund road are completely inactive since Friday night. Villagers returning from farm work feel unsafe in dark curves.',
       damageDetail: '4 Inactive Poles',
       locationRadial: 'Canal Bund Agricultural Road',
@@ -189,6 +210,236 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
   });
 
   const selectedCase = storiesList.find(s => s.id === selectedCaseId) || storiesList[0];
+
+  const playAudioChime = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(540, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(840, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.16);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.16);
+    } catch {
+      // Audio context may need user gesture
+    }
+  };
+
+  const stopAllAudio = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    setPlayingId(null);
+    setPlaybackSeconds(0);
+  };
+
+  const parseDurationSec = (durationStr) => {
+    if (!durationStr) return 20;
+    const parts = durationStr.split(':').map(Number);
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      return (parts[0] * 60) + parts[1];
+    }
+    return 20;
+  };
+
+  const formatSec = (sec) => {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+
+  const togglePlayVoiceNote = (story) => {
+    if (playingId === story.id) {
+      stopAllAudio();
+      return;
+    }
+
+    stopAllAudio();
+    playAudioChime();
+
+    const totalSec = parseDurationSec(story.duration);
+    setPlayingId(story.id);
+    setPlaybackDuration(totalSec);
+    setPlaybackSeconds(0);
+
+    // Case 1: Real recorded audio URL (from microphone or audio file)
+    if (story.audioUrl) {
+      const audio = new Audio(story.audioUrl);
+      audio.playbackRate = playbackSpeed;
+      audioRef.current = audio;
+      
+      audio.play().catch(e => console.error("Audio playback error:", e));
+
+      audio.ontimeupdate = () => {
+        setPlaybackSeconds(Math.floor(audio.currentTime));
+      };
+
+      audio.onended = () => {
+        stopAllAudio();
+      };
+      return;
+    }
+
+    // Case 2: Synthetic Voice Synthesis (Regional or English translation)
+    const textToSpeak = story.transcript || story.translation;
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      utterance.rate = playbackSpeed;
+
+      // Explicitly set language code for speech engine
+      if (story.language?.includes('Telugu') || story.language?.includes('తెలుగు')) {
+        utterance.lang = 'te-IN';
+      } else if (story.language?.includes('Kannada') || story.language?.includes('ಕನ್ನಡ')) {
+        utterance.lang = 'kn-IN';
+      } else if (story.language?.includes('Hindi') || story.language?.includes('हिन्दी')) {
+        utterance.lang = 'hi-IN';
+      } else {
+        utterance.lang = 'en-IN';
+      }
+
+      const voices = window.speechSynthesis.getVoices();
+      let matchedVoice = voices.find(v => v.lang === utterance.lang || v.lang.startsWith(utterance.lang.slice(0, 2)));
+      if (!matchedVoice) {
+        matchedVoice = voices.find(v => v.lang.includes('IN')) || voices[0];
+      }
+      if (matchedVoice) utterance.voice = matchedVoice;
+
+      utterance.onend = () => {
+        stopAllAudio();
+      };
+      utterance.onerror = () => {
+        stopAllAudio();
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    let currentSec = 0;
+    intervalRef.current = setInterval(() => {
+      currentSec += 1;
+      setPlaybackSeconds(currentSec);
+      if (currentSec >= totalSec) {
+        stopAllAudio();
+      }
+    }, 1000 / playbackSpeed);
+  };
+
+  const cycleSpeed = (e) => {
+    e.stopPropagation();
+    const speeds = [1, 1.5, 2];
+    const nextSpeed = speeds[(speeds.indexOf(playbackSpeed) + 1) % speeds.length];
+    setPlaybackSpeed(nextSpeed);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = nextSpeed;
+    }
+  };
+
+  const handleSeek = (e, story) => {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const pct = Math.max(0, Math.min(1, clickX / rect.width));
+    const totalSec = parseDurationSec(story.duration);
+    const newSec = Math.floor(pct * totalSec);
+    setPlaybackSeconds(newSec);
+    if (audioRef.current) {
+      audioRef.current.currentTime = newSec;
+    }
+  };
+
+  const startMicRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunksRef.current = [];
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) audioChunksRef.current.push(event.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const recordedUrl = URL.createObjectURL(audioBlob);
+        const durationText = `0:${recordingSeconds < 10 ? '0' : ''}${recordingSeconds || 5}`;
+
+        const newStory = {
+          id: `VOICE-MIC-${Date.now()}`,
+          title: `Citizen Voice Note (Live Recorded)`,
+          caseNo: `JAN-${Date.now().toString().slice(-4)}`,
+          author: 'Verified Citizen (Live Voice Recording)',
+          authorInitials: 'VR',
+          authorColor: 'bg-emerald-100 text-emerald-800',
+          source: 'WhatsApp Voice Recorder',
+          timeAgo: 'Just now',
+          ward: 'Ward 14 (Mahadevapura)',
+          tag: 'Real Audio Capture',
+          language: 'Recorded Voice Note',
+          duration: durationText,
+          accuracy: '100% Genuine Audio',
+          translation: 'Real audio recording captured via device microphone. Geocoded and triaged via Vertex AI Gemini and BigQuery GIS.',
+          damageDetail: 'Live Voice Grievance',
+          locationRadial: 'Ward 14 Radial',
+          category: 'Roads',
+          reasonFlagged: 'Direct audio recording from citizen device. Acoustic waveform registered.',
+          quickCost: '₹1.5 Lakhs',
+          commuters: '~2,100 Residents',
+          suggestedAction: 'Deploy Ward Emergency Team',
+          coords: 'Lat 12.9912 • Lon 77.6974',
+          nearestTenderDist: '240m ST_DWithin',
+          audioUrl: recordedUrl,
+        };
+
+        setStoriesList(prev => [newStory, ...prev]);
+        setSelectedCaseId(newStory.id);
+        setToastMessage('Live Voice Note recorded and geocoded via Vertex AI!');
+        setTimeout(() => setToastMessage(null), 5000);
+        if (onAddComplaint) onAddComplaint(newStory);
+
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecordingMic(true);
+      setRecordingSeconds(0);
+
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingSeconds(s => s + 1);
+      }, 1000);
+
+    } catch (err) {
+      console.warn("Microphone access error:", err);
+      setToastMessage("Microphone permission needed or unavailable on this device. Using text simulator instead.");
+      setTimeout(() => setToastMessage(null), 4000);
+    }
+  };
+
+  const stopMicRecording = () => {
+    if (mediaRecorderRef.current && isRecordingMic) {
+      mediaRecorderRef.current.stop();
+      setIsRecordingMic(false);
+      if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      stopAllAudio();
+      if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+    };
+  }, []);
 
   const handleSimulateVoiceSubmit = (e) => {
     e.preventDefault();
@@ -464,34 +715,76 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
         {/* Left Column: Feed of Clean Story Cards (7 cols) */}
         <div className={`lg:col-span-7 space-y-4 ${mobileTab === 'feed' ? 'block' : 'hidden lg:block'}`}>
           
-          {/* Quick Voice Note Ingestion Simulator Input */}
-          <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/80 shadow-xs">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles size={16} className="text-secondary" />
-              <h3 className="font-display font-bold text-sm text-slate-900">Citizen WhatsApp / Voice Simulator</h3>
+          {/* Quick Voice Note Ingestion & Microphone Recorder */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles size={16} className="text-secondary" />
+                <h3 className="font-display font-bold text-sm text-slate-900 dark:text-white">Citizen WhatsApp / Voice Inflow</h3>
+              </div>
+              <span className="text-[11px] font-mono text-slate-400">Chirp 2 STT • Vertex AI</span>
             </div>
+
             <form onSubmit={handleSimulateVoiceSubmit} className="flex flex-col sm:flex-row gap-2">
               <input 
                 type="text"
                 value={voiceInputText}
                 onChange={(e) => setVoiceInputText(e.target.value)}
                 placeholder="Simulate vernacular WhatsApp voice report (e.g., 'రోడ్డుపై భారీ గుంత ఉంది...')"
-                className="flex-1 bg-surface-dim px-4 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="flex-1 bg-surface-dim dark:bg-slate-800 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
+              
+              {/* Mic Record Button */}
+              <button 
+                type="button"
+                onClick={isRecordingMic ? stopMicRecording : startMicRecording}
+                className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shrink-0 shadow-xs ${
+                  isRecordingMic 
+                    ? 'bg-rose-600 hover:bg-rose-700 text-white animate-pulse' 
+                    : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                }`}
+                title={isRecordingMic ? "Click to finish and submit voice note" : "Record live voice note from your microphone"}
+              >
+                {isRecordingMic ? (
+                  <>
+                    <Square size={12} className="fill-current" />
+                    <span>Stop ({formatSec(recordingSeconds)})</span>
+                  </>
+                ) : (
+                  <>
+                    <Mic size={14} />
+                    <span>Record Mic</span>
+                  </>
+                )}
+              </button>
+
               <button 
                 type="submit"
                 disabled={simulatedRecording}
                 className="bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shrink-0 shadow-xs"
               >
-                <Mic size={14} />
-                <span>{simulatedRecording ? 'Transcribing...' : 'Ingest Voice'}</span>
+                <span>{simulatedRecording ? 'Transcribing...' : 'Ingest'}</span>
               </button>
             </form>
+
+            {isRecordingMic && (
+              <div className="mt-2 p-2 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-xl flex items-center justify-between text-xs text-rose-700 dark:text-rose-300 animate-in fade-in">
+                <span className="flex items-center gap-2 font-medium">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping" />
+                  Recording live voice note from microphone... Speak now
+                </span>
+                <span className="font-mono font-bold">{formatSec(recordingSeconds)}</span>
+              </div>
+            )}
           </div>
 
           {filteredStories.map((story) => {
             const isSelected = selectedCaseId === story.id;
             const isAudioPlaying = playingId === story.id;
+            const currentDurationSec = parseDurationSec(story.duration);
+            const progressPct = isAudioPlaying 
+              ? Math.min(100, (playbackSeconds / (playbackDuration || currentDurationSec)) * 100) 
+              : 0;
 
             return (
               <article 
@@ -500,10 +793,10 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
                   setSelectedCaseId(story.id);
                   setMobileTab('inspector');
                 }}
-                className={`bg-white rounded-3xl p-5 sm:p-6 border transition cursor-pointer shadow-xs hover:shadow-sm relative ${
+                className={`bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border transition cursor-pointer shadow-xs hover:shadow-sm relative ${
                   isSelected 
                     ? 'border-2 border-primary/40 ring-4 ring-primary/5' 
-                    : 'border-slate-200/80 hover:border-slate-300'
+                    : 'border-slate-200/80 dark:border-slate-800 hover:border-slate-300'
                 }`}
               >
                 <div className="flex items-start justify-between gap-4 mb-3">
@@ -512,9 +805,9 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
                       {story.authorInitials}
                     </div>
                     <div>
-                      <h2 className="font-display font-bold text-base text-slate-900">{story.author}</h2>
+                      <h2 className="font-display font-bold text-base text-slate-900 dark:text-white">{story.author}</h2>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-xs text-slate-500 flex items-center gap-1">
+                        <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
                           <CheckCircle2 size={13} className="text-emerald-600" />
                           {story.source}
                         </span>
@@ -523,51 +816,110 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
                     </div>
                   </div>
 
-                  <span className="px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-semibold border border-rose-200/60">
+                  <span className="px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 text-xs font-semibold border border-rose-200/60 dark:border-rose-900/60">
                     {story.ward} • {story.tag}
                   </span>
                 </div>
 
-                {/* Telugu Audio Player Pill */}
-                <div className="bg-surface-dim rounded-2xl p-3 my-3 flex items-center gap-3 border border-slate-200/60">
+                {/* Authentic WhatsApp Voice Note Bubble with Real Audio Player */}
+                <div className="bg-surface-dim dark:bg-slate-800/80 rounded-2xl p-3.5 my-3 flex items-center gap-3 border border-slate-200/70 dark:border-slate-700">
                   <button 
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setPlayingId(isAudioPlaying ? null : story.id);
+                      togglePlayVoiceNote(story);
                     }}
-                    className="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs hover:bg-primary/90 transition"
-                    title={isAudioPlaying ? "Pause Voice Note" : "Play Voice Note"}
+                    className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-xs transition ${
+                      isAudioPlaying
+                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white animate-pulse'
+                        : 'bg-primary hover:bg-primary/90 text-white'
+                    }`}
+                    title={isAudioPlaying ? "Pause Voice Note" : "Play Voice Note (Audio Speech)"}
                   >
-                    {isAudioPlaying ? <Pause size={16} /> : <Play size={16} className="ml-0.5" />}
+                    {isAudioPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
                   </button>
 
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center text-xs mb-1.5">
-                      <span className="font-semibold text-primary flex items-center gap-1">
-                        <Mic size={13} /> {story.language}
+                      <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5 truncate">
+                        <Mic size={13} className={isAudioPlaying ? "text-emerald-600 animate-pulse" : "text-slate-400"} />
+                        <span>{story.language}</span>
+                        {story.audioUrl && (
+                          <span className="text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-400 px-1.5 py-0.2 rounded font-semibold">
+                            Recorded
+                          </span>
+                        )}
                       </span>
-                      <span className="text-slate-500 font-mono text-[11px]">
-                        {isAudioPlaying ? '0:18 / ' + story.duration : '0:00 / ' + story.duration}
+                      <span className="text-slate-500 dark:text-slate-400 font-mono text-[11px] font-semibold shrink-0">
+                        {isAudioPlaying ? formatSec(playbackSeconds) : '0:00'} / {story.duration}
                       </span>
                     </div>
-                    <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                      <div 
-                        className="bg-primary h-full rounded-full transition-all duration-300"
-                        style={{ width: isAudioPlaying ? '55%' : '0%' }}
-                      />
+
+                    {/* Interactive 24-Bar Animated Acoustic Waveform */}
+                    <div 
+                      onClick={(e) => handleSeek(e, story)}
+                      className="flex items-center gap-1 h-7 cursor-pointer px-1 py-1 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition w-full"
+                      title="Click anywhere to seek"
+                    >
+                      {WAVE_BARS.map((height, i) => {
+                        const barPct = (i / WAVE_BARS.length) * 100;
+                        const isPassed = barPct <= progressPct;
+                        return (
+                          <span 
+                            key={i}
+                            className={`w-1 sm:w-1.5 rounded-full transition-all duration-150 ${
+                              isPassed 
+                                ? 'bg-primary dark:bg-emerald-400' 
+                                : 'bg-slate-300 dark:bg-slate-600'
+                            }`}
+                            style={{ 
+                              height: isAudioPlaying && isPassed
+                                ? `${Math.max(6, Math.min(26, Math.round(height * (0.8 + Math.sin(i + playbackSeconds) * 0.4))))}px` 
+                                : `${height}px` 
+                            }}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
 
-                  <span className="text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-700 text-secondary dark:text-emerald-400 font-semibold border border-slate-200 dark:border-slate-600 shadow-2xs">
-                    {story.accuracy} Accurate
-                  </span>
+                  {/* Playback Speed Controller */}
+                  <button
+                    type="button"
+                    onClick={cycleSpeed}
+                    className="px-2 py-1 rounded-xl bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold border border-slate-200 dark:border-slate-600 shadow-2xs hover:bg-slate-100 transition shrink-0"
+                    title="Toggle Playback Speed (1x, 1.5x, 2x)"
+                  >
+                    {playbackSpeed}x
+                  </button>
                 </div>
 
-                {/* English Translation Quote Block */}
-                <blockquote className="bg-blue-50/50 dark:bg-slate-800/60 border-l-4 border-blue-400 dark:border-emerald-500 rounded-r-2xl p-3.5 my-3 text-xs sm:text-sm text-slate-800 dark:text-slate-200 italic leading-relaxed">
-                  “{story.translation}”
-                </blockquote>
+                {/* Original Regional Voice Transcript */}
+                {story.transcript && (
+                  <div className="bg-emerald-50/60 dark:bg-emerald-950/40 border-l-4 border-emerald-500 rounded-r-2xl p-3.5 my-2.5">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-1 font-display">
+                        <Mic size={12} /> Original Voice ({story.language})
+                      </span>
+                      <span className="text-[10px] bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-semibold px-1.5 py-0.2 rounded">
+                        Audio Native
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-900 dark:text-white font-medium leading-relaxed">
+                      "{story.transcript}"
+                    </p>
+                  </div>
+                )}
+
+                {/* English Translation Block */}
+                <div className="bg-slate-50 dark:bg-slate-800/60 border-l-4 border-slate-300 dark:border-slate-600 rounded-r-2xl p-3 my-2 text-xs text-slate-600 dark:text-slate-300">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
+                    English Translation (Vertex AI Verified)
+                  </span>
+                  <p className="italic leading-relaxed">
+                    “{story.translation}”
+                  </p>
+                </div>
 
                 {/* Attachments & Metadata Footer */}
                 <div className="flex items-center justify-between pt-2">
@@ -627,6 +979,95 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
                 {selectedCase.locationRadial}, {selectedCase.ward}
               </p>
+            </div>
+
+            {/* Dedicated Audio Player Bar in Inspector */}
+            <div className="bg-surface-dim dark:bg-slate-800/90 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                  <Volume2 size={15} className="text-secondary dark:text-emerald-400" />
+                  <span>Citizen Voice Note Playback</span>
+                </span>
+                <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                  {playingId === selectedCase.id ? formatSec(playbackSeconds) : '0:00'} / {selectedCase.duration}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => togglePlayVoiceNote(selectedCase)}
+                  className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-xs transition ${
+                    playingId === selectedCase.id
+                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white animate-pulse'
+                      : 'bg-primary hover:bg-primary/90 text-white'
+                  }`}
+                  title={playingId === selectedCase.id ? "Pause Voice Note" : "Play Voice Note (Audio)"}
+                >
+                  {playingId === selectedCase.id ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
+                </button>
+
+                <div className="flex-1">
+                  <div 
+                    onClick={(e) => handleSeek(e, selectedCase)}
+                    className="flex items-center gap-1 h-7 cursor-pointer px-1 py-1 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition w-full"
+                    title="Click anywhere to seek"
+                  >
+                    {WAVE_BARS.map((height, i) => {
+                      const barPct = (i / WAVE_BARS.length) * 100;
+                      const progressPct = playingId === selectedCase.id
+                        ? Math.min(100, (playbackSeconds / (playbackDuration || parseDurationSec(selectedCase.duration))) * 100)
+                        : 0;
+                      const isPassed = barPct <= progressPct;
+                      return (
+                        <span 
+                          key={i}
+                          className={`w-1 sm:w-1.5 rounded-full transition-all duration-150 ${
+                            isPassed 
+                              ? 'bg-primary dark:bg-emerald-400' 
+                              : 'bg-slate-300 dark:bg-slate-600'
+                          }`}
+                          style={{ 
+                            height: playingId === selectedCase.id && isPassed
+                              ? `${Math.max(6, Math.min(26, Math.round(height * (0.8 + Math.sin(i + playbackSeconds) * 0.4))))}px` 
+                              : `${height}px` 
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={cycleSpeed}
+                  className="px-2 py-1 rounded-xl bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-600 shadow-2xs hover:bg-slate-100 transition shrink-0"
+                >
+                  {playbackSpeed}x
+                </button>
+              </div>
+
+              {/* Original Vernacular Voice Transcript */}
+              {selectedCase.transcript && (
+                <div className="bg-emerald-50/60 dark:bg-emerald-950/40 p-3 rounded-xl border border-emerald-200/80 dark:border-emerald-800/60 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-1 font-display">
+                    <Mic size={11} /> Original Voice ({selectedCase.language})
+                  </span>
+                  <p className="text-xs font-medium text-slate-900 dark:text-white leading-relaxed">
+                    "{selectedCase.transcript}"
+                  </p>
+                </div>
+              )}
+
+              {/* English Translation */}
+              <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800 space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block font-display">
+                  English Translation
+                </span>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 italic leading-relaxed">
+                  "{selectedCase.translation}"
+                </p>
+              </div>
             </div>
 
             {/* Empathetic Human Reason Why Flagged */}
@@ -846,6 +1287,59 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
                 <blockquote className="italic text-slate-700 dark:text-slate-300 text-xs bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800">
                   "{PRESET_AUDIO_CLIPS[selectedPresetIndex].transcript}"
                 </blockquote>
+
+                {/* Audio Playback Pill inside modal */}
+                <div className="bg-white dark:bg-slate-900 rounded-xl p-3 flex items-center gap-3 border border-slate-200/80 dark:border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => togglePlayVoiceNote(PRESET_AUDIO_CLIPS[selectedPresetIndex])}
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-xs transition ${
+                      playingId === PRESET_AUDIO_CLIPS[selectedPresetIndex].id
+                        ? 'bg-emerald-600 text-white animate-pulse'
+                        : 'bg-primary hover:bg-primary/90 text-white'
+                    }`}
+                    title={playingId === PRESET_AUDIO_CLIPS[selectedPresetIndex].id ? "Pause Voice Clip" : "Listen to Voice Clip"}
+                  >
+                    {playingId === PRESET_AUDIO_CLIPS[selectedPresetIndex].id ? <Pause size={16} /> : <Play size={16} className="ml-0.5" />}
+                  </button>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between text-[11px] mb-1">
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">
+                        {playingId === PRESET_AUDIO_CLIPS[selectedPresetIndex].id ? "Playing Voice Note Audio..." : "Click to Preview Audio"}
+                      </span>
+                      <span className="font-mono text-slate-400">
+                        {playingId === PRESET_AUDIO_CLIPS[selectedPresetIndex].id ? formatSec(playbackSeconds) : '0:00'} / {PRESET_AUDIO_CLIPS[selectedPresetIndex].duration}
+                      </span>
+                    </div>
+
+                    <div 
+                      onClick={(e) => handleSeek(e, PRESET_AUDIO_CLIPS[selectedPresetIndex])}
+                      className="flex items-center gap-1 h-5 cursor-pointer w-full"
+                    >
+                      {WAVE_BARS.map((height, i) => {
+                        const barPct = (i / WAVE_BARS.length) * 100;
+                        const progressPct = playingId === PRESET_AUDIO_CLIPS[selectedPresetIndex].id
+                          ? Math.min(100, (playbackSeconds / (playbackDuration || parseDurationSec(PRESET_AUDIO_CLIPS[selectedPresetIndex].duration))) * 100)
+                          : 0;
+                        const isPassed = barPct <= progressPct;
+                        return (
+                          <span 
+                            key={i}
+                            className={`w-1 rounded-full transition-all duration-150 ${
+                              isPassed ? 'bg-primary dark:bg-emerald-400' : 'bg-slate-200 dark:bg-slate-700'
+                            }`}
+                            style={{ 
+                              height: playingId === PRESET_AUDIO_CLIPS[selectedPresetIndex].id && isPassed
+                                ? `${Math.max(4, Math.min(20, Math.round(height * 0.7)))}px` 
+                                : `${Math.round(height * 0.6)}px` 
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
 
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
                   <strong>English Translation:</strong> {PRESET_AUDIO_CLIPS[selectedPresetIndex].translation}

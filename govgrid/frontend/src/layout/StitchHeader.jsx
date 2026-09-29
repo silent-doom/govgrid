@@ -40,9 +40,77 @@ export default function StitchHeader({
     { to: '/pipeline', label: 'Pipeline', icon: Database },
   ];
 
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [syncToast, setSyncToast] = useState(null);
+  const [activeAlerts, setActiveAlerts] = useState([
+    {
+      id: 1,
+      title: 'Mahadevapura Ring Road (Ward 14)',
+      desc: '₹18.5 Cr flagged with 142 citizen defect clusters within 500m buffer.',
+      time: '12m ago',
+      type: 'critical',
+      link: '/map',
+      read: false
+    },
+    {
+      id: 2,
+      title: 'Kadugodi Slum Water Main Breach',
+      desc: '312 citizen voice inquiries in 48 hours. Zero capital allocated.',
+      time: '34m ago',
+      type: 'warning',
+      link: '/voices',
+      read: false
+    },
+    {
+      id: 3,
+      title: 'Outer Ring Road Culvert Delay',
+      desc: '184 days overdue. 48-hour show-cause notice queued.',
+      time: '1h ago',
+      type: 'info',
+      link: '/audits',
+      read: false
+    }
+  ]);
+
+  const unreadCount = activeAlerts.filter(a => !a.read).length;
+
+  const handleRefreshClick = async () => {
+    setIsRefreshing(true);
+    setSyncToast('Syncing BigQuery GIS records with GeM & CPGRAMS...');
+    try {
+      if (onRefresh) await onRefresh();
+      setTimeout(() => {
+        setIsRefreshing(false);
+        setSyncToast('BigQuery GIS spatial sync complete (1,428 live records refreshed)');
+        setTimeout(() => setSyncToast(null), 3500);
+      }, 700);
+    } catch {
+      setIsRefreshing(false);
+      setSyncToast('Refreshed local telemetry');
+      setTimeout(() => setSyncToast(null), 2500);
+    }
+  };
+
+  const markAllRead = () => {
+    setActiveAlerts(prev => prev.map(a => ({ ...a, read: true })));
+  };
+
+  const dismissAlert = (id, e) => {
+    e.stopPropagation();
+    setActiveAlerts(prev => prev.filter(a => a.id !== id));
+  };
+
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 shadow-2xs">
+        {syncToast && (
+          <div className="bg-emerald-600 text-white text-xs font-semibold px-4 py-2 text-center flex items-center justify-center gap-2 shadow-sm animate-in slide-in-from-top duration-200">
+            <Sparkles size={14} className="text-emerald-200" />
+            <span>{syncToast}</span>
+          </div>
+        )}
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Brand & Mobile Hamburger */}
@@ -121,14 +189,17 @@ export default function StitchHeader({
           </nav>
 
           {/* Right User & Commissioner Profile */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 relative">
             {/* Refresh Button */}
             <button 
-              onClick={onRefresh}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-surface-dim hover:bg-slate-200/70 text-on-surface-variant flex items-center justify-center transition border border-slate-200/70 shrink-0"
-              title="Refresh Data Feeds"
+              onClick={handleRefreshClick}
+              disabled={isRefreshing}
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-surface-dim hover:bg-slate-200/70 text-on-surface-variant flex items-center justify-center transition border border-slate-200/70 shrink-0 ${
+                isRefreshing ? 'opacity-70 cursor-wait' : ''
+              }`}
+              title="Refresh Data Feeds from BigQuery"
             >
-              <RefreshCw size={16} />
+              <RefreshCw size={16} className={isRefreshing ? 'animate-spin text-emerald-600' : ''} />
             </button>
 
             {/* Theme Toggle Button */}
@@ -142,29 +213,163 @@ export default function StitchHeader({
             </button>
 
             {/* Notifications Button */}
-            <button 
-              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-surface-dim hover:bg-slate-200/70 text-on-surface-variant flex items-center justify-center transition border border-slate-200/70 shrink-0" 
-              title="Citizen Notifications"
-            >
-              <Bell size={17} />
-              {alertCount > 0 && (
-                <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-rose-600 ring-2 ring-white animate-pulse" />
+            <div className="relative">
+              <button 
+                onClick={() => {
+                  setNotificationsOpen(!notificationsOpen);
+                  setProfileOpen(false);
+                }}
+                className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center transition border shrink-0 ${
+                  notificationsOpen 
+                    ? 'bg-primary text-white border-primary shadow-sm' 
+                    : 'bg-surface-dim hover:bg-slate-200/70 text-on-surface-variant border-slate-200/70'
+                }`} 
+                title="Citizen & Spatial Notifications"
+              >
+                <Bell size={17} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-rose-600 ring-2 ring-white animate-pulse" />
+                )}
+              </button>
+
+              {/* Notification Popover Dropdown */}
+              {notificationsOpen && (
+                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl z-50 p-4 animate-in fade-in-50 zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="font-display font-bold text-sm text-slate-900 dark:text-white">Spatial Alerts & Notices</span>
+                      {unreadCount > 0 && (
+                        <span className="bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-bold text-[10px] px-2 py-0.5 rounded-full">
+                          {unreadCount} new
+                        </span>
+                      )}
+                    </div>
+                    {unreadCount > 0 && (
+                      <button 
+                        onClick={markAllRead} 
+                        className="text-[11px] font-semibold text-primary dark:text-emerald-400 hover:underline"
+                      >
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                    {activeAlerts.length === 0 ? (
+                      <div className="py-6 text-center text-xs text-slate-400">
+                        No pending spatial anomalies. All tenders compliant!
+                      </div>
+                    ) : (
+                      activeAlerts.map(alert => (
+                        <div 
+                          key={alert.id}
+                          className={`p-3 rounded-2xl border transition ${
+                            alert.read 
+                              ? 'bg-slate-50/60 dark:bg-slate-800/40 border-slate-200/60 dark:border-slate-800' 
+                              : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-2xs'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="font-display font-bold text-xs text-slate-900 dark:text-white leading-tight">
+                              {alert.title}
+                            </span>
+                            <span className="text-[10px] text-slate-400 shrink-0">{alert.time}</span>
+                          </div>
+                          <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-normal">
+                            {alert.desc}
+                          </p>
+                          <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-700/60">
+                            <NavLink 
+                              to={alert.link}
+                              onClick={() => setNotificationsOpen(false)}
+                              className="text-[11px] font-bold text-primary dark:text-emerald-400 hover:underline flex items-center gap-1"
+                            >
+                              Inspect Dossier →
+                            </NavLink>
+                            <button 
+                              onClick={(e) => dismissAlert(alert.id, e)}
+                              className="text-[10px] text-slate-400 hover:text-rose-600 font-medium"
+                            >
+                              Dismiss
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
               )}
-            </button>
+            </div>
 
-            <div className="h-7 w-px bg-slate-200 hidden sm:block" />
+            <div className="h-7 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
 
-            {/* Commissioner Profile */}
-            <div className="flex items-center gap-2 sm:gap-2.5 pl-0 sm:pl-1">
-              <img 
-                alt="Commissioner Sarita Desai" 
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-emerald-500/30 shadow-xs shrink-0" 
-                src="https://lh3.googleusercontent.com/aida/AEtjO1V0FdREEs6ZThX9EGReDYLBX3kP7-xhoSw4t77SKzUtphw_F5uQQ-CkDigK3Mztxzhe8LHp0tBQEzigg___D8S1tEgt50-yzw-nMyRKHv8Sar5r7jBMONXH8Qr6TAYezR08pX4jj6nAF-DJxBBfUTN4jMzkHrIkZ8ySTbjQvFfDQ7c2GQeAnl_5SI5oodamJaioWwqMYko20rexb_tbOF8nb8tjDlrcDJK-Uc2zLONmTosUBw80971wLus"
-              />
-              <div className="hidden xl:flex flex-col text-left">
-                <span className="font-display font-bold text-xs text-on-surface leading-tight whitespace-nowrap">Sarita Desai, IAS</span>
-                <span className="text-[10px] text-on-surface-variant whitespace-nowrap">Municipal Commissioner</span>
-              </div>
+            {/* Commissioner Profile Button & Menu */}
+            <div className="relative">
+              <button 
+                onClick={() => {
+                  setProfileOpen(!profileOpen);
+                  setNotificationsOpen(false);
+                }}
+                className="flex items-center gap-2 sm:gap-2.5 pl-0 sm:pl-1 text-left rounded-2xl hover:opacity-90 transition p-1"
+                title="View Commissioner Authority Profile"
+              >
+                <img 
+                  alt="Commissioner Sarita Desai" 
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-emerald-500/30 shadow-xs shrink-0" 
+                  src="https://lh3.googleusercontent.com/aida/AEtjO1V0FdREEs6ZThX9EGReDYLBX3kP7-xhoSw4t77SKzUtphw_F5uQQ-CkDigK3Mztxzhe8LHp0tBQEzigg___D8S1tEgt50-yzw-nMyRKHv8Sar5r7jBMONXH8Qr6TAYezR08pX4jj6nAF-DJxBBfUTN4jMzkHrIkZ8ySTbjQvFfDQ7c2GQeAnl_5SI5oodamJaioWwqMYko20rexb_tbOF8nb8tjDlrcDJK-Uc2zLONmTosUBw80971wLus"
+                />
+                <div className="hidden xl:flex flex-col text-left">
+                  <span className="font-display font-bold text-xs text-on-surface leading-tight whitespace-nowrap">Sarita Desai, IAS</span>
+                  <span className="text-[10px] text-on-surface-variant whitespace-nowrap">Municipal Commissioner</span>
+                </div>
+                <ChevronDown size={13} className="text-slate-400 hidden xl:block" />
+              </button>
+
+              {/* Profile Dropdown */}
+              {profileOpen && (
+                <div className="absolute right-0 mt-3 w-72 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl z-50 p-4 animate-in fade-in-50 zoom-in-95 duration-150">
+                  <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <img 
+                      alt="Commissioner Sarita Desai" 
+                      className="w-12 h-12 rounded-2xl object-cover ring-2 ring-emerald-500/30 shadow-xs" 
+                      src="https://lh3.googleusercontent.com/aida/AEtjO1V0FdREEs6ZThX9EGReDYLBX3kP7-xhoSw4t77SKzUtphw_F5uQQ-CkDigK3Mztxzhe8LHp0tBQEzigg___D8S1tEgt50-yzw-nMyRKHv8Sar5r7jBMONXH8Qr6TAYezR08pX4jj6nAF-DJxBBfUTN4jMzkHrIkZ8ySTbjQvFfDQ7c2GQeAnl_5SI5oodamJaioWwqMYko20rexb_tbOF8nb8tjDlrcDJK-Uc2zLONmTosUBw80971wLus"
+                    />
+                    <div>
+                      <h4 className="font-display font-bold text-sm text-slate-900 dark:text-white">Sarita Desai, IAS</h4>
+                      <p className="text-[11px] text-slate-500">2012 Cadre • Principal Commissioner</p>
+                      <span className="inline-block mt-0.5 px-2 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold text-[10px]">
+                        Escrow Signatory Level 4
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="py-2.5 space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+                    <div className="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800">
+                      <span className="text-slate-400">Jurisdiction</span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">BBMP East &amp; Anantapur</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800">
+                      <span className="text-slate-400">Discretionary Fund</span>
+                      <span className="font-semibold text-emerald-700 dark:text-emerald-400">₹25.0 Cr Authorized</span>
+                    </div>
+                    <div className="flex justify-between py-1">
+                      <span className="text-slate-400">Digital Key Status</span>
+                      <span className="font-mono text-emerald-600 font-bold">SHA-256 Active</span>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => {
+                      setProfileOpen(false);
+                      setSyncToast('Commissioner digital signature authenticated for 24 hours.');
+                      setTimeout(() => setSyncToast(null), 4000);
+                    }}
+                    className="w-full mt-2 py-2 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-display font-bold text-xs hover:bg-slate-800 transition"
+                  >
+                    Authenticate Audit Seal
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

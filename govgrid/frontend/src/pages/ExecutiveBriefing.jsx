@@ -13,6 +13,9 @@ import {
   Zap, 
   BrainCircuit, 
   PhoneCall, 
+  PhoneOff,
+  Radio,
+  X,
   Play, 
   Pause, 
   ExternalLink, 
@@ -27,6 +30,8 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
   const [approvedFunds, setApprovedFunds] = useState({});
   const [selectedPin, setSelectedPin] = useState(1);
   const [mobileTab, setMobileTab] = useState('priorities'); // 'priorities' | 'spatial'
+  const [callingHelpline, setCallingHelpline] = useState(false);
+  const [callDuration, setCallDuration] = useState(0);
 
   const handleFreeze = (tenderId, title) => {
     setFrozenTenders(prev => ({ ...prev, [tenderId]: true }));
@@ -601,16 +606,114 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
             </div>
             <button 
               onClick={() => {
-                alert("Initiating secure audio conference with Municipal Disaster Management Desk (Ext 104)...");
+                setCallingHelpline(true);
+                setCallDuration(1);
               }}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-primary dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-600 shadow-2xs border border-slate-200 dark:border-slate-600 transition"
+              className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-primary text-white hover:bg-primary/90 shadow-2xs transition flex items-center gap-1.5"
             >
-              Call Desk
+              <PhoneCall size={13} />
+              <span>Call Desk (104)</span>
             </button>
           </div>
 
         </section>
       </div>
+
+      {/* Interactive Disaster Management Hotline Audio Conference Modal */}
+      {callingHelpline && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl p-6 relative overflow-hidden">
+            {/* Header Glow */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center">
+                  <Radio size={20} className="animate-pulse" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-sm text-slate-900 dark:text-white">Municipal Disaster Desk (Ext 104)</h3>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                    <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Connected • Secure Encrypted Line</span>
+                  </div>
+                </div>
+              </div>
+              <button 
+                onClick={() => setCallingHelpline(false)}
+                className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Call State & Audio Visualizer */}
+            <div className="py-6 text-center">
+              <div className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center mb-3 shadow-inner">
+                <PhoneCall size={28} />
+              </div>
+              <h4 className="font-display font-extrabold text-lg text-slate-900 dark:text-white">
+                Nodal Officer: M. Raghavan
+              </h4>
+              <p className="text-xs text-slate-500 mt-1">Disaster Relief Operations • Bangalore Urban HQ</p>
+
+              {/* Simulated Frequency Waves */}
+              <div className="flex items-center justify-center gap-1.5 h-10 mt-5">
+                {[14, 28, 20, 36, 16, 32, 24, 18, 30, 15].map((h, i) => (
+                  <div 
+                    key={i} 
+                    className="w-1.5 bg-emerald-500 rounded-full animate-pulse"
+                    style={{ height: `${h}px`, animationDelay: `${i * 120}ms` }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Actions to dispatch via desk */}
+            <div className="space-y-2 mb-6">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block font-display">
+                Immediate Directives (One-Touch)
+              </span>
+              <button 
+                onClick={() => {
+                  setActionNotice({
+                    type: 'approved',
+                    title: '10 Water Tankers Dispatched',
+                    message: 'Emergency priority water tanker fleet assigned to Kadugodi slum cluster via Disaster Management Cell.'
+                  });
+                  setCallingHelpline(false);
+                }}
+                className="w-full py-2.5 px-3 rounded-xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-900 dark:text-blue-300 text-xs font-semibold text-left flex items-center justify-between border border-blue-200/60 dark:border-slate-700 transition"
+              >
+                <span>Dispatch 10 Tankers to Ward 22</span>
+                <span className="text-[10px] bg-blue-200 dark:bg-blue-900 px-2 py-0.5 rounded font-bold">SEND</span>
+              </button>
+
+              <button 
+                onClick={() => {
+                  setActionNotice({
+                    type: 'frozen',
+                    title: 'P1 Sinkhole Hazard Cordoned',
+                    message: 'Traffic police & barricade teams deployed along Mahadevapura Ring Road segment.'
+                  });
+                  setCallingHelpline(false);
+                }}
+                className="w-full py-2.5 px-3 rounded-xl bg-rose-50 dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-slate-700 text-rose-900 dark:text-rose-300 text-xs font-semibold text-left flex items-center justify-between border border-rose-200/60 dark:border-slate-700 transition"
+              >
+                <span>Deploy Emergency Barricade to P1</span>
+                <span className="text-[10px] bg-rose-200 dark:bg-rose-900 px-2 py-0.5 rounded font-bold">DISPATCH</span>
+              </button>
+            </div>
+
+            {/* End Call Button */}
+            <button 
+              onClick={() => setCallingHelpline(false)}
+              className="w-full py-3 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-display font-bold text-xs flex items-center justify-center gap-2 shadow-md transition"
+            >
+              <PhoneOff size={16} />
+              <span>Disconnect Audio Conference</span>
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

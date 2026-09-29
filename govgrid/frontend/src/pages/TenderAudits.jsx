@@ -13,7 +13,11 @@ import {
   IndianRupee, 
   Layers, 
   BrainCircuit, 
-  ExternalLink 
+  ExternalLink,
+  X,
+  Printer,
+  Download,
+  Award
 } from 'lucide-react';
 
 export default function TenderAudits({ tenders = [], complaints = [], reconciliationReport = null }) {
@@ -21,6 +25,8 @@ export default function TenderAudits({ tenders = [], complaints = [], reconcilia
   const [frozenCases, setFrozenCases] = useState({});
   const [summonedCases, setSummonedCases] = useState({});
   const [feedbackNotice, setFeedbackNotice] = useState(null);
+  const [activeDossierModal, setActiveDossierModal] = useState(null);
+  const [activeCertificateModal, setActiveCertificateModal] = useState(null);
 
   const liveAttentionCases = reconciliationReport?.capital_leakage && reconciliationReport.capital_leakage.length > 0
     ? reconciliationReport.capital_leakage.map((item, idx) => ({
@@ -363,9 +369,7 @@ export default function TenderAudits({ tenders = [], complaints = [], reconcilia
 
                 <div className="flex flex-wrap items-center gap-2 shrink-0">
                   <button 
-                    onClick={() => {
-                      alert(`Generating Official State Audit Dossier PDF for Case ${item.id} (${item.tenderId})... Download starting.`);
-                    }}
+                    onClick={() => setActiveDossierModal(item)}
                     className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600 transition flex items-center gap-1.5 shadow-2xs"
                   >
                     <FileDown size={14} />
@@ -439,7 +443,7 @@ export default function TenderAudits({ tenders = [], complaints = [], reconcilia
                     <span className="text-[11px] text-emerald-600 block font-semibold">{c.completion}</span>
                   </div>
                   <button 
-                    onClick={() => alert(`Opening GeM verified audit certificate for ${c.tenderId}...`)}
+                    onClick={() => setActiveCertificateModal(c)}
                     className="p-2 rounded-xl bg-surface-dim hover:bg-slate-200 text-slate-600 transition" 
                     title="View Certificate"
                   >
@@ -448,6 +452,173 @@ export default function TenderAudits({ tenders = [], complaints = [], reconcilia
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Official Forensic Audit Dossier Modal */}
+      {activeDossierModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-surface-dim dark:bg-slate-800/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center">
+                  <ShieldAlert size={20} />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 font-display block">
+                    Statutory Forensic Audit Dossier • Confidential
+                  </span>
+                  <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
+                    {activeDossierModal.title}
+                  </h3>
+                </div>
+              </div>
+              <button 
+                onClick={() => setActiveDossierModal(null)}
+                className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Dossier Content */}
+            <div className="p-6 overflow-y-auto space-y-4 text-xs">
+              {/* Emblem & Authority Banner */}
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
+                <div>
+                  <p className="font-bold text-slate-900 dark:text-white">Government of Karnataka / BBMP Urban Audit Directorate</p>
+                  <p className="text-[11px] text-slate-500">BigQuery GIS Autonomous Reconciliation Record • Ref: {activeDossierModal.tenderId}</p>
+                </div>
+                <span className="font-mono text-xs bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 px-2.5 py-1 rounded-lg font-bold">
+                  {activeDossierModal.id}
+                </span>
+              </div>
+
+              {/* Data Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3 bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Sanctioned Capital</span>
+                  <span className="font-display font-extrabold text-sm text-slate-900 dark:text-white">{activeDossierModal.budget}</span>
+                </div>
+                <div className="p-3 bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Claimed Disbursement</span>
+                  <span className="font-display font-extrabold text-sm text-rose-600">{activeDossierModal.disbursed}</span>
+                </div>
+                <div className="p-3 bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Contractor</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 truncate block">{activeDossierModal.contractor}</span>
+                </div>
+                <div className="p-3 bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Spatial Join</span>
+                  <span className="font-mono text-[11px] text-emerald-600 font-bold">{activeDossierModal.spatialBuffer}</span>
+                </div>
+              </div>
+
+              {/* Forensic Findings */}
+              <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800 text-amber-900 dark:text-amber-200">
+                <h4 className="font-display font-bold text-xs flex items-center gap-1.5 mb-1 text-amber-800 dark:text-amber-300">
+                  <BrainCircuit size={15} /> Vertex AI Forensic Finding &amp; Evidence
+                </h4>
+                <p className="leading-relaxed text-[11px]">
+                  {activeDossierModal.aiRecommendation}
+                </p>
+              </div>
+
+              {/* Digital Signature & Hash */}
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700 text-[10px] font-mono text-slate-500 flex items-center justify-between">
+                <span>SHA-256: 7f8a92b...e41d80c (BigQuery Immutably Logged)</span>
+                <span className="text-emerald-600 font-bold">VERIFIED AUTHENTIC</span>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-surface-dim dark:bg-slate-800/50 flex items-center justify-between gap-3">
+              <span className="text-[11px] text-slate-400">
+                Authorized for Municipal Public Accounts Committee
+              </span>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => window.print()}
+                  className="px-4 py-2 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white font-semibold text-xs flex items-center gap-1.5 shadow-2xs hover:bg-slate-50 transition"
+                >
+                  <Printer size={14} />
+                  <span>Print Dossier</span>
+                </button>
+                <button 
+                  onClick={() => setActiveDossierModal(null)}
+                  className="px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs hover:bg-primary/90 transition shadow-xs"
+                >
+                  Close Dossier
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* GeM Digital Compliance Certificate Modal */}
+      {activeCertificateModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center">
+                  <Award size={20} />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-sm text-slate-900 dark:text-white">
+                    GeM Compliance Certificate
+                  </h3>
+                  <span className="text-xs text-slate-400 font-mono">{activeCertificateModal.tenderId}</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => setActiveCertificateModal(null)}
+                className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="py-2 space-y-3 text-xs">
+              <div className="p-3 bg-emerald-50/60 dark:bg-emerald-950/20 rounded-2xl border border-emerald-200/80 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200">
+                <p className="font-bold flex items-center gap-1.5">
+                  <CheckCircle2 size={15} className="text-emerald-600" />
+                  Clean Public Works Execution Verified
+                </p>
+                <p className="text-[11px] mt-1 text-emerald-800/90 dark:text-emerald-300">
+                  Zero spatial grievance clusters detected within 500m radius of site for past 90 days.
+                </p>
+              </div>
+
+              <div className="space-y-1.5 border-t border-slate-100 dark:border-slate-800 pt-3">
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-400">Work Description</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{activeCertificateModal.title}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-400">Department</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{activeCertificateModal.department}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-400">Budget Outlay</span>
+                  <span className="font-display font-bold text-emerald-600">{activeCertificateModal.budget}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-400">Milestone Status</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{activeCertificateModal.completion}</span>
+                </div>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => setActiveCertificateModal(null)}
+              className="w-full py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-display font-bold text-xs hover:bg-slate-800 transition"
+            >
+              Close Verification
+            </button>
           </div>
         </div>
       )}

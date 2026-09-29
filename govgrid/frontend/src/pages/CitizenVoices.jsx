@@ -28,6 +28,8 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
   const [simulatedRecording, setSimulatedRecording] = useState(false);
   const [voiceInputText, setVoiceInputText] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
+  const [sanctionedCases, setSanctionedCases] = useState({});
+  const [assignedEngineers, setAssignedEngineers] = useState({});
 
   // Curated Stitch Citizen Stories
   const citizenStories = [
@@ -121,11 +123,13 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
   const selectedCase = citizenStories.find(s => s.id === selectedCaseId) || citizenStories[0];
 
   const handleQuickSanction = (caseItem) => {
+    setSanctionedCases(prev => ({ ...prev, [caseItem.id]: true }));
     setToastMessage(`Sanction Granted! Rapid order issued for ${caseItem.title} (${caseItem.quickCost}). Automated SMS dispatched to citizens.`);
     setTimeout(() => setToastMessage(null), 5000);
   };
 
   const handleAssignEngineer = (caseItem) => {
+    setAssignedEngineers(prev => ({ ...prev, [caseItem.id]: true }));
     setToastMessage(`Engineer Assigned! Ward Executive Officer notified for on-site inspection at ${caseItem.ward}.`);
     setTimeout(() => setToastMessage(null), 5000);
   };
@@ -526,18 +530,46 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
             <div className="space-y-3 pt-2">
               <button 
                 onClick={() => handleQuickSanction(selectedCase)}
-                className="w-full bg-secondary hover:bg-emerald-800 text-white font-display font-bold text-xs py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-xs transition"
+                disabled={sanctionedCases[selectedCase.id]}
+                className={`w-full font-display font-bold text-xs py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-xs transition ${
+                  sanctionedCases[selectedCase.id]
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 cursor-not-allowed'
+                    : 'bg-secondary hover:bg-emerald-800 text-white'
+                }`}
               >
-                <Zap size={16} />
-                <span>Sanction Quick Repair</span>
+                {sanctionedCases[selectedCase.id] ? (
+                  <>
+                    <CheckCircle2 size={16} className="text-emerald-700" />
+                    <span>Sanction Granted (SMS Dispatched)</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap size={16} />
+                    <span>Sanction Quick Repair</span>
+                  </>
+                )}
               </button>
 
               <button 
                 onClick={() => handleAssignEngineer(selectedCase)}
-                className="w-full bg-surface-dim hover:bg-slate-200 text-primary font-display font-bold text-xs py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 border border-slate-200 transition"
+                disabled={assignedEngineers[selectedCase.id]}
+                className={`w-full font-display font-bold text-xs py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 border transition ${
+                  assignedEngineers[selectedCase.id]
+                    ? 'bg-blue-50 text-blue-800 border-blue-200 cursor-not-allowed'
+                    : 'bg-surface-dim hover:bg-slate-200 text-primary border-slate-200'
+                }`}
               >
-                <UserPlus size={16} />
-                <span>Assign Ward Engineer</span>
+                {assignedEngineers[selectedCase.id] ? (
+                  <>
+                    <CheckCircle2 size={16} className="text-blue-700" />
+                    <span>Engineer Assigned (Inspection Queued)</span>
+                  </>
+                ) : (
+                  <>
+                    <UserPlus size={16} />
+                    <span>Assign Ward Engineer</span>
+                  </>
+                )}
               </button>
             </div>
 
@@ -551,6 +583,19 @@ export default function CitizenVoices({ complaints = [], onAddComplaint }) {
         </div>
 
       </div>
+
+      {/* Floating Bottom Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 max-w-md p-4 rounded-2xl bg-slate-900 text-white shadow-2xl border border-slate-800 flex items-start justify-between gap-3 animate-in slide-in-from-bottom duration-200">
+          <div className="flex items-start gap-2.5">
+            <CheckCircle2 size={18} className="text-emerald-400 shrink-0 mt-0.5" />
+            <p className="text-xs font-medium leading-relaxed">{toastMessage}</p>
+          </div>
+          <button onClick={() => setToastMessage(null)} className="text-xs font-bold text-slate-400 hover:text-white shrink-0">
+            ✕
+          </button>
+        </div>
+      )}
 
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../LanguageContext';
 import { 
   ShieldAlert, 
   CheckCircle2, 
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 
 export default function TenderAudits({ tenders = [], complaints = [], reconciliationReport = null }) {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('attention');
   const [frozenCases, setFrozenCases] = useState({});
   const [summonedCases, setSummonedCases] = useState({});
@@ -221,7 +223,7 @@ export default function TenderAudits({ tenders = [], complaints = [], reconcilia
             }`}
           >
             <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse" />
-            <span>Needs Attention</span>
+            <span>{t('tabAttention')}</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
               {attentionCases.length}
             </span>
@@ -237,7 +239,7 @@ export default function TenderAudits({ tenders = [], complaints = [], reconcilia
             }`}
           >
             <span className="w-2 h-2 rounded-full bg-secondary" />
-            <span>Verified Clean</span>
+            <span>{t('tabClean')}</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-medium bg-slate-100 text-slate-600">
               24
             </span>
@@ -373,7 +375,7 @@ export default function TenderAudits({ tenders = [], complaints = [], reconcilia
                     className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600 transition flex items-center gap-1.5 shadow-2xs"
                   >
                     <FileDown size={14} />
-                    <span>Dossier PDF</span>
+                    <span>{t('btnDossierPDF')}</span>
                   </button>
 
                   <button 
@@ -386,7 +388,7 @@ export default function TenderAudits({ tenders = [], complaints = [], reconcilia
                     }`}
                   >
                     <UserCheck size={14} />
-                    <span>{summonedCases[item.id] ? 'Summons Served' : 'Summon Contractor'}</span>
+                    <span>{summonedCases[item.id] ? 'Summons Served' : t('btnSummon')}</span>
                   </button>
 
                   <button 
@@ -399,7 +401,7 @@ export default function TenderAudits({ tenders = [], complaints = [], reconcilia
                     }`}
                   >
                     <Lock size={14} />
-                    <span>{frozenCases[item.id] ? 'Tranche Frozen' : 'Freeze Escrow'}</span>
+                    <span>{frozenCases[item.id] ? 'Tranche Frozen' : t('btnFreezeEscrow')}</span>
                   </button>
                 </div>
               </div>

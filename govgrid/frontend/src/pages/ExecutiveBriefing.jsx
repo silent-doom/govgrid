@@ -22,8 +22,10 @@ import {
   FileCheck,
   AlertCircle
 } from 'lucide-react';
+import { useLanguage } from '../LanguageContext';
 
 export default function ExecutiveBriefing({ districtData, complaints = [], tenders = [], reconciliationReport = null }) {
+  const { t } = useLanguage();
   const [isPlaying, setIsPlaying] = useState(false);
   const [actionNotice, setActionNotice] = useState(null);
   const [frozenTenders, setFrozenTenders] = useState({});
@@ -88,65 +90,71 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-slate-900 tracking-tight">
-                Good morning, Commissioner Desai
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
+                {t('greeting')}
               </h1>
               <span className="text-xl sm:text-2xl" role="img" aria-label="sun">☀️</span>
             </div>
-            <p className="text-slate-600 text-xs sm:text-base mt-1.5 font-normal">
-              <strong className="font-semibold text-rose-700">3 critical spatial items</strong> require your attention today across <strong className="text-slate-900 font-semibold">₹42.8 Cr</strong> in municipal capital.
+            <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-base mt-1.5 font-normal">
+              {t('summaryAttention')}
             </p>
           </div>
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-600 bg-white px-3 sm:px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs self-start md:self-auto">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 px-3 sm:px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs self-start md:self-auto">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Last automated sync: <strong>8:45 AM</strong> (CPGRAMS + GeM)</span>
+            <span>{t('liveSyncNotice')}</span>
           </div>
         </div>
 
         {/* 3 Clean Highlight Metric Pills */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-5 sm:mt-6">
           {/* Metric 1 */}
-          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition flex items-center justify-between">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-700 shadow-xs hover:shadow-sm transition flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-display">Citizen Reports</span>
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-display">
+                {t('metricCitizenReports')}
+              </span>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-xl sm:text-2xl font-display font-extrabold text-slate-900">1,428</span>
-                <span className="text-[11px] sm:text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+                <span className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 dark:text-white">1,428</span>
+                <span className="text-[11px] sm:text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200/60 dark:border-emerald-800">
                   92% Vernacular
                 </span>
               </div>
             </div>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <MessageSquare size={20} className="text-primary" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 flex items-center justify-center">
+              <MessageSquare size={20} className="text-primary dark:text-emerald-400" />
             </div>
           </div>
 
           {/* Metric 2 */}
-          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition flex items-center justify-between">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-700 shadow-xs hover:shadow-sm transition flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-display">Capital Reconciled</span>
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-display">
+                {t('metricReconciled')}
+              </span>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-xl sm:text-2xl font-display font-extrabold text-slate-900">84.2%</span>
-                <span className="text-xs font-medium text-slate-500">₹141.8 / 184.6 Cr</span>
+                <span className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 dark:text-white">84.2%</span>
+                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">₹141.8 / 184.6 Cr</span>
               </div>
             </div>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <CheckCircle2 size={22} className="text-secondary" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
+              <CheckCircle2 size={22} className="text-secondary dark:text-emerald-400" />
             </div>
           </div>
 
           {/* Metric 3 */}
-          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition flex items-center justify-between">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-700 shadow-xs hover:shadow-sm transition flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-display">Pending Attention</span>
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-display">
+                {t('metricHotspots')}
+              </span>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="text-xl sm:text-2xl font-display font-extrabold text-rose-600">3 Hotspots</span>
-                <span className="text-[11px] sm:text-xs font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/60">
+                <span className="text-[11px] sm:text-xs font-semibold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 px-2 py-0.5 rounded-full border border-rose-200/60 dark:border-rose-800">
                   Immediate
                 </span>
               </div>
             </div>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-rose-50 dark:bg-slate-700 text-rose-600 flex items-center justify-center">
               <AlertTriangle size={22} className="text-rose-600" />
             </div>
           </div>
@@ -244,9 +252,9 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
               <div className="flex items-center gap-2">
                 <NavLink 
                   to="/map" 
-                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition border border-slate-200"
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-700"
                 >
-                  Inspect GIS Evidence
+                  {t('actionInspectGIS')}
                 </NavLink>
                 <button 
                   onClick={() => handleFreeze('GEM-2025-C-84912', 'Mahadevapura Ring Road')}
@@ -258,7 +266,7 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
                   }`}
                 >
                   <Lock size={13} />
-                  {frozenTenders['GEM-2025-C-84912'] ? 'Escrow Frozen' : 'Review & Freeze Payment'}
+                  {frozenTenders['GEM-2025-C-84912'] ? t('actionFrozen') : t('actionFreeze')}
                 </button>
               </div>
             </div>
@@ -312,21 +320,21 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
               <div className="flex items-center gap-2">
                 <NavLink 
                   to="/voices"
-                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition border border-slate-200"
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-700"
                 >
-                  Dispatch Tankers
+                  {t('actionDispatchTankers')}
                 </NavLink>
                 <button 
                   onClick={() => handleApproveFund('DEF-2025-09', '3.2 Cr', 'Kadugodi Water Main')}
                   disabled={approvedFunds['DEF-2025-09']}
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs ${
                     approvedFunds['DEF-2025-09'] 
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-not-allowed' 
+                      ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 cursor-not-allowed' 
                       : 'bg-primary hover:bg-primary/90 text-white'
                   }`}
                 >
                   <CheckCircle2 size={13} />
-                  {approvedFunds['DEF-2025-09'] ? 'Sanctioned ₹3.2 Cr' : 'Approve ₹3.2 Cr Emergency Fund'}
+                  {approvedFunds['DEF-2025-09'] ? t('actionFundApproved') : t('actionApproveFund')}
                 </button>
               </div>
             </div>
@@ -612,7 +620,7 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
               className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-primary text-white hover:bg-primary/90 shadow-2xs transition flex items-center gap-1.5"
             >
               <PhoneCall size={13} />
-              <span>Call Desk (104)</span>
+              <span>{t('actionCallDesk')}</span>
             </button>
           </div>
 

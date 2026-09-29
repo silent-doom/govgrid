@@ -1,39 +1,19 @@
-version: "3.9"
+version: '3.8'
 
 services:
-  backend:
+  govgrid:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: govgrid-app
     ports:
-      - "8000:8080"
-    env_file:
-      - .env
-    volumes:
-      - ./backend:/app
-      - ./data:/data
-      # Mount service account key if using file-based auth
-      - ./service-account-key.json:/app/service-account-key.json:ro
+      - "8080:8080"
     environment:
       - PORT=8080
-    restart: unless-stopped
-
-  dashboard:
-    image: python:3.11-slim
-    working_dir: /app
-    command: >
-      sh -c "pip install -r /requirements.txt -q &&
-             streamlit run app.py --server.port=8501 --server.address=0.0.0.0"
-    ports:
-      - "8501:8501"
-    env_file:
-      - .env
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID:-eventflow-e3c91}
+      - BIGQUERY_DATASET=${BIGQUERY_DATASET:-govgrid_dpi}
+      - GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-govgrid-audio-bucket}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/gcp-sa.json
     volumes:
-      - ./dashboard:/app
-      - ./requirements.txt:/requirements.txt
-      - ./service-account-key.json:/app/service-account-key.json:ro
-    environment:
-      - BACKEND_URL=http://backend:8080
-    depends_on:
-      - backend
+      - ~/.config/gcloud:/root/.config/gcloud:ro
     restart: unless-stopped

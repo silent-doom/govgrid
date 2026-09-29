@@ -52,9 +52,11 @@ async def health_check():
     return {"status": "healthy", "version": "1.0.0"}
 
 
-# ── Startup ───────────────────────────────────────────────────────────────────
-@app.on_event("startup")
-async def startup_event():
-    logger.info(f"GovGrid backend starting — project: {settings.gcp_project_id}")
-    logger.info(f"BigQuery dataset: {settings.bigquery_dataset}")
-    logger.info(f"GCS bucket: {settings.gcs_bucket_name}")
+import os
+from fastapi.staticfiles import StaticFiles
+
+# If frontend build exists (e.g. Docker / Cloud Run production deployment), serve static files
+dist_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "dist"))
+if os.path.exists(dist_dir):
+    logger.info(f"Mounting static frontend assets from: {dist_dir}")
+    app.mount("/", StaticFiles(directory=dist_dir, html=True), name="static")

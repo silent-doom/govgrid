@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTheme } from '../ThemeContext';
+import { useLanguage } from '../LanguageContext';
 import { 
   Building2, 
   MapPin, 
@@ -17,7 +18,13 @@ import {
   X,
   Sparkles,
   Sun,
-  Moon
+  Moon,
+  Languages,
+  Trophy,
+  CheckCircle2,
+  Cpu,
+  Layers,
+  ArrowRight
 } from 'lucide-react';
 
 export default function StitchHeader({ 
@@ -30,14 +37,16 @@ export default function StitchHeader({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { theme, toggleTheme, isDark } = useTheme();
+  const { language, setLanguage, t, supportedLanguages } = useLanguage();
+  const [judgingGuideOpen, setJudgingGuideOpen] = useState(false);
 
   const navItems = [
-    { to: '/', label: 'Executive Brief', icon: FileText, exact: true },
-    { to: '/voices', label: 'Citizen Voices', icon: Mic },
-    { to: '/audits', label: 'Tender Audits', icon: ShieldCheck },
-    { to: '/map', label: 'Ward Map', icon: MapIcon },
-    { to: '/analytics', label: 'Analytics', icon: BarChart3 },
-    { to: '/pipeline', label: 'Pipeline', icon: Database },
+    { to: '/', label: t('navExecutive'), icon: FileText, exact: true },
+    { to: '/voices', label: t('navVoices'), icon: Mic },
+    { to: '/audits', label: t('navAudits'), icon: ShieldCheck },
+    { to: '/map', label: t('navMap'), icon: MapIcon },
+    { to: '/analytics', label: t('navAnalytics'), icon: BarChart3 },
+    { to: '/pipeline', label: t('navPipeline'), icon: Database },
   ];
 
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -190,6 +199,32 @@ export default function StitchHeader({
 
           {/* Right User & Commissioner Profile */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 relative">
+            {/* Hackathon Judging Guide Pill */}
+            <button
+              onClick={() => setJudgingGuideOpen(true)}
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300/80 dark:border-amber-700/80 text-xs font-bold shadow-2xs hover:bg-amber-100 dark:hover:bg-amber-900/60 transition"
+              title="Hack2Skill Hackathon Judging Guide & System Architecture"
+            >
+              <Trophy size={14} className="text-amber-600" />
+              <span>{t('judgingGuideBtn')}</span>
+            </button>
+
+            {/* Vernacular Language Selector Dropdown */}
+            <div className="relative">
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="appearance-none bg-surface-dim hover:bg-slate-200/70 text-on-surface text-xs font-semibold pl-7 pr-6 py-2 rounded-2xl border border-slate-200/70 cursor-pointer transition shadow-2xs"
+                title="Select Vernacular Language"
+              >
+                {supportedLanguages.map(l => (
+                  <option key={l.code} value={l.code}>{l.label}</option>
+                ))}
+              </select>
+              <Languages size={13} className="text-on-surface-variant absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown size={11} className="text-on-surface-variant absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+
             {/* Refresh Button */}
             <button 
               onClick={handleRefreshClick}
@@ -489,6 +524,102 @@ export default function StitchHeader({
           <span className="text-[10px]">More</span>
         </button>
       </nav>
+
+      {/* Hack2Skill Hackathon Judging Guide Modal */}
+      {judgingGuideOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-amber-50/50 dark:bg-amber-950/20">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 flex items-center justify-center">
+                  <Trophy size={20} />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 font-display block">
+                    Build with AI: Code for Communities 2.0 • Track 1
+                  </span>
+                  <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
+                    GovGrid: AI-Powered DPI Public Budget Reconciliation
+                  </h3>
+                </div>
+              </div>
+              <button 
+                onClick={() => setJudgingGuideOpen(false)}
+                className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 overflow-y-auto space-y-4 text-xs">
+              {/* Problem & Solution Fit */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                <h4 className="font-display font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5 mb-1">
+                  <Building2 size={14} className="text-primary" /> The Problem &amp; DPI Solution
+                </h4>
+                <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-[11px]">
+                  India invests over <strong>₹1.4 Lakh Crore</strong> annually in urban local body civil contracts. However, public procurement systems (GeM) operate completely blind to citizen ground reality. GovGrid bridges citizen complaints with contractor disbursements through autonomous BigQuery GIS cross-matching.
+                </p>
+              </div>
+
+              {/* Google Cloud AI Technologies Matrix */}
+              <div>
+                <span className="font-display font-bold text-[11px] uppercase tracking-wider text-slate-400 block mb-2">
+                  Google Cloud AI Tech Stack
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div className="p-3 rounded-xl bg-blue-50/60 dark:bg-slate-800 border border-blue-200/60 dark:border-slate-700">
+                    <span className="font-bold text-blue-900 dark:text-blue-300 block text-xs">Vertex AI (Gemini 2.5)</span>
+                    <p className="text-[10px] text-slate-600 dark:text-slate-300 mt-1 leading-normal">
+                      Multimodal image damage scoring (1-10) and 50-page procurement PDF long-context extraction.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-emerald-50/60 dark:bg-slate-800 border border-emerald-200/60 dark:border-slate-700">
+                    <span className="font-bold text-emerald-900 dark:text-emerald-300 block text-xs">Cloud Speech-to-Text</span>
+                    <p className="text-[10px] text-slate-600 dark:text-slate-300 mt-1 leading-normal">
+                      Chirp 2 multilingual recognition for Kannada, Telugu, Hindi vernacular voice notes.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-purple-50/60 dark:bg-slate-800 border border-purple-200/60 dark:border-slate-700">
+                    <span className="font-bold text-purple-900 dark:text-purple-300 block text-xs">BigQuery GIS</span>
+                    <p className="text-[10px] text-slate-600 dark:text-slate-300 mt-1 leading-normal">
+                      <code className="text-[10px]">ST_DWithin(500m)</code> spatial joins detecting contractor ghost projects.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rubric Evaluator Walkthrough */}
+              <div className="p-3.5 rounded-2xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/60">
+                <span className="font-display font-bold text-xs text-amber-900 dark:text-amber-200 block mb-1.5">
+                  Recommended Evaluation Walkthrough:
+                </span>
+                <ol className="list-decimal pl-4 space-y-1 text-[11px] text-slate-700 dark:text-slate-300">
+                  <li><strong>Language Switcher</strong>: Switch to ಕನ್ನಡ or తెలుగు to verify rural inclusivity.</li>
+                  <li><strong>Citizen Voices</strong>: Click "Simulate WhatsApp Voice Inflow" to test live Chirp 2 + Gemini reasoning.</li>
+                  <li><strong>Executive Briefing</strong>: Test "Review &amp; Freeze Payment" on P1 and "Call Desk (104)".</li>
+                  <li><strong>Tender Audits</strong>: Open "Dossier PDF" to inspect the printable statutory audit memo.</li>
+                </ol>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-surface-dim dark:bg-slate-800/50 flex items-center justify-between">
+              <span className="text-[11px] text-slate-400">Team: GovGrid • September 2026</span>
+              <button 
+                onClick={() => setJudgingGuideOpen(false)}
+                className="px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs hover:bg-primary/90 transition shadow-xs"
+              >
+                Start Evaluation Tour
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

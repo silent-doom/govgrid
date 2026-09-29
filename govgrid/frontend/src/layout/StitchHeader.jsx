@@ -20,7 +20,8 @@ import {
   Sun,
   Moon,
   Languages,
-  Trophy,
+  Compass,
+  HelpCircle,
   CheckCircle2,
   Cpu,
   Layers,
@@ -38,7 +39,7 @@ export default function StitchHeader({
   const location = useLocation();
   const { theme, toggleTheme, isDark } = useTheme();
   const { language, setLanguage, t, supportedLanguages } = useLanguage();
-  const [judgingGuideOpen, setJudgingGuideOpen] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
 
   const navItems = [
     { to: '/', label: t('navExecutive'), icon: FileText, exact: true },
@@ -199,14 +200,14 @@ export default function StitchHeader({
 
           {/* Right User & Commissioner Profile */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 relative">
-            {/* Hackathon Judging Guide Pill */}
+            {/* Interactive Platform Tour Pill */}
             <button
-              onClick={() => setJudgingGuideOpen(true)}
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300/80 dark:border-amber-700/80 text-xs font-bold shadow-2xs hover:bg-amber-100 dark:hover:bg-amber-900/60 transition"
-              title="Hack2Skill Hackathon Judging Guide & System Architecture"
+              onClick={() => setTourOpen(true)}
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700/80 text-on-surface border border-slate-200/80 dark:border-slate-700/80 text-xs font-semibold shadow-2xs transition"
+              title="How GovGrid Works — Interactive Walkthrough for Users"
             >
-              <Trophy size={14} className="text-amber-600" />
-              <span>{t('judgingGuideBtn')}</span>
+              <Compass size={14} className="text-secondary" />
+              <span>{t('tourBtn')}</span>
             </button>
 
             {/* Vernacular Language Selector Dropdown */}
@@ -525,28 +526,29 @@ export default function StitchHeader({
         </button>
       </nav>
 
-      {/* Hack2Skill Hackathon Judging Guide Modal */}
-      {judgingGuideOpen && (
+      {/* Interactive Platform Tour & Onboarding Walkthrough Modal */}
+      {tourOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
           <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
             {/* Header */}
-            <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-amber-50/50 dark:bg-amber-950/20">
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-primary/5 dark:bg-slate-800/60">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 flex items-center justify-center">
-                  <Trophy size={20} />
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 dark:bg-emerald-950 text-secondary dark:text-emerald-400 flex items-center justify-center">
+                  <Compass size={20} />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 font-display block">
-                    Build with AI: Code for Communities 2.0 • Track 1
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-secondary dark:text-emerald-400 font-display block">
+                    GovGrid User Guide &amp; Platform Tour
                   </span>
                   <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
-                    GovGrid: AI-Powered DPI Public Budget Reconciliation
+                    How GovGrid Reconciles Public Infrastructure Capital
                   </h3>
                 </div>
               </div>
               <button 
-                onClick={() => setJudgingGuideOpen(false)}
+                onClick={() => setTourOpen(false)}
                 className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400"
+                aria-label="Close tour"
               >
                 <X size={18} />
               </button>
@@ -554,67 +556,89 @@ export default function StitchHeader({
 
             {/* Content */}
             <div className="p-6 overflow-y-auto space-y-4 text-xs">
-              {/* Problem & Solution Fit */}
-              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+              {/* Introduction Banner */}
+              <div className="p-3.5 rounded-2xl bg-surface-dim dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
                 <h4 className="font-display font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5 mb-1">
-                  <Building2 size={14} className="text-primary" /> The Problem &amp; DPI Solution
+                  <Building2 size={14} className="text-secondary" /> Institutional Purpose
                 </h4>
                 <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-[11px]">
-                  India invests over <strong>₹1.4 Lakh Crore</strong> annually in urban local body civil contracts. However, public procurement systems (GeM) operate completely blind to citizen ground reality. GovGrid bridges citizen complaints with contractor disbursements through autonomous BigQuery GIS cross-matching.
+                  GovGrid bridges the gap between what citizens experience on the ground and what municipal contractors bill the public treasury. By cross-matching e-procurement contract boundaries with grassroots distress signals in real time, administrators can verify ground reality before public funds are disbursed.
                 </p>
               </div>
 
-              {/* Google Cloud AI Technologies Matrix */}
+              {/* 3-Step Core Workflow */}
               <div>
-                <span className="font-display font-bold text-[11px] uppercase tracking-wider text-slate-400 block mb-2">
-                  Google Cloud AI Tech Stack
+                <span className="font-display font-bold text-[11px] uppercase tracking-wider text-slate-400 block mb-2.5">
+                  The 3-Step Accountability Cycle
                 </span>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                  <div className="p-3 rounded-xl bg-blue-50/60 dark:bg-slate-800 border border-blue-200/60 dark:border-slate-700">
-                    <span className="font-bold text-blue-900 dark:text-blue-300 block text-xs">Vertex AI (Gemini 2.5)</span>
-                    <p className="text-[10px] text-slate-600 dark:text-slate-300 mt-1 leading-normal">
-                      Multimodal image damage scoring (1-10) and 50-page procurement PDF long-context extraction.
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                    <div className="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+                      1
+                    </div>
+                    <span className="font-bold text-slate-900 dark:text-white block text-xs">Citizen Inflow</span>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                      Grassroots complaints from WhatsApp voice notes, CPGRAMS, and townhalls are transcribed in regional languages and geocoded automatically.
                     </p>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-emerald-50/60 dark:bg-slate-800 border border-emerald-200/60 dark:border-slate-700">
-                    <span className="font-bold text-emerald-900 dark:text-emerald-300 block text-xs">Cloud Speech-to-Text</span>
-                    <p className="text-[10px] text-slate-600 dark:text-slate-300 mt-1 leading-normal">
-                      Chirp 2 multilingual recognition for Kannada, Telugu, Hindi vernacular voice notes.
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                    <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+                      2
+                    </div>
+                    <span className="font-bold text-slate-900 dark:text-white block text-xs">Spatial Cross-Match</span>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                      Automated BigQuery GIS queries check if unfulfilled defects exist within 500m of active or claimed completed civil tenders.
                     </p>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-purple-50/60 dark:bg-slate-800 border border-purple-200/60 dark:border-slate-700">
-                    <span className="font-bold text-purple-900 dark:text-purple-300 block text-xs">BigQuery GIS</span>
-                    <p className="text-[10px] text-slate-600 dark:text-slate-300 mt-1 leading-normal">
-                      <code className="text-[10px]">ST_DWithin(500m)</code> spatial joins detecting contractor ghost projects.
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                    <div className="w-6 h-6 rounded-lg bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-400 flex items-center justify-center font-bold text-xs">
+                      3
+                    </div>
+                    <span className="font-bold text-slate-900 dark:text-white block text-xs">Executive Action</span>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                      Commissioners freeze delinquent escrow payments under GFR Rule 175, summon contractors, or fast-track emergency repairs.
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Rubric Evaluator Walkthrough */}
-              <div className="p-3.5 rounded-2xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/60">
-                <span className="font-display font-bold text-xs text-amber-900 dark:text-amber-200 block mb-1.5">
-                  Recommended Evaluation Walkthrough:
+              {/* Interactive Features to Try */}
+              <div className="p-3.5 rounded-2xl bg-primary/5 dark:bg-slate-800/60 border border-primary/15 dark:border-slate-700">
+                <span className="font-display font-bold text-xs text-primary dark:text-emerald-400 block mb-2">
+                  Key Features to Explore in this Demo:
                 </span>
-                <ol className="list-decimal pl-4 space-y-1 text-[11px] text-slate-700 dark:text-slate-300">
-                  <li><strong>Language Switcher</strong>: Switch to ಕನ್ನಡ or తెలుగు to verify rural inclusivity.</li>
-                  <li><strong>Citizen Voices</strong>: Click "Simulate WhatsApp Voice Inflow" to test live Chirp 2 + Gemini reasoning.</li>
-                  <li><strong>Executive Briefing</strong>: Test "Review &amp; Freeze Payment" on P1 and "Call Desk (104)".</li>
-                  <li><strong>Tender Audits</strong>: Open "Dossier PDF" to inspect the printable statutory audit memo.</li>
-                </ol>
+                <ul className="space-y-1.5 text-[11px] text-slate-700 dark:text-slate-300">
+                  <li className="flex items-start gap-2">
+                    <ArrowRight size={13} className="text-secondary shrink-0 mt-0.5" />
+                    <span><strong>Vernacular Language Switching</strong>: Use the language dropdown in the header to switch to Kannada (ಕನ್ನಡ), Telugu (తెలుగు), or Hindi (हिन्दी).</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowRight size={13} className="text-secondary shrink-0 mt-0.5" />
+                    <span><strong>Citizen Voices (<NavLink to="/voices" onClick={() => setTourOpen(false)} className="text-secondary underline font-semibold">/voices</NavLink>)</strong>: Click "Simulate WhatsApp Voice Inflow" to test speech transcription, damage scoring, and GIS registration.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowRight size={13} className="text-secondary shrink-0 mt-0.5" />
+                    <span><strong>Tender Audits (<NavLink to="/audits" onClick={() => setTourOpen(false)} className="text-secondary underline font-semibold">/audits</NavLink>)</strong>: Inspect discrepancy dossiers, freeze escrow payments, and generate official statutory audit memos.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowRight size={13} className="text-secondary shrink-0 mt-0.5" />
+                    <span><strong>Ward Map (<NavLink to="/map" onClick={() => setTourOpen(false)} className="text-secondary underline font-semibold">/map</NavLink>)</strong>: Visualize live GIS spatial buffers and defect clusters across Bengaluru, Anantapur, and Delhi.</span>
+                  </li>
+                </ul>
               </div>
             </div>
 
             {/* Footer */}
             <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-surface-dim dark:bg-slate-800/50 flex items-center justify-between">
-              <span className="text-[11px] text-slate-400">Team: GovGrid • September 2026</span>
+              <span className="text-[11px] text-slate-500 dark:text-slate-400">Institutional Governance Portal • GovGrid DPI</span>
               <button 
-                onClick={() => setJudgingGuideOpen(false)}
-                className="px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs hover:bg-primary/90 transition shadow-xs"
+                onClick={() => setTourOpen(false)}
+                className="px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs hover:bg-primary/90 transition shadow-xs flex items-center gap-1.5"
               >
-                Start Evaluation Tour
+                <span>Start Exploring</span>
+                <ArrowRight size={13} />
               </button>
             </div>
           </div>

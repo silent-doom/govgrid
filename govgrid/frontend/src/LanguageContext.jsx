@@ -13,7 +13,7 @@ export const TRANSLATIONS = {
     // Header
     jurisdictionLabel: 'Jurisdiction Node',
     liveSyncNotice: 'Last automated sync: 8:45 AM (CPGRAMS + GeM)',
-    judgingGuideBtn: 'Judging Guide',
+    tourBtn: 'Platform Tour',
 
     // Executive Briefing
     greeting: 'Good morning, Commissioner Desai',
@@ -61,7 +61,7 @@ export const TRANSLATIONS = {
     // Header
     jurisdictionLabel: 'ವ್ಯಾಪ್ತಿ ವಲಯ',
     liveSyncNotice: 'ಸ್ವಯಂಚಾಲಿತ ಸಿಂಕ್: ಬೆಳಗ್ಗೆ 8:45 (CPGRAMS + GeM)',
-    judgingGuideBtn: 'ಮೌಲ್ಯಮಾಪನ ಕೈಪಿಡಿ',
+    tourBtn: 'ವೇದಿಕೆ ಪರಿಚಯ',
 
     // Executive Briefing
     greeting: 'ಶುಭೋದಯ, ಆಯುಕ್ತರಾದ ದೇಸಾಯಿ',
@@ -109,7 +109,7 @@ export const TRANSLATIONS = {
     // Header
     jurisdictionLabel: 'పరిధి నోడ్',
     liveSyncNotice: 'ఆటోమేటెడ్ సింక్: ఉదయం 8:45 (CPGRAMS + GeM)',
-    judgingGuideBtn: 'మూల్యాంకన మార్గదర్శి',
+    tourBtn: 'ప్లాట్‌ఫారమ్ టూర్',
 
     // Executive Briefing
     greeting: 'శుభోదయం, కమిషనర్ దేశాయ్',
@@ -157,7 +157,7 @@ export const TRANSLATIONS = {
     // Header
     jurisdictionLabel: 'अधिकार क्षेत्र',
     liveSyncNotice: 'अंतिम स्वचालित सिंक: सुबह 8:45 (CPGRAMS + GeM)',
-    judgingGuideBtn: 'मूल्यांकन गाइड',
+    tourBtn: 'प्लेटफ़ॉर्म टूर',
 
     // Executive Briefing
     greeting: 'शुभ प्रभात, कमिश्नर देसाई',

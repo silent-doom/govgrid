@@ -789,7 +789,7 @@ export default function StitchHeader({
       {/* Civic Knowledge & FAQ Drawer Modal */}
       {faqDrawerOpen && (
         <div 
-          className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex justify-end animate-in fade-in duration-150"
+          className="fixed inset-0 z-[1000] bg-slate-950/70 backdrop-blur-xs flex justify-end animate-in fade-in duration-150"
           onClick={() => setFaqDrawerOpen(false)}
         >
           <div 
@@ -808,6 +808,8 @@ export default function StitchHeader({
                 </div>
               </div>
               <button 
+                id="close-faq-btn"
+                aria-label="Close FAQ drawer"
                 onClick={() => setFaqDrawerOpen(false)}
                 className="p-1.5 rounded-xl hover:bg-slate-200/70 dark:hover:bg-slate-800 text-slate-400 transition"
               >

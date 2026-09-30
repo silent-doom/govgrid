@@ -103,7 +103,7 @@ export default function MapView({ complaints, tenders, center, zoom }) {
       </div>
 
       {/* Map Canvas */}
-      <div style={{ height: '480px', width: '100%', borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+      <div style={{ height: '480px', width: '100%', borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--border)', position: 'relative', zIndex: 1, isolation: 'isolate' }}>
         <MapContainer center={center} zoom={zoom || 14} style={{ height: '100%', width: '100%' }}>
           <ChangeView center={center} zoom={zoom || 14} />
 

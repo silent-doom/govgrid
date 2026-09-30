@@ -1,0 +1,188 @@
+{
+  "tool": "voila",
+  "spec": "voila-recipe/1",
+  "url": "https://govgrid.web.app",
+  "mode": "steps",
+  "steps": [
+    {
+      "action": "slide",
+      "title": "GovGrid",
+      "subtitle": "AI-Powered DPI Public Budget Reconciliation",
+      "accent": "#059669",
+      "ms": 3600,
+      "caption": "GovGrid: AI-Powered Digital Public Infrastructure",
+      "narration": "Welcome to GovGrid. Autonomous budget reconciliation for municipal digital public infrastructure."
+    },
+    {
+      "action": "wait",
+      "ms": 1000,
+      "caption": "Executive Briefing: Real-time municipal capital oversight",
+      "narration": "GovGrid reconciles citizen distress signals directly against municipal e-procurement contracts."
+    },
+    {
+      "action": "scroll",
+      "y": 350,
+      "caption": "Spatial Priority Matrix: Identifying infrastructure anomalies",
+      "narration": "Active distress clusters are automatically prioritized by severity and geographic impact."
+    },
+    {
+      "action": "click",
+      "selector": "button:has-text('Quick search') >> visible=true",
+      "caption": "Command Palette: Instant navigation across civic datasets",
+      "narration": "Administrators search tenders, statutory audits, and citizen records in milliseconds."
+    },
+    {
+      "action": "click",
+      "selector": "button:has-text('Jan-Vani Citizen Voice Ledger') >> visible=true",
+      "caption": "Jan-Vani: Grassroots Vernacular Voice Processing",
+      "narration": "Citizens report infrastructure damage in Telugu, Kannada, and Hindi via WhatsApp voice notes."
+    },
+    {
+      "action": "wait",
+      "ms": 1200,
+      "caption": "Vertex AI Chirp 2: Vernacular Indic language processing",
+      "narration": "Chirp two transcribes colloquial Indic dialects with ninety-eight percent phonetic accuracy."
+    },
+    {
+      "action": "click",
+      "selector": "button[title*='Play Voice Note'] >> visible=true",
+      "caption": "Audio Playback: High-fidelity citizen distress verification",
+      "narration": "Audio evidence is verified with geocoded coordinates before cross-referencing public procurement."
+    },
+    {
+      "action": "wait",
+      "ms": 1800
+    },
+    {
+      "action": "click",
+      "selector": "a[href='/audits'] >> visible=true",
+      "caption": "Tender Audits: Cross-referencing GeM public contracts",
+      "narration": "GovGrid surfaces contractors billing for completed road repairs where citizen grievances persist."
+    },
+    {
+      "action": "scroll",
+      "y": 300,
+      "caption": "Forensic Discrepancy Dossier: Automated evidence binding",
+      "narration": "Discrepancy reports compile satellite imagery, citizen testimony, and billing records."
+    },
+    {
+      "action": "click",
+      "selector": "button:has-text('Freeze Escrow') >> visible=true",
+      "caption": "GFR Rule 175: Instant statutory payment freeze",
+      "narration": "Commissioners freeze milestone tranches with one click under municipal financial statutory rules."
+    },
+    {
+      "action": "wait",
+      "ms": 1200
+    },
+    {
+      "action": "click",
+      "selector": "a[href='/map'] >> visible=true",
+      "caption": "BigQuery GIS: ST_DWithin 500-meter buffer analysis",
+      "narration": "BigQuery GIS maps citizen complaint clusters directly against active geospatial tender polygons."
+    },
+    {
+      "action": "wait",
+      "ms": 2200,
+      "caption": "Geospatial Reconciliation: Visualizing contractor compliance",
+      "narration": "Interactive maps expose infrastructure gaps that traditional municipal audits miss entirely."
+    },
+    {
+      "action": "click",
+      "selector": "a[href='/'] >> visible=true"
+    },
+    {
+      "action": "click",
+      "selector": "#open-faq-btn >> visible=true",
+      "caption": "Civic Knowledge Base: Transparent open governance",
+      "narration": "Complete documentation of algorithmic audit rules, legal frameworks, and grievance resolution pathways."
+    },
+    {
+      "action": "wait",
+      "ms": 2000
+    },
+    {
+      "action": "slide",
+      "title": "GovGrid",
+      "subtitle": "Live DPI at govgrid.web.app • Season 2",
+      "accent": "#059669",
+      "ms": 8000,
+      "caption": "Built for Code for Communities Season 2 • Track 1",
+      "narration": "GovGrid brings accountable transparency to public funds. Live now at govgrid dot web dot app."
+    }
+  ],
+  "durationSec": 107,
+  "segments": [
+    {
+      "at": 0.6,
+      "caption": "GovGrid: AI-Powered Digital Public Infrastructure",
+      "narration": "Welcome to GovGrid. Autonomous budget reconciliation for municipal digital public infrastructure."
+    },
+    {
+      "at": 8.68,
+      "caption": "Executive Briefing: Real-time municipal capital oversight",
+      "narration": "GovGrid reconciles citizen distress signals directly against municipal e-procurement contracts."
+    },
+    {
+      "at": 15.95,
+      "caption": "Spatial Priority Matrix: Identifying infrastructure anomalies",
+      "narration": "Active distress clusters are automatically prioritized by severity and geographic impact."
+    },
+    {
+      "at": 23.18,
+      "caption": "Command Palette: Instant navigation across civic datasets",
+      "narration": "Administrators search tenders, statutory audits, and citizen records in milliseconds."
+    },
+    {
+      "at": 29.61,
+      "caption": "Jan-Vani: Grassroots Vernacular Voice Processing",
+      "narration": "Citizens report infrastructure damage in Telugu, Kannada, and Hindi via WhatsApp voice notes."
+    },
+    {
+      "at": 36.93,
+      "caption": "Vertex AI Chirp 2: Vernacular Indic language processing",
+      "narration": "Chirp two transcribes colloquial Indic dialects with ninety-eight percent phonetic accuracy."
+    },
+    {
+      "at": 43.98,
+      "caption": "Audio Playback: High-fidelity citizen distress verification",
+      "narration": "Audio evidence is verified with geocoded coordinates before cross-referencing public procurement."
+    },
+    {
+      "at": 51.53,
+      "caption": "Tender Audits: Cross-referencing GeM public contracts",
+      "narration": "GovGrid surfaces contractors billing for completed road repairs where citizen grievances persist."
+    },
+    {
+      "at": 58.71,
+      "caption": "Forensic Discrepancy Dossier: Automated evidence binding",
+      "narration": "Discrepancy reports compile satellite imagery, citizen testimony, and billing records."
+    },
+    {
+      "at": 65.43,
+      "caption": "GFR Rule 175: Instant statutory payment freeze",
+      "narration": "Commissioners freeze milestone tranches with one click under municipal financial statutory rules."
+    },
+    {
+      "at": 72.96,
+      "caption": "BigQuery GIS: ST_DWithin 500-meter buffer analysis",
+      "narration": "BigQuery GIS maps citizen complaint clusters directly against active geospatial tender polygons."
+    },
+    {
+      "at": 81.41,
+      "caption": "Geospatial Reconciliation: Visualizing contractor compliance",
+      "narration": "Interactive maps expose infrastructure gaps that traditional municipal audits miss entirely."
+    },
+    {
+      "at": 88.48,
+      "caption": "Civic Knowledge Base: Transparent open governance",
+      "narration": "Complete documentation of algorithmic audit rules, legal frameworks, and grievance resolution pathways."
+    },
+    {
+      "at": 96.24,
+      "caption": "Built for Code for Communities Season 2 • Track 1",
+      "narration": "GovGrid brings accountable transparency to public funds. Live now at govgrid dot web dot app."
+    }
+  ],
+  "howToRecreate": "Run the steps against the url with voila (github.com/anzal1/voila) — voila_record(url, steps_yaml) via MCP, or `voila record <url> --steps <file>`."
+}

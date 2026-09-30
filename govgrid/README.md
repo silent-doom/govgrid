@@ -30,11 +30,8 @@
 | :--- | :---: | :--- |
 | **Official Pitch Deck (PDF)** | 📄 Landscape PDF | **[`pitch_deck/govgrid_pitch_deck.pdf`](./pitch_deck/govgrid_pitch_deck.pdf)** — 10 High-Resolution Widescreen 16:9 Slides with System Architecture, SWOT Analysis & Impact Metrics. |
 | **Editable Slide Deck (PPTX)** | 💻 PowerPoint | **[`pitch_deck/govgrid_pitch_deck.pptx`](./pitch_deck/govgrid_pitch_deck.pptx)** — Fully editable Microsoft PowerPoint deck. |
-| **Solution Demo Video** | 🎥 Animated Video | **[`demo/govgrid_solution_demo.webp`](./demo/govgrid_solution_demo.webp)** — End-to-end walkthrough showing WhatsApp voice ingestion, BigQuery GIS reconciliation, and GFR 175 escrow freeze. See **[`demo/README.md`](./demo/README.md)** for video timestamps. |
-
-### 🎬 Demo Video Preview
-
-![GovGrid Solution Demo Preview](./demo/govgrid_solution_demo.webp)
+| **Voila Narrated Demo Video (MP4)** | 🎬 Narrated MP4 | **[`demo/govgrid_narrated_demo.mp4`](./demo/govgrid_narrated_demo.mp4)** / **[`demo/demo.mp4`](./demo/demo.mp4)** — Full 107-second 1080p demo with Kokoro TTS audio narration, burned-in captions, Jan-Vani Telugu audio playback, BigQuery GIS mapping, GFR 175 freeze, and Civic Knowledge FAQ. |
+| **Voila Recipe & Steps** | 📜 YAML / Recipe | **[`demo/voila_steps.yaml`](./demo/voila_steps.yaml)** & **[`demo/review/`](./demo/review/)** — Reproducible recording script and frame-by-frame review snapshots. |
 
 ---
 

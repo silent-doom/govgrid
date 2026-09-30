@@ -20,7 +20,18 @@ import {
   Pause, 
   ExternalLink, 
   FileCheck,
-  AlertCircle
+  AlertCircle,
+  HelpCircle,
+  ChevronDown,
+  BookOpen,
+  Compass,
+  Database,
+  ShieldCheck,
+  Mic,
+  FileText,
+  BarChart3,
+  Map as MapIcon,
+  ChevronRight
 } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 
@@ -34,6 +45,7 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
   const [mobileTab, setMobileTab] = useState('priorities'); // 'priorities' | 'spatial'
   const [callingHelpline, setCallingHelpline] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
+  const [activeFaq, setActiveFaq] = useState(0);
 
   const handleFreeze = (tenderId, title) => {
     setFrozenTenders(prev => ({ ...prev, [tenderId]: true }));
@@ -625,6 +637,237 @@ export default function ExecutiveBriefing({ districtData, complaints = [], tende
           </div>
 
         </section>
+      </div>
+
+      {/* Platform Quicklinks & Direct Navigation Grid */}
+      <div className="mt-10 sm:mt-14 mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Zap className="text-amber-500 fill-amber-500/20" size={18} />
+            <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 dark:text-white">
+              Platform Quicklinks & Accessibility Directives
+            </h3>
+          </div>
+          <span className="text-xs text-slate-400 font-mono hidden sm:inline">Press ⌘K anywhere for fast dispatch</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          <NavLink 
+            to="/voices"
+            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary/50 shadow-2xs hover:shadow-xs transition group flex items-start gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Mic size={20} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                  Jan-Vani Citizen Voices
+                </span>
+                <ChevronRight size={14} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                Native Kannada, Telugu & Hindi audio transcript playback with automated WhatsApp simulation.
+              </p>
+            </div>
+          </NavLink>
+
+          <NavLink 
+            to="/audits"
+            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary/50 shadow-2xs hover:shadow-xs transition group flex items-start gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <ShieldCheck size={20} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                  Tender Accountability Audits
+                </span>
+                <ChevronRight size={14} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                Discrepancy dossiers, GFR Rule 175 escrow freeze orders, and contractor show-cause notices.
+              </p>
+            </div>
+          </NavLink>
+
+          <NavLink 
+            to="/map"
+            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary/50 shadow-2xs hover:shadow-xs transition group flex items-start gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <MapIcon size={20} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                  Interactive Ward GIS Map
+                </span>
+                <ChevronRight size={14} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                Uber H3 hexbins, ST_DWithin 500m contractor buffer rings, and satellite visual overlays.
+              </p>
+            </div>
+          </NavLink>
+
+          <NavLink 
+            to="/analytics"
+            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary/50 shadow-2xs hover:shadow-xs transition group flex items-start gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <BarChart3 size={20} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                  Spatial Variance Analytics
+                </span>
+                <ChevronRight size={14} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                Ward contractor compliance ratios, capital leakage trends, and cross-district benchmarks.
+              </p>
+            </div>
+          </NavLink>
+
+          <NavLink 
+            to="/pipeline"
+            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary/50 shadow-2xs hover:shadow-xs transition group flex items-start gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Database size={20} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                  BigQuery GIS Pipeline Telemetry
+                </span>
+                <ChevronRight size={14} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                Ingested GeM e-Tenders, CPGRAMS grievances, and live SQL reconciliation queries.
+              </p>
+            </div>
+          </NavLink>
+
+          <div 
+            onClick={() => window.print()}
+            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary/50 shadow-2xs hover:shadow-xs transition group flex items-start gap-3.5 cursor-pointer"
+          >
+            <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <FileText size={20} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                  Print Statutory Gazette Dossier
+                </span>
+                <ChevronRight size={14} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                Official PDF export containing Commissioner audit memos and certified telemetry hashes.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Comprehensive Civic Knowledge & FAQ Section */}
+      <div className="mt-8 mb-12 bg-surface-dim dark:bg-slate-900/60 rounded-3xl p-5 sm:p-8 border border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-primary/10 dark:bg-emerald-950 text-primary dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <BookOpen size={20} />
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 dark:text-white">
+                GovGrid Civic FAQ & Technical Methodology
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Ground-truth reconciliation architecture, AI verification standards & regulatory protocols
+              </p>
+            </div>
+          </div>
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 self-start sm:self-auto">
+            DPI Verified Standard
+          </span>
+        </div>
+
+        <div className="space-y-3">
+          {[
+            {
+              id: 0,
+              cat: 'Spatial Reconciliation',
+              q: 'How does GovGrid reconcile citizen ground truth against GeM e-Tender disbursements?',
+              a: 'GovGrid executes automated BigQuery GIS spatial queries using ST_DWithin with dynamic 500m to 1.5km buffer rings around civil contract milestone coordinates. When incoming CPGRAMS or WhatsApp voice grievances intersect spatially with a 100% billed contractor milestone, an automated discrepancy anomaly is flagged with an auditable forensic checksum.'
+            },
+            {
+              id: 1,
+              cat: 'Vertex AI & Gemini',
+              q: 'What role does Vertex AI & Gemini 1.5 Pro play in multimodal audit verification?',
+              a: 'Gemini 1.5 Pro performs multimodal cross-matching by analyzing contractor milestone submission photos, drone photogrammetry, and citizen ground evidence. It detects physical progress discrepancies (such as 22% actual concrete pour vs 100% billed completion) with verifiable 98% forensic accuracy.'
+            },
+            {
+              id: 2,
+              cat: 'Enforcement Directives',
+              q: 'What happens when an Unfunded Liability or Capital Leakage anomaly is flagged?',
+              a: 'The system initiates a three-tier statutory response: (1) Temporary PFMS escrow tranche freeze under GFR Rule 175, (2) Automated dispatch of a third-party municipal vigilance inspector within 24 hours, and (3) Automated Kannada/Telugu/Hindi SMS notification to citizen complainants with a public grievance tracking hash.'
+            },
+            {
+              id: 3,
+              cat: 'Vernacular DPI',
+              q: 'How does Jan-Vani support multiple regional languages and dialects?',
+              a: 'Jan-Vani incorporates speech-to-text models calibrated for colloquial Indic dialects in Kannada, Telugu, Tamil, and Hindi. Voice notes submitted via WhatsApp or IVR line 104 are normalized, phonetically transcribed, translated to English for administrative review, and geocoded to the nearest municipal ward node.'
+            },
+            {
+              id: 4,
+              cat: 'Statutory Authority',
+              q: 'Who has statutory authority to execute PFMS payment freeze orders?',
+              a: 'Only credentialed Municipal Commissioners (IAS) and District Magistrates holding hardware-authenticated cryptographic tokens can freeze or reallocate contingency funds under Section 71(b) of the Municipal Financial Governance Act.'
+            },
+            {
+              id: 5,
+              cat: 'Citizen Transparency',
+              q: 'Can ordinary citizens verify whether contractor repair works were validated?',
+              a: 'Yes. Every audit decision produces a verifiable SHA-256 telemetry hash published to the GovGrid open ledger. Citizens can view whether their ward defect was addressed, inspect before/after satellite imagery, and track fund allocations transparently without bureaucratic friction.'
+            }
+          ].map((item) => {
+            const isOpen = activeFaq === item.id;
+            return (
+              <div 
+                key={item.id}
+                className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden transition shadow-2xs"
+              >
+                <button
+                  onClick={() => setActiveFaq(isOpen ? -1 : item.id)}
+                  className="w-full p-4 text-left flex items-start justify-between gap-3 hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition cursor-pointer"
+                >
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-primary dark:text-emerald-400 block mb-1 font-display">
+                      {item.cat}
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-snug">
+                      {item.q}
+                    </span>
+                  </div>
+                  <ChevronDown 
+                    size={18} 
+                    className={`text-slate-400 shrink-0 mt-1 transition-transform duration-200 ${
+                      isOpen ? 'rotate-180 text-primary dark:text-emerald-400' : ''
+                    }`} 
+                  />
+                </button>
+                {isOpen && (
+                  <div className="px-4 pb-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800 pt-3 animate-in fade-in duration-150">
+                    {item.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Interactive Disaster Management Hotline Audio Conference Modal */}

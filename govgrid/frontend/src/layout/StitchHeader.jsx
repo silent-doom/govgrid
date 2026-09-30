@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../ThemeContext';
 import { useLanguage } from '../LanguageContext';
 import { 
@@ -14,18 +14,25 @@ import {
   Database, 
   Bell, 
   RefreshCw,
-  Menu,
-  X,
-  Sparkles,
-  Sun,
-  Moon,
-  Languages,
-  Compass,
-  HelpCircle,
-  CheckCircle2,
-  Cpu,
-  Layers,
-  ArrowRight
+  Menu, 
+  X, 
+  Sparkles, 
+  Sun, 
+  Moon, 
+  Languages, 
+  Compass, 
+  HelpCircle, 
+  CheckCircle2, 
+  Cpu, 
+  Layers, 
+  ArrowRight,
+  Zap,
+  Search,
+  ChevronRight,
+  FileDown,
+  ExternalLink,
+  BookOpen,
+  Volume2
 } from 'lucide-react';
 
 export default function StitchHeader({ 
@@ -37,23 +44,184 @@ export default function StitchHeader({
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { theme, toggleTheme, isDark } = useTheme();
   const { language, setLanguage, t, supportedLanguages } = useLanguage();
+  
+  // Modals & Drawers
   const [tourOpen, setTourOpen] = useState(false);
-
-  const navItems = [
-    { to: '/', label: t('navExecutive'), icon: FileText, exact: true },
-    { to: '/voices', label: t('navVoices'), icon: Mic },
-    { to: '/audits', label: t('navAudits'), icon: ShieldCheck },
-    { to: '/map', label: t('navMap'), icon: MapIcon },
-    { to: '/analytics', label: t('navAnalytics'), icon: BarChart3 },
-    { to: '/pipeline', label: t('navPipeline'), icon: Database },
-  ];
-
+  const [quickLinksOpen, setQuickLinksOpen] = useState(false);
+  const [faqDrawerOpen, setFaqDrawerOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedFaq, setExpandedFaq] = useState(1); // default expand first FAQ
+  
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [syncToast, setSyncToast] = useState(null);
+
+  const navItems = [
+    { to: '/', label: t('navExecutive'), enSubtitle: 'Executive Brief', icon: FileText, exact: true },
+    { to: '/voices', label: t('navVoices'), enSubtitle: 'Citizen Voices', icon: Mic },
+    { to: '/audits', label: t('navAudits'), enSubtitle: 'Tender Audits', icon: ShieldCheck },
+    { to: '/map', label: t('navMap'), enSubtitle: 'Ward Map', icon: MapIcon },
+    { to: '/analytics', label: t('navAnalytics'), enSubtitle: 'Analytics', icon: BarChart3 },
+    { to: '/pipeline', label: t('navPipeline'), enSubtitle: 'Pipeline', icon: Database },
+  ];
+
+  // Quick Links items for Cmd+K palette
+  const quickJumpItems = [
+    {
+      id: 'exec',
+      title: 'Executive Briefing & Priorities',
+      desc: 'Real-time DPI Budget Reconciliation & Key Performance Indices',
+      path: '/',
+      category: 'Primary Navigation',
+      icon: FileText,
+      badge: 'Main'
+    },
+    {
+      id: 'voices',
+      title: 'Jan-Vani Citizen Voice Ledger',
+      desc: 'Multilingual audio transcripts, WhatsApp simulations & defect scoring',
+      path: '/voices',
+      category: 'Primary Navigation',
+      icon: Mic,
+      badge: 'Audio'
+    },
+    {
+      id: 'audits',
+      title: 'Civic Tender Accountability Ledger',
+      desc: 'Disbursed ₹18.5 Cr milestone vs satellite photogrammetry logs & GFR 175 freeze',
+      path: '/audits',
+      category: 'Primary Navigation',
+      icon: ShieldCheck,
+      badge: 'Audit'
+    },
+    {
+      id: 'map',
+      title: 'Interactive Ward GIS Map',
+      desc: 'Uber H3 resolution 9 zero-budget distress clusters & contractor buffer rings',
+      path: '/map',
+      category: 'Primary Navigation',
+      icon: MapIcon,
+      badge: 'GIS'
+    },
+    {
+      id: 'analytics',
+      title: 'Spatial Variance Analytics',
+      desc: 'Ward-by-ward contractor compliance metrics & budget variance heatmaps',
+      path: '/analytics',
+      category: 'Primary Navigation',
+      icon: BarChart3,
+      badge: 'Metrics'
+    },
+    {
+      id: 'pipeline',
+      title: 'BigQuery Spatial GIS Pipeline',
+      desc: 'ST_DWithin spatial buffers & disbursement cross-verification telemetry',
+      path: '/pipeline',
+      category: 'Primary Navigation',
+      icon: Database,
+      badge: 'Data'
+    },
+    {
+      id: 'sync',
+      title: 'Trigger Live BigQuery Spatial Sync',
+      desc: 'Pull latest 1,428 GeM tender & CPGRAMS records from BigQuery dataset',
+      action: 'sync',
+      category: 'System Directives',
+      icon: RefreshCw,
+      badge: 'Action'
+    },
+    {
+      id: 'tour',
+      title: 'Platform Onboarding Tour',
+      desc: 'Interactive 3-step walkthrough explaining DPI budget reconciliation',
+      action: 'tour',
+      category: 'Help & Knowledge',
+      icon: Compass,
+      badge: 'Guide'
+    },
+    {
+      id: 'faq',
+      title: 'DPI Governance FAQ & Knowledge Base',
+      desc: 'Regulatory protocols, ST_DWithin algorithms, and escrow freezing rules',
+      action: 'faq',
+      category: 'Help & Knowledge',
+      icon: HelpCircle,
+      badge: 'FAQ'
+    }
+  ];
+
+  // Comprehensive FAQ knowledge entries
+  const faqItems = [
+    {
+      id: 1,
+      q: 'How does GovGrid reconcile citizen ground truth against GeM e-Tender disbursements?',
+      category: 'Spatial Reconciliation',
+      a: 'GovGrid executes automated BigQuery GIS spatial queries using ST_DWithin with dynamic 500m to 1.5km buffer rings around civil contract milestone coordinates. When incoming CPGRAMS or WhatsApp voice grievances intersect spatially with a 100% billed contractor milestone, an automated discrepancy anomaly is flagged with an auditable forensic checksum.'
+    },
+    {
+      id: 2,
+      q: 'What role does Vertex AI & Gemini 1.5 Pro play in multimodal audit verification?',
+      category: 'AI Verification',
+      a: 'Gemini 1.5 Pro performs multimodal cross-matching by analyzing contractor milestone submission photos, drone photogrammetry, and citizen ground evidence. It detects physical progress discrepancies (such as 22% actual concrete pour vs 100% billed completion) with verifiable 98% forensic accuracy.'
+    },
+    {
+      id: 3,
+      q: 'What happens when an Unfunded Liability or Capital Leakage anomaly is flagged?',
+      category: 'Enforcement Protocols',
+      a: 'The system initiates a three-tier statutory response: (1) Temporary PFMS escrow tranche freeze under GFR Rule 175, (2) Automated dispatch of a third-party municipal vigilance inspector within 24 hours, and (3) Automated Kannada/Telugu/Hindi SMS notification to citizen complainants with a public grievance tracking hash.'
+    },
+    {
+      id: 4,
+      q: 'How does Jan-Vani support multiple regional languages and dialects?',
+      category: 'Vernacular DPI',
+      a: 'Jan-Vani incorporates speech-to-text models calibrated for colloquial Indic dialects in Kannada, Telugu, Tamil, and Hindi. Voice notes submitted via WhatsApp or IVR line 104 are normalized, phonetically transcribed, translated to English for administrative review, and geocoded to the nearest municipal ward node.'
+    },
+    {
+      id: 5,
+      q: 'Who has statutory authority to execute PFMS payment freeze orders?',
+      category: 'Statutory Authority',
+      a: 'Only credentialed Municipal Commissioners (IAS) and District Magistrates holding hardware-authenticated cryptographic tokens can freeze or reallocate contingency funds under Section 71(b) of the Municipal Financial Governance Act.'
+    },
+    {
+      id: 6,
+      q: 'Can ordinary citizens verify whether contractor repair works were validated?',
+      category: 'Public Transparency',
+      a: 'Yes. Every audit decision produces a verifiable SHA-256 telemetry hash published to the GovGrid open ledger. Citizens can view whether their ward defect was addressed, inspect before/after satellite imagery, and track fund allocations transparently without bureaucratic friction.'
+    }
+  ];
+
+  // Filtered quick jump items based on live search query
+  const filteredQuickLinks = quickJumpItems.filter(item => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return item.title.toLowerCase().includes(q) || 
+           item.desc.toLowerCase().includes(q) ||
+           item.category.toLowerCase().includes(q);
+  });
+
+  // Global Keyboard Shortcuts (Cmd+K / Ctrl+K and Escape)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setQuickLinksOpen(prev => !prev);
+      }
+      if (e.key === 'Escape') {
+        setQuickLinksOpen(false);
+        setFaqDrawerOpen(false);
+        setTourOpen(false);
+        setNotificationsOpen(false);
+        setProfileOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const [activeAlerts, setActiveAlerts] = useState([
     {
       id: 1,
@@ -112,6 +280,19 @@ export default function StitchHeader({
     setActiveAlerts(prev => prev.filter(a => a.id !== id));
   };
 
+  const handleQuickLinkClick = (item) => {
+    setQuickLinksOpen(false);
+    if (item.path) {
+      navigate(item.path);
+    } else if (item.action === 'sync') {
+      handleRefreshClick();
+    } else if (item.action === 'tour') {
+      setTourOpen(true);
+    } else if (item.action === 'faq') {
+      setFaqDrawerOpen(true);
+    }
+  };
+
   return (
     <>
       <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 shadow-2xs">
@@ -121,28 +302,28 @@ export default function StitchHeader({
             <span>{syncToast}</span>
           </div>
         )}
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3 sm:gap-4">
           
-          {/* Brand & Mobile Hamburger */}
-          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+          {/* Brand & District Selector */}
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
             {/* Mobile Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 transition"
+              className="lg:hidden p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
 
             <NavLink to="/" className="flex items-center gap-2.5 sm:gap-3 group">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-primary flex items-center justify-center text-white shadow-sm shadow-primary/20 transition-transform group-hover:scale-105 shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white shadow-sm shadow-primary/20 transition-transform group-hover:scale-105 shrink-0">
                 <Building2 size={20} className="text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <span className="font-display font-extrabold text-base sm:text-lg text-primary tracking-tight">GovGrid</span>
                   {isLiveBackend ? (
-                    <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold bg-emerald-50 text-emerald-700 border border-emerald-300 flex items-center gap-1">
+                    <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       BigQuery GIS
                     </span>
@@ -156,7 +337,7 @@ export default function StitchHeader({
               </div>
             </NavLink>
 
-            <div className="h-6 w-px bg-slate-200 hidden md:block" />
+            <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden md:block" />
 
             {/* District Selector Dropdown */}
             <div className="relative hidden md:flex items-center">
@@ -164,7 +345,7 @@ export default function StitchHeader({
               <select 
                 value={selectedDistrict}
                 onChange={(e) => setSelectedDistrict(e.target.value)}
-                className="appearance-none bg-surface-dim hover:bg-slate-100 text-on-surface text-xs font-semibold pl-8 pr-8 py-2 rounded-xl border border-slate-200/80 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer transition shadow-2xs whitespace-nowrap"
+                className="appearance-none bg-surface-dim hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface text-xs font-semibold pl-8 pr-8 py-2 rounded-xl border border-slate-200/80 dark:border-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer transition shadow-2xs whitespace-nowrap"
               >
                 <option value="bengaluru">Bengaluru East, KA</option>
                 <option value="anantapur">Anantapur Rural, AP</option>
@@ -174,8 +355,8 @@ export default function StitchHeader({
             </div>
           </div>
 
-          {/* Desktop Navigation Tabs (Uncramped with whitespace-nowrap) */}
-          <nav className="hidden lg:flex items-center gap-1 bg-surface-dim p-1.5 rounded-2xl border border-slate-200/70 overflow-x-auto">
+          {/* Spacious & Prominent Desktop Navigation Tabs (Uncramped with No Scrollbar Cuts) */}
+          <nav className="hidden lg:flex items-center gap-1.5 bg-slate-100/90 dark:bg-slate-800/90 p-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -184,30 +365,51 @@ export default function StitchHeader({
                   to={item.to} 
                   end={item.exact}
                   className={({ isActive }) => 
-                    `px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+                    `px-3.5 sm:px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-2 whitespace-nowrap shrink-0 group ${
                       isActive 
-                        ? 'bg-white text-primary shadow-xs border border-slate-200/70 font-bold' 
-                        : 'text-on-surface-variant hover:text-primary hover:bg-white/60 font-medium'
+                        ? 'bg-white dark:bg-slate-900 text-primary dark:text-emerald-400 shadow-xs border border-slate-200 dark:border-slate-700 font-bold' 
+                        : 'text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-emerald-400 hover:bg-white/70 dark:hover:bg-slate-700/60 font-semibold'
                     }`
                   }
                 >
-                  <Icon size={15} className="shrink-0" />
-                  <span>{item.label}</span>
+                  <Icon size={15} className="shrink-0 transition-transform group-hover:scale-110" />
+                  <div className="flex flex-col text-left leading-tight">
+                    <span className="text-xs">{item.label}</span>
+                    {language !== 'en' && (
+                      <span className="text-[9px] opacity-70 font-normal tracking-wide">{item.enSubtitle}</span>
+                    )}
+                  </div>
                 </NavLink>
               );
             })}
           </nav>
 
-          {/* Right User & Commissioner Profile */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0 relative">
-            {/* Interactive Platform Tour Pill */}
+          {/* Right Action Tools: Quick Links, FAQ, Language, Theme, Notifications & Profile */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 relative">
+            
+            {/* Quick Links Jump Button (Cmd+K) */}
             <button
-              onClick={() => setTourOpen(true)}
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700/80 text-on-surface border border-slate-200/80 dark:border-slate-700/80 text-xs font-semibold shadow-2xs transition"
-              title="How GovGrid Works — Interactive Walkthrough for Users"
+              id="open-quick-links-btn"
+              onClick={() => setQuickLinksOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50/80 hover:bg-amber-100/80 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 text-amber-900 dark:text-amber-200 border border-amber-200/80 dark:border-amber-700/60 text-xs font-bold transition shadow-2xs group"
+              title="Open Quick Navigation & Search (Cmd+K / Ctrl+K)"
             >
-              <Compass size={14} className="text-secondary" />
-              <span>{t('tourBtn')}</span>
+              <Zap size={14} className="text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform fill-amber-500/20" />
+              <span className="hidden sm:inline">{t('quickLinks') || 'Quick Links'}</span>
+              <kbd className="hidden xl:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-amber-200 dark:border-slate-700 ml-0.5 shadow-2xs">
+                ⌘K
+              </kbd>
+            </button>
+
+            {/* Civic Knowledge & FAQ Drawer Trigger */}
+            <button
+              id="open-faq-btn"
+              onClick={() => setFaqDrawerOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface border border-slate-200/80 dark:border-slate-700 text-xs font-semibold shadow-2xs transition group"
+              title="GovGrid Civic FAQ & Technical Methodology"
+            >
+              <HelpCircle size={14} className="text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+              <span className="hidden md:inline">{t('faqHelp') || 'FAQ & Help'}</span>
             </button>
 
             {/* Vernacular Language Selector Dropdown */}
@@ -215,7 +417,7 @@ export default function StitchHeader({
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="appearance-none bg-surface-dim hover:bg-slate-200/70 text-on-surface text-xs font-semibold pl-7 pr-6 py-2 rounded-2xl border border-slate-200/70 cursor-pointer transition shadow-2xs"
+                className="appearance-none bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface text-xs font-semibold pl-7 pr-6 py-2 rounded-xl border border-slate-200/70 dark:border-slate-700 cursor-pointer transition shadow-2xs"
                 title="Select Vernacular Language"
               >
                 {supportedLanguages.map(l => (
@@ -226,26 +428,26 @@ export default function StitchHeader({
               <ChevronDown size={11} className="text-on-surface-variant absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
 
-            {/* Refresh Button */}
+            {/* BigQuery Refresh Button */}
             <button 
               onClick={handleRefreshClick}
               disabled={isRefreshing}
-              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-surface-dim hover:bg-slate-200/70 text-on-surface-variant flex items-center justify-center transition border border-slate-200/70 shrink-0 ${
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface-variant flex items-center justify-center transition border border-slate-200/70 dark:border-slate-700 shrink-0 ${
                 isRefreshing ? 'opacity-70 cursor-wait' : ''
               }`}
               title="Refresh Data Feeds from BigQuery"
             >
-              <RefreshCw size={16} className={isRefreshing ? 'animate-spin text-emerald-600' : ''} />
+              <RefreshCw size={15} className={isRefreshing ? 'animate-spin text-emerald-600' : ''} />
             </button>
 
             {/* Theme Toggle Button */}
             <button 
               onClick={toggleTheme}
-              className="theme-toggle-btn rounded-2xl"
+              className="theme-toggle-btn rounded-xl"
               title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               aria-label="Toggle theme"
             >
-              {isDark ? <Sun size={17} /> : <Moon size={17} />}
+              {isDark ? <Sun size={16} /> : <Moon size={16} />}
             </button>
 
             {/* Notifications Button */}
@@ -255,16 +457,16 @@ export default function StitchHeader({
                   setNotificationsOpen(!notificationsOpen);
                   setProfileOpen(false);
                 }}
-                className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center transition border shrink-0 ${
+                className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition border shrink-0 ${
                   notificationsOpen 
                     ? 'bg-primary text-white border-primary shadow-sm' 
-                    : 'bg-surface-dim hover:bg-slate-200/70 text-on-surface-variant border-slate-200/70'
+                    : 'bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface-variant border-slate-200/70 dark:border-slate-700'
                 }`} 
                 title="Citizen & Spatial Notifications"
               >
-                <Bell size={17} />
+                <Bell size={16} />
                 {unreadCount > 0 && (
-                  <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-rose-600 ring-2 ring-white animate-pulse" />
+                  <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-600 ring-2 ring-white animate-pulse" />
                 )}
               </button>
 
@@ -299,32 +501,28 @@ export default function StitchHeader({
                       activeAlerts.map(alert => (
                         <div 
                           key={alert.id}
-                          className={`p-3 rounded-2xl border transition ${
+                          onClick={() => {
+                            setNotificationsOpen(false);
+                            navigate(alert.link);
+                          }}
+                          className={`p-3 rounded-2xl border transition cursor-pointer ${
                             alert.read 
-                              ? 'bg-slate-50/60 dark:bg-slate-800/40 border-slate-200/60 dark:border-slate-800' 
-                              : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-2xs'
+                              ? 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 opacity-70' 
+                              : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-2xs hover:border-primary/40'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
-                            <span className="font-display font-bold text-xs text-slate-900 dark:text-white leading-tight">
-                              {alert.title}
-                            </span>
-                            <span className="text-[10px] text-slate-400 shrink-0">{alert.time}</span>
+                            <span className="font-bold text-xs text-slate-900 dark:text-white">{alert.title}</span>
+                            <span className="text-[10px] text-slate-400">{alert.time}</span>
                           </div>
-                          <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-normal">
-                            {alert.desc}
-                          </p>
-                          <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-700/60">
-                            <NavLink 
-                              to={alert.link}
-                              onClick={() => setNotificationsOpen(false)}
-                              className="text-[11px] font-bold text-primary dark:text-emerald-400 hover:underline flex items-center gap-1"
-                            >
-                              Inspect Dossier →
-                            </NavLink>
+                          <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">{alert.desc}</p>
+                          <div className="flex items-center justify-between mt-2 pt-1 border-t border-slate-100 dark:border-slate-700/60">
+                            <span className="text-[10px] font-semibold text-primary dark:text-emerald-400 flex items-center gap-1">
+                              View Spatial Evidence <ArrowRight size={11} />
+                            </span>
                             <button 
                               onClick={(e) => dismissAlert(alert.id, e)}
-                              className="text-[10px] text-slate-400 hover:text-rose-600 font-medium"
+                              className="text-[10px] text-slate-400 hover:text-rose-500"
                             >
                               Dismiss
                             </button>
@@ -337,16 +535,14 @@ export default function StitchHeader({
               )}
             </div>
 
-            <div className="h-7 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
-
-            {/* Commissioner Profile Button & Menu */}
+            {/* Commissioner Authority Profile Badge */}
             <div className="relative">
               <button 
                 onClick={() => {
                   setProfileOpen(!profileOpen);
                   setNotificationsOpen(false);
                 }}
-                className="flex items-center gap-2 sm:gap-2.5 pl-0 sm:pl-1 text-left rounded-2xl hover:opacity-90 transition p-1"
+                className="flex items-center gap-2 pl-1 pr-1.5 sm:pr-2.5 py-1 rounded-2xl hover:bg-surface-dim dark:hover:bg-slate-800 transition"
                 title="View Commissioner Authority Profile"
               >
                 <img 
@@ -407,15 +603,16 @@ export default function StitchHeader({
                 </div>
               )}
             </div>
+
           </div>
 
         </div>
 
         {/* Mobile Navigation Dropdown Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-4 space-y-3 animate-in slide-in-from-top duration-200 shadow-md">
+          <div className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-4 space-y-3 animate-in slide-in-from-top duration-200 shadow-md">
             {/* Mobile District Selector */}
-            <div className="bg-surface-dim p-2.5 rounded-xl border border-slate-200">
+            <div className="bg-surface-dim dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
               <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-display block mb-1">
                 Select Jurisdiction Node
               </label>
@@ -427,7 +624,7 @@ export default function StitchHeader({
                     setSelectedDistrict(e.target.value);
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full bg-white text-xs font-semibold pl-8 pr-8 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full bg-white dark:bg-slate-900 text-xs font-semibold pl-8 pr-8 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <option value="bengaluru">Bengaluru East, KA</option>
                   <option value="anantapur">Anantapur Rural, AP</option>
@@ -435,6 +632,30 @@ export default function StitchHeader({
                 </select>
                 <ChevronDown size={13} className="text-on-surface-variant absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
+            </div>
+
+            {/* Quick Actions in Mobile Drawer */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setQuickLinksOpen(true);
+                }}
+                className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border border-amber-200 dark:border-amber-800 text-xs font-bold flex items-center justify-center gap-1.5"
+              >
+                <Zap size={14} className="text-amber-600 fill-amber-500/20" />
+                <span>Quick Links (⌘K)</span>
+              </button>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setFaqDrawerOpen(true);
+                }}
+                className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-800 text-xs font-bold flex items-center justify-center gap-1.5"
+              >
+                <HelpCircle size={14} className="text-blue-600" />
+                <span>Civic FAQ</span>
+              </button>
             </div>
 
             {/* Mobile Nav Links */}
@@ -449,11 +670,12 @@ export default function StitchHeader({
                   <NavLink
                     key={item.to}
                     to={item.to}
+                    end={item.exact}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`p-3 rounded-xl text-xs font-bold transition flex items-center gap-2 border ${
+                    className={`flex items-center gap-2 p-3 rounded-xl text-xs font-semibold border transition ${
                       isActive 
-                        ? 'bg-primary text-white border-primary shadow-xs' 
-                        : 'bg-surface-dim text-slate-700 border-slate-200/80 hover:bg-slate-100'
+                        ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-emerald-400 border-primary/20 font-bold' 
+                        : 'bg-surface-dim dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                     }`}
                   >
                     <Icon size={16} />
@@ -466,65 +688,170 @@ export default function StitchHeader({
         )}
       </header>
 
-      {/* Mobile Sticky Bottom Navigation Bar (App Bar for One-Thumb Ergonomics) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-2 py-1.5 shadow-lg flex items-center justify-around">
-        <NavLink 
-          to="/" 
-          end
-          className={({ isActive }) => 
-            `flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition ${
-              isActive ? 'text-primary font-bold' : 'text-slate-500 font-medium'
-            }`
-          }
+      {/* Quick Links Jump Modal (Cmd+K) */}
+      {quickLinksOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-start justify-center pt-16 sm:pt-24 px-3 sm:px-4 animate-in fade-in duration-150"
+          onClick={() => setQuickLinksOpen(false)}
         >
-          <FileText size={18} />
-          <span className="text-[10px]">Brief</span>
-        </NavLink>
+          <div 
+            className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Search Input Bar */}
+            <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3 bg-slate-50/70 dark:bg-slate-800/50">
+              <Search className="text-slate-400 shrink-0" size={18} />
+              <input 
+                type="text"
+                autoFocus
+                placeholder="Search GIS pipeline, anomalies, citizen voice recordings, or gazettes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none font-medium"
+              />
+              <button 
+                onClick={() => setQuickLinksOpen(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700 transition"
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-        <NavLink 
-          to="/voices" 
-          className={({ isActive }) => 
-            `flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition ${
-              isActive ? 'text-primary font-bold' : 'text-slate-500 font-medium'
-            }`
-          }
-        >
-          <Mic size={18} />
-          <span className="text-[10px]">Voices</span>
-        </NavLink>
+            {/* Quick Links Jump Options List */}
+            <div className="p-3 overflow-y-auto space-y-1 divide-y divide-slate-100 dark:divide-slate-800/60">
+              {filteredQuickLinks.length === 0 ? (
+                <div className="py-10 text-center text-xs text-slate-400">
+                  No quick actions found matching "{searchQuery}". Try "map", "voices", or "audits".
+                </div>
+              ) : (
+                filteredQuickLinks.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleQuickLinkClick(item)}
+                      className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition text-left group pt-3"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-emerald-950/60 text-primary dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
+                          <Icon size={18} />
+                        </div>
+                        <div className="min-w-0 pr-2">
+                          <div className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-emerald-400 transition-colors flex items-center gap-2 truncate">
+                            <span>{item.title}</span>
+                            <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                              {item.badge}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{item.desc}</p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono text-slate-400 group-hover:text-primary shrink-0 flex items-center gap-1 font-semibold">
+                        Jump <ChevronRight size={13} />
+                      </span>
+                    </button>
+                  );
+                })
+              )}
+            </div>
 
-        <NavLink 
-          to="/audits" 
-          className={({ isActive }) => 
-            `flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition ${
-              isActive ? 'text-primary font-bold' : 'text-slate-500 font-medium'
-            }`
-          }
-        >
-          <ShieldCheck size={18} />
-          <span className="text-[10px]">Audits</span>
-        </NavLink>
+            {/* Quick Links Footer with Hotkey Tips */}
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between px-4">
+              <div className="flex items-center gap-2">
+                <span>Press <kbd className="px-1.5 py-0.5 rounded text-[10px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono">Esc</kbd> to dismiss</span>
+                <span>•</span>
+                <span><kbd className="px-1.5 py-0.5 rounded text-[10px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono">⌘K</kbd> to toggle</span>
+              </div>
+              <span className="text-emerald-700 dark:text-emerald-400 font-bold">GovGrid Fast Dispatch</span>
+            </div>
+          </div>
+        </div>
+      )}
 
-        <NavLink 
-          to="/map" 
-          className={({ isActive }) => 
-            `flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition ${
-              isActive ? 'text-primary font-bold' : 'text-slate-500 font-medium'
-            }`
-          }
+      {/* Civic Knowledge & FAQ Drawer Modal */}
+      {faqDrawerOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex justify-end animate-in fade-in duration-150"
+          onClick={() => setFaqDrawerOpen(false)}
         >
-          <MapIcon size={18} />
-          <span className="text-[10px]">Map</span>
-        </NavLink>
+          <div 
+            className="bg-white dark:bg-slate-900 w-full max-w-xl h-full shadow-2xl border-l border-slate-200 dark:border-slate-800 flex flex-col animate-in slide-in-from-right duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drawer Header */}
+            <div className="p-5 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between bg-slate-50/80 dark:bg-slate-800/60">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0">
+                  <BookOpen size={20} />
+                </div>
+                <div>
+                  <h2 className="text-base font-display font-bold text-slate-900 dark:text-white">GovGrid Civic Knowledge & FAQ</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Reconciliation Methodology & Regulatory Protocols</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setFaqDrawerOpen(false)}
+                className="p-1.5 rounded-xl hover:bg-slate-200/70 dark:hover:bg-slate-800 text-slate-400 transition"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
-        <button 
-          onClick={() => setMobileMenuOpen(true)}
-          className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-slate-500 font-medium hover:text-primary transition"
-        >
-          <Menu size={18} />
-          <span className="text-[10px]">More</span>
-        </button>
-      </nav>
+            {/* Accordion FAQ Items */}
+            <div className="flex-1 p-5 overflow-y-auto space-y-3">
+              {faqItems.map((faq) => {
+                const isExpanded = expandedFaq === faq.id;
+                return (
+                  <div 
+                    key={faq.id}
+                    className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 overflow-hidden transition shadow-2xs"
+                  >
+                    <button 
+                      onClick={() => setExpandedFaq(isExpanded ? null : faq.id)}
+                      className="w-full p-4 text-left flex items-start justify-between gap-3 hover:bg-slate-50/70 dark:hover:bg-slate-700/50 transition cursor-pointer"
+                    >
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-primary dark:text-emerald-400 block mb-1 font-display">
+                          {faq.category}
+                        </span>
+                        <span className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
+                          {faq.q}
+                        </span>
+                      </div>
+                      <ChevronDown 
+                        size={16} 
+                        className={`text-slate-400 shrink-0 mt-1 transition-transform duration-200 ${
+                          isExpanded ? 'rotate-180 text-primary dark:text-emerald-400' : ''
+                        }`} 
+                      />
+                    </button>
+                    {isExpanded && (
+                      <div className="px-4 pb-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-700 pt-3 animate-in fade-in duration-150">
+                        {faq.a}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Drawer Footer with Escalation and Tour Links */}
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between text-xs">
+              <span className="text-slate-500 dark:text-slate-400">Need platform walkthrough?</span>
+              <button 
+                onClick={() => {
+                  setFaqDrawerOpen(false);
+                  setTourOpen(true);
+                }}
+                className="px-3.5 py-1.5 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition shadow-xs flex items-center gap-1.5"
+              >
+                <Compass size={13} />
+                <span>Launch Tour</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Interactive Platform Tour & Onboarding Walkthrough Modal */}
       {tourOpen && (

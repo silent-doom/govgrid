@@ -10,10 +10,13 @@ export const TRANSLATIONS = {
     navAnalytics: 'Analytics',
     navPipeline: 'Pipeline',
     
-    // Header
+    // Header & Quick Links
     jurisdictionLabel: 'Jurisdiction Node',
     liveSyncNotice: 'Last automated sync: 8:45 AM (CPGRAMS + GeM)',
     tourBtn: 'Platform Tour',
+    quickLinks: 'Quick Links',
+    faqHelp: 'FAQ & Help',
+    navFAQ: 'DPI Knowledge & FAQ',
 
     // Executive Briefing
     greeting: 'Good morning, Commissioner Desai',
@@ -62,6 +65,9 @@ export const TRANSLATIONS = {
     jurisdictionLabel: 'ವ್ಯಾಪ್ತಿ ವಲಯ',
     liveSyncNotice: 'ಸ್ವಯಂಚಾಲಿತ ಸಿಂಕ್: ಬೆಳಗ್ಗೆ 8:45 (CPGRAMS + GeM)',
     tourBtn: 'ವೇದಿಕೆ ಪರಿಚಯ',
+    quickLinks: 'ತ್ವರಿತ ಲಿಂಕ್‌ಗಳು',
+    faqHelp: 'ಪ್ರಶ್ನೋತ್ತರ & ಸಹಾಯ',
+    navFAQ: 'DPI ಪ್ರಶ್ನೋತ್ತರ',
 
     // Executive Briefing
     greeting: 'ಶುಭೋದಯ, ಆಯುಕ್ತರಾದ ದೇಸಾಯಿ',
@@ -110,6 +116,9 @@ export const TRANSLATIONS = {
     jurisdictionLabel: 'పరిధి నోడ్',
     liveSyncNotice: 'ఆటోమేటెడ్ సింక్: ఉదయం 8:45 (CPGRAMS + GeM)',
     tourBtn: 'ప్లాట్‌ఫారమ్ టూర్',
+    quickLinks: 'త్వరిత లింకులు',
+    faqHelp: 'ప్రశ్నోత్తరాలు & సహాయం',
+    navFAQ: 'DPI ప్రశ్నోత్తరాలు',
 
     // Executive Briefing
     greeting: 'శుభోదయం, కమిషనర్ దేశాయ్',
@@ -158,6 +167,9 @@ export const TRANSLATIONS = {
     jurisdictionLabel: 'अधिकार क्षेत्र',
     liveSyncNotice: 'अंतिम स्वचालित सिंक: सुबह 8:45 (CPGRAMS + GeM)',
     tourBtn: 'प्लेटफ़ॉर्म टूर',
+    quickLinks: 'त्वरित लिंक',
+    faqHelp: 'सामान्य प्रश्न (FAQ)',
+    navFAQ: 'DPI सामान्य प्रश्न',
 
     // Executive Briefing
     greeting: 'शुभ प्रभात, कमिश्नर देसाई',

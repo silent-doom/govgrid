@@ -16,11 +16,10 @@ FROM python:3.11-slim AS runner
 
 WORKDIR /app
 
-# Install system dependencies for GIS & audio codecs
+# Install system dependencies for audio codecs
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ffmpeg \
-    libgdal-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python requirements

@@ -24,6 +24,20 @@
 
 ---
 
+## 📊 Pitch Deck & 🎥 Solution Demo Video
+
+| Asset | Format | Description / Link |
+| :--- | :---: | :--- |
+| **Official Pitch Deck (PDF)** | 📄 Landscape PDF | **[`pitch_deck/govgrid_pitch_deck.pdf`](./pitch_deck/govgrid_pitch_deck.pdf)** — 10 High-Resolution Widescreen 16:9 Slides with System Architecture, SWOT Analysis & Impact Metrics. |
+| **Editable Slide Deck (PPTX)** | 💻 PowerPoint | **[`pitch_deck/govgrid_pitch_deck.pptx`](./pitch_deck/govgrid_pitch_deck.pptx)** — Fully editable Microsoft PowerPoint deck. |
+| **Solution Demo Video** | 🎥 Animated Video | **[`demo/govgrid_solution_demo.webp`](./demo/govgrid_solution_demo.webp)** — End-to-end walkthrough showing WhatsApp voice ingestion, BigQuery GIS reconciliation, and GFR 175 escrow freeze. See **[`demo/README.md`](./demo/README.md)** for video timestamps. |
+
+### 🎬 Demo Video Preview
+
+![GovGrid Solution Demo Preview](./demo/govgrid_solution_demo.webp)
+
+---
+
 ## 🏆 Hackathon Alignment & Rubric Architecture
 
 GovGrid is specifically architected for the **Build with AI: Code for Communities (Season 2)** Hackathon under **Track 1: AI for Digital Public Infrastructure & Governance**:

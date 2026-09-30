@@ -10,8 +10,17 @@
 [![Vite](https://img.shields.io/badge/Vite-6.0+-047857.svg?style=flat&logo=vite)](https://vitejs.dev)
 [![Google Cloud BigQuery GIS](https://img.shields.io/badge/BigQuery%20GIS-ST__DWithin-10b981.svg?style=flat&logo=googlecloud)](https://cloud.google.com/bigquery)
 [![Vertex AI Gemini](https://img.shields.io/badge/Vertex%20AI-Gemini%202.5-059669.svg?style=flat&logo=google)](https://cloud.google.com/vertex-ai)
-[![Google Cloud Run Ready](https://img.shields.io/badge/Cloud%20Run-Serverless-4285F4.svg?style=flat&logo=googlecloud)](https://cloud.google.com/run)
-[![License: MIT](https://img.shields.io/badge/License-MIT-slate.svg?style=flat)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-eventflow--e3c91.web.app-10b981.svg?style=for-the-badge&logo=firebase)](https://eventflow-e3c91.web.app)
+[![Google Cloud Ready](https://img.shields.io/badge/Google%20Cloud-BigQuery%20GIS%20%7C%20Firebase-4285F4.svg?style=for-the-badge&logo=googlecloud)](https://cloud.google.com)
+
+---
+
+## 🌐 Live Production Deployment (Google Cloud / Firebase)
+
+> 🚀 **Live Production Application**: **[https://eventflow-e3c91.web.app](https://eventflow-e3c91.web.app)**  
+> 🔗 **Alternative Domain**: **[https://eventflow-e3c91.firebaseapp.com](https://eventflow-e3c91.firebaseapp.com)**  
+> 
+> *Full-fidelity DPI application deployed live on Google Cloud Firebase Hosting, featuring vernacular Indic voice note playback (Telugu, Kannada, Hindi), BigQuery GIS spatial reconciliation, Quick Links palette (`⌘K`), and Civic FAQ knowledge base.*
 
 ---
 

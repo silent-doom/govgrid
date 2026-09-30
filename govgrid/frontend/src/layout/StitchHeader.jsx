@@ -53,7 +53,7 @@ export default function StitchHeader({
   const [quickLinksOpen, setQuickLinksOpen] = useState(false);
   const [faqDrawerOpen, setFaqDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedFaq, setExpandedFaq] = useState(1); // default expand first FAQ
+  const [expandedFaq, setExpandedFaq] = useState(1);
   
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -69,7 +69,6 @@ export default function StitchHeader({
     { to: '/pipeline', label: t('navPipeline'), enSubtitle: 'Pipeline', icon: Database },
   ];
 
-  // Quick Links items for Cmd+K palette
   const quickJumpItems = [
     {
       id: 'exec',
@@ -154,7 +153,6 @@ export default function StitchHeader({
     }
   ];
 
-  // Comprehensive FAQ knowledge entries
   const faqItems = [
     {
       id: 1,
@@ -194,7 +192,6 @@ export default function StitchHeader({
     }
   ];
 
-  // Filtered quick jump items based on live search query
   const filteredQuickLinks = quickJumpItems.filter(item => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
@@ -203,7 +200,6 @@ export default function StitchHeader({
            item.category.toLowerCase().includes(q);
   });
 
-  // Global Keyboard Shortcuts (Cmd+K / Ctrl+K and Escape)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -295,121 +291,100 @@ export default function StitchHeader({
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 shadow-2xs">
+      <header className="sticky top-0 z-40 bg-white/98 dark:bg-slate-900/98 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 shadow-2xs">
         {syncToast && (
           <div className="bg-emerald-600 text-white text-xs font-semibold px-4 py-2 text-center flex items-center justify-center gap-2 shadow-sm animate-in slide-in-from-top duration-200">
             <Sparkles size={14} className="text-emerald-200" />
             <span>{syncToast}</span>
           </div>
         )}
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3 sm:gap-4">
+
+        {/* TIER 1: Brand, Search/QuickLinks, and Utilities */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80">
           
-          {/* Brand & District Selector */}
-          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-            {/* Mobile Hamburger Button */}
+          {/* Left: Brand & District Switcher */}
+          <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
 
-            <NavLink to="/" className="flex items-center gap-2.5 sm:gap-3 group">
-              <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white shadow-sm shadow-primary/20 transition-transform group-hover:scale-105 shrink-0">
-                <Building2 size={20} className="text-white" />
+            <NavLink to="/" className="flex items-center gap-2.5 group">
+              <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white shadow-sm shadow-primary/20 transition-transform group-hover:scale-105 shrink-0">
+                <Building2 size={18} className="text-white" />
               </div>
-              <div>
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="font-display font-extrabold text-base sm:text-lg text-primary tracking-tight">GovGrid</span>
-                  {isLiveBackend ? (
-                    <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      BigQuery GIS
-                    </span>
-                  ) : (
-                    <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-semibold bg-secondary-container text-secondary border border-secondary/20 hidden xs:inline-block">
-                      Civic Audit
-                    </span>
-                  )}
-                </div>
-                <p className="text-[10px] sm:text-xs text-on-surface-variant font-medium hidden sm:block">Digital Public Infrastructure</p>
+              <div className="flex items-center gap-2">
+                <span className="font-display font-extrabold text-lg text-primary tracking-tight">GovGrid</span>
+                {isLiveBackend ? (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 flex items-center gap-1 hidden sm:inline-flex">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    BigQuery GIS
+                  </span>
+                ) : (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-secondary-container text-secondary border border-secondary/20 hidden sm:inline-flex">
+                    DPI Reconciler
+                  </span>
+                )}
               </div>
             </NavLink>
 
-            <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden md:block" />
+            <div className="h-5 w-px bg-slate-200 dark:bg-slate-800 hidden md:block" />
 
             {/* District Selector Dropdown */}
             <div className="relative hidden md:flex items-center">
-              <MapPin size={14} className="text-on-surface-variant absolute left-3 pointer-events-none" />
+              <MapPin size={13} className="text-on-surface-variant absolute left-2.5 pointer-events-none" />
               <select 
                 value={selectedDistrict}
                 onChange={(e) => setSelectedDistrict(e.target.value)}
-                className="appearance-none bg-surface-dim hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface text-xs font-semibold pl-8 pr-8 py-2 rounded-xl border border-slate-200/80 dark:border-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer transition shadow-2xs whitespace-nowrap"
+                className="appearance-none bg-surface-dim hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface text-xs font-semibold pl-7 pr-7 py-1.5 rounded-lg border border-slate-200/80 dark:border-slate-700 cursor-pointer transition shadow-2xs whitespace-nowrap"
               >
                 <option value="bengaluru">Bengaluru East, KA</option>
                 <option value="anantapur">Anantapur Rural, AP</option>
                 <option value="delhi">Varanasi / Delhi Urban</option>
               </select>
-              <ChevronDown size={13} className="text-on-surface-variant absolute right-2.5 pointer-events-none" />
+              <ChevronDown size={12} className="text-on-surface-variant absolute right-2 pointer-events-none" />
             </div>
           </div>
 
-          {/* Spacious & Prominent Desktop Navigation Tabs (Uncramped with No Scrollbar Cuts) */}
-          <nav className="hidden lg:flex items-center gap-1.5 bg-slate-100/90 dark:bg-slate-800/90 p-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink 
-                  key={item.to}
-                  to={item.to} 
-                  end={item.exact}
-                  className={({ isActive }) => 
-                    `px-3.5 sm:px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-2 whitespace-nowrap shrink-0 group ${
-                      isActive 
-                        ? 'bg-white dark:bg-slate-900 text-primary dark:text-emerald-400 shadow-xs border border-slate-200 dark:border-slate-700 font-bold' 
-                        : 'text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-emerald-400 hover:bg-white/70 dark:hover:bg-slate-700/60 font-semibold'
-                    }`
-                  }
-                >
-                  <Icon size={15} className="shrink-0 transition-transform group-hover:scale-110" />
-                  <div className="flex flex-col text-left leading-tight">
-                    <span className="text-xs">{item.label}</span>
-                    {language !== 'en' && (
-                      <span className="text-[9px] opacity-70 font-normal tracking-wide">{item.enSubtitle}</span>
-                    )}
-                  </div>
-                </NavLink>
-              );
-            })}
-          </nav>
-
-          {/* Right Action Tools: Quick Links, FAQ, Language, Theme, Notifications & Profile */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 relative">
-            
-            {/* Quick Links Jump Button (Cmd+K) */}
+          {/* Center: Search & Quick Links Palette Trigger */}
+          <div className="hidden md:flex items-center flex-1 max-w-md mx-2">
             <button
-              id="open-quick-links-btn"
               onClick={() => setQuickLinksOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50/80 hover:bg-amber-100/80 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 text-amber-900 dark:text-amber-200 border border-amber-200/80 dark:border-amber-700/60 text-xs font-bold transition shadow-2xs group"
-              title="Open Quick Navigation & Search (Cmd+K / Ctrl+K)"
+              className="w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-100/80 hover:bg-slate-200/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 border border-slate-200/70 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 transition shadow-2xs group"
             >
-              <Zap size={14} className="text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform fill-amber-500/20" />
-              <span className="hidden sm:inline">{t('quickLinks') || 'Quick Links'}</span>
-              <kbd className="hidden xl:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-amber-200 dark:border-slate-700 ml-0.5 shadow-2xs">
+              <div className="flex items-center gap-2">
+                <Search size={14} className="text-slate-400 group-hover:text-primary transition-colors" />
+                <span className="font-medium">Quick search or jump across DPI modules...</span>
+              </div>
+              <kbd className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
                 ⌘K
               </kbd>
+            </button>
+          </div>
+
+          {/* Right: Actions & Utilities */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Quick Links Button for small/mobile screens */}
+            <button
+              onClick={() => setQuickLinksOpen(true)}
+              className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800"
+              title="Quick Links (⌘K)"
+            >
+              <Zap size={14} className="fill-amber-500/20" />
             </button>
 
             {/* Civic Knowledge & FAQ Drawer Trigger */}
             <button
               id="open-faq-btn"
               onClick={() => setFaqDrawerOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface border border-slate-200/80 dark:border-slate-700 text-xs font-semibold shadow-2xs transition group"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface border border-slate-200/80 dark:border-slate-700 text-xs font-semibold shadow-2xs transition group"
               title="GovGrid Civic FAQ & Technical Methodology"
             >
               <HelpCircle size={14} className="text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
-              <span className="hidden md:inline">{t('faqHelp') || 'FAQ & Help'}</span>
+              <span className="hidden sm:inline">FAQ</span>
             </button>
 
             {/* Vernacular Language Selector Dropdown */}
@@ -417,37 +392,37 @@ export default function StitchHeader({
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="appearance-none bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface text-xs font-semibold pl-7 pr-6 py-2 rounded-xl border border-slate-200/70 dark:border-slate-700 cursor-pointer transition shadow-2xs"
+                className="appearance-none bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface text-xs font-semibold pl-6 pr-5 py-1.5 rounded-lg border border-slate-200/70 dark:border-slate-700 cursor-pointer transition shadow-2xs"
                 title="Select Vernacular Language"
               >
                 {supportedLanguages.map(l => (
                   <option key={l.code} value={l.code}>{l.label}</option>
                 ))}
               </select>
-              <Languages size={13} className="text-on-surface-variant absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <ChevronDown size={11} className="text-on-surface-variant absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Languages size={12} className="text-on-surface-variant absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown size={10} className="text-on-surface-variant absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
 
             {/* BigQuery Refresh Button */}
             <button 
               onClick={handleRefreshClick}
               disabled={isRefreshing}
-              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface-variant flex items-center justify-center transition border border-slate-200/70 dark:border-slate-700 shrink-0 ${
+              className={`w-8 h-8 rounded-lg bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface-variant flex items-center justify-center transition border border-slate-200/70 dark:border-slate-700 shrink-0 ${
                 isRefreshing ? 'opacity-70 cursor-wait' : ''
               }`}
               title="Refresh Data Feeds from BigQuery"
             >
-              <RefreshCw size={15} className={isRefreshing ? 'animate-spin text-emerald-600' : ''} />
+              <RefreshCw size={14} className={isRefreshing ? 'animate-spin text-emerald-600' : ''} />
             </button>
 
             {/* Theme Toggle Button */}
             <button 
               onClick={toggleTheme}
-              className="theme-toggle-btn rounded-xl"
+              className="theme-toggle-btn rounded-lg w-8 h-8 flex items-center justify-center"
               title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               aria-label="Toggle theme"
             >
-              {isDark ? <Sun size={16} /> : <Moon size={16} />}
+              {isDark ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
             {/* Notifications Button */}
@@ -457,16 +432,16 @@ export default function StitchHeader({
                   setNotificationsOpen(!notificationsOpen);
                   setProfileOpen(false);
                 }}
-                className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition border shrink-0 ${
+                className={`relative w-8 h-8 rounded-lg flex items-center justify-center transition border shrink-0 ${
                   notificationsOpen 
                     ? 'bg-primary text-white border-primary shadow-sm' 
                     : 'bg-surface-dim hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-on-surface-variant border-slate-200/70 dark:border-slate-700'
                 }`} 
                 title="Citizen & Spatial Notifications"
               >
-                <Bell size={16} />
+                <Bell size={15} />
                 {unreadCount > 0 && (
-                  <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-600 ring-2 ring-white animate-pulse" />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-600 ring-2 ring-white animate-pulse" />
                 )}
               </button>
 
@@ -542,19 +517,15 @@ export default function StitchHeader({
                   setProfileOpen(!profileOpen);
                   setNotificationsOpen(false);
                 }}
-                className="flex items-center gap-2 pl-1 pr-1.5 sm:pr-2.5 py-1 rounded-2xl hover:bg-surface-dim dark:hover:bg-slate-800 transition"
+                className="flex items-center gap-1.5 pl-1 pr-1.5 py-1 rounded-xl hover:bg-surface-dim dark:hover:bg-slate-800 transition"
                 title="View Commissioner Authority Profile"
               >
                 <img 
                   alt="Commissioner Sarita Desai" 
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-emerald-500/30 shadow-xs shrink-0" 
+                  className="w-8 h-8 rounded-full object-cover ring-2 ring-emerald-500/30 shadow-xs shrink-0" 
                   src="https://lh3.googleusercontent.com/aida/AEtjO1V0FdREEs6ZThX9EGReDYLBX3kP7-xhoSw4t77SKzUtphw_F5uQQ-CkDigK3Mztxzhe8LHp0tBQEzigg___D8S1tEgt50-yzw-nMyRKHv8Sar5r7jBMONXH8Qr6TAYezR08pX4jj6nAF-DJxBBfUTN4jMzkHrIkZ8ySTbjQvFfDQ7c2GQeAnl_5SI5oodamJaioWwqMYko20rexb_tbOF8nb8tjDlrcDJK-Uc2zLONmTosUBw80971wLus"
                 />
-                <div className="hidden xl:flex flex-col text-left">
-                  <span className="font-display font-bold text-xs text-on-surface leading-tight whitespace-nowrap">Sarita Desai, IAS</span>
-                  <span className="text-[10px] text-on-surface-variant whitespace-nowrap">Municipal Commissioner</span>
-                </div>
-                <ChevronDown size={13} className="text-slate-400 hidden xl:block" />
+                <ChevronDown size={11} className="text-slate-400 hidden xl:block" />
               </button>
 
               {/* Profile Dropdown */}
@@ -606,6 +577,53 @@ export default function StitchHeader({
 
           </div>
 
+        </div>
+
+        {/* TIER 2: Dedicated Primary Navigation Tabs Row (Never Overflows!) */}
+        <div className="hidden lg:block bg-slate-50/70 dark:bg-slate-900/60 border-b border-slate-200/50 dark:border-slate-800/50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-between">
+            {/* Clean Segmented Navigation Tabs */}
+            <nav className="flex items-center gap-1.5">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <NavLink 
+                    key={item.to}
+                    to={item.to} 
+                    end={item.exact}
+                    className={({ isActive }) => 
+                      `px-3.5 py-1.5 rounded-lg text-xs transition-all flex items-center gap-2 whitespace-nowrap group ${
+                        isActive 
+                          ? 'bg-white dark:bg-slate-800 text-primary dark:text-emerald-400 shadow-xs border border-slate-200/80 dark:border-slate-700 font-bold' 
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-white/60 dark:hover:bg-slate-800/50 font-medium'
+                      }`
+                    }
+                  >
+                    <Icon size={14} className="shrink-0 transition-transform group-hover:scale-110" />
+                    <span>{item.label}</span>
+                    {language !== 'en' && (
+                      <span className="text-[9px] opacity-60 font-normal">({item.enSubtitle})</span>
+                    )}
+                  </NavLink>
+                );
+              })}
+            </nav>
+
+            {/* Right Telemetry Chip */}
+            <div className="flex items-center gap-3">
+              <span className="text-[11px] text-slate-400 font-mono hidden xl:flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                ST_DWithin 500m Buffers • 1,428 Spatial Records
+              </span>
+              <button
+                onClick={() => setTourOpen(true)}
+                className="text-xs font-semibold text-secondary dark:text-emerald-400 hover:underline flex items-center gap-1"
+              >
+                <Compass size={13} />
+                <span>{t('tourBtn')}</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Mobile Navigation Dropdown Drawer */}
@@ -883,7 +901,6 @@ export default function StitchHeader({
 
             {/* Content */}
             <div className="p-6 overflow-y-auto space-y-4 text-xs">
-              {/* Introduction Banner */}
               <div className="p-3.5 rounded-2xl bg-surface-dim dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
                 <h4 className="font-display font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5 mb-1">
                   <Building2 size={14} className="text-secondary" /> Institutional Purpose
@@ -893,7 +910,6 @@ export default function StitchHeader({
                 </p>
               </div>
 
-              {/* 3-Step Core Workflow */}
               <div>
                 <span className="font-display font-bold text-[11px] uppercase tracking-wider text-slate-400 block mb-2.5">
                   The 3-Step Accountability Cycle
@@ -931,7 +947,6 @@ export default function StitchHeader({
                 </div>
               </div>
 
-              {/* Interactive Features to Try */}
               <div className="p-3.5 rounded-2xl bg-primary/5 dark:bg-slate-800/60 border border-primary/15 dark:border-slate-700">
                 <span className="font-display font-bold text-xs text-primary dark:text-emerald-400 block mb-2">
                   Key Features to Explore in this Demo:
@@ -957,7 +972,6 @@ export default function StitchHeader({
               </div>
             </div>
 
-            {/* Footer */}
             <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-surface-dim dark:bg-slate-800/50 flex items-center justify-between">
               <span className="text-[11px] text-slate-500 dark:text-slate-400">Institutional Governance Portal • GovGrid DPI</span>
               <button 
